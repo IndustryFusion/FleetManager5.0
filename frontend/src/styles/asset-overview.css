@@ -1,0 +1,230 @@
+/* asset-overview.css */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+body {
+  /* font-family: Roboto, sans-serif; */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.asset-data-table,
+.asset-details-card {
+  margin-top: 0;
+  /* Remove any top margin */
+  max-width: 100%;
+  /* Ensure these elements do not exceed 100% width */
+  box-sizing: border-box;
+  /* Include padding and border */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.asset-btn {
+  color: #000;
+  background: #a7e3f985;
+  border: 1px solid #ced4da;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  border-radius: 4px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-weight: 500;
+  margin-right: 2rem;
+}
+
+*/ .asset-btn:hover {
+  background: #b5e1f1;
+  transition: background-color 0.15s;
+
+}
+
+.action-items-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.status-complete-tag {
+
+  padding: 5px 10px;
+  color: rgb(1, 145, 1);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.status-complete-tag i {
+  font-size: 13px;
+}
+
+.status-incomplete-tag {
+
+  padding: 5px 10px;
+  color: #363737;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.status-incomplete-tag i {
+  color: #000;
+}
+
+.p-inputtext:enabled:focus {
+  box-shadow: none;
+  border-color: #495057;
+}
+
+.asset-overview-dialog {
+  width: 80%;
+}
+
+.p-paginator {
+  display: flex;
+  align-items: flex-end;
+  justify-content: right;
+  flex-wrap: wrap;
+  margin-top: 25px;
+  border: none;
+  margin-bottom: 4rem;
+}
+
+/** dataTable css ***/
+.p-datatable-table {
+  border-radius: 10px;
+}
+
+.p-datatable>.p-datatable-wrapper {
+  margin-top: 1rem;
+
+}
+
+.p-datatable-frozen-tbody {
+  font-weight: bold;
+}
+
+/* .p-datatable-table {
+  margin: 0 20px; 
+} */
+.p-datatable>.p-datatable-wrapper {
+  overflow: auto !important;
+}
+
+.p-datatable .p-datatable-tbody>tr:nth-child(even) {
+  background-color: #f4f7f880;
+}
+
+.p-datatable .p-datatable-tbody>tr>td {
+  border: none !important;
+  font-size: 14px;
+}
+
+.p-datatable .p-datatable-thead>tr>th {
+  text-align: left;
+  padding: 1rem 1rem;
+  /* border: 1px solid #dee2e6; */
+  border: none;
+  font-weight: 600;
+  color: #212529;
+  background: #a7e3f985;
+  transition: box-shadow 0.15s;
+  font-size: 14px;
+}
+
+.p-datatable .p-datatable-thead>tr>th:first-child {
+  border-top-left-radius: 10px;
+}
+
+.p-datatable .p-datatable-thead>tr>th:last-child {
+  border-top-right-radius: 10px;
+}
+
+
+/** dataTable css ***/
+.asset-heading {
+  font-size: 24px;
+}
+
+.pi.pi-search {
+  position: absolute;
+  left: 23rem;
+}
+
+.searchbar-input {
+  width: 25rem;
+  height: 41px;
+  padding: 10px;
+  border: 1px solid #ced4da;
+}
+
+.p-input-icon-left {
+  position: relative
+}
+
+/* Mobile view adjustments */
+@media screen and (max-width: 768px) {
+  .asset-details-card.mobile-view {
+    width: 100%;
+  }
+}
+
+/* Custom row padding for DataTable */
+.custom-row-padding .p-datatable-tbody>tr>td {
+  padding: 10px 14px;
+  /* Adjust the padding as needed */
+}
+
+/* Scrollable side panel */
+.scrollable-side-panel {
+  max-height: calc(100vh - 100px);
+  /* Adjust the height as needed */
+  overflow-y: auto;
+  /* Enables vertical scrolling */
+}
+
+.asset-data-table {
+  margin-top: 0;
+  /* Remove any top margin */
+  overflow-x: auto;
+  /* Enable horizontal scrolling if content exceeds the width */
+  max-width: 100%;
+  /* Ensure the element does not exceed 100% width */
+}
+
+/* Ensure the DataTable itself does not exceed the width of its container */
+.asset-data-table .p-datatable {
+  width: auto;
+  /* Adjust the width of the DataTable to fit its content */
+  min-width: 100%;
+  /* Ensure the DataTable takes at least 100% of the container width */
+}
+
+/* Add this CSS in your stylesheet */
+@keyframes dot {
+
+  0%,
+  20% {
+    color: rgba(0, 0, 0, 0);
+  }
+
+  40%,
+  100% {
+    color: black;
+  }
+}
+
+.loading-dots::after {
+  content: "...";
+  font-size: 1em;
+  /* Adjust the size as needed */
+  margin-left: 2px;
+  animation: dot 1.5s infinite linear;
+  display: inline-block;
+}
