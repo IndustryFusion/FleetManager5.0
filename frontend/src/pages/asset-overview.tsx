@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, Component, ErrorInfo, ReactNode } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { Menu } from "primereact/menu";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dialog } from "primereact/dialog";
@@ -16,14 +15,6 @@ import { InputText } from "primereact/inputtext";
 import "../../public/styles/asset-overview.css";
 import { CSSProperties } from "react";
 import { Asset } from "@/interfaces/assetTypes";
-import { skip } from "node:test";
-
-// Alert Component Props
-interface Alerts {
-    text: string;
-    resource: string;
-    severity: string;
-}
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -41,8 +32,6 @@ export default function Asset() {
     const [assets, setAssets] = useState<Asset[]>([]);
     const [showExtraCard, setShowExtraCard] = useState<boolean>(false);
     const [isMobile, setIsMobile] = useState<boolean>(false);
-    const [alerts, setAlerts] = useState<Alerts[]>([]);
-    const [alertCount, setAlertCount] = useState<number>(0);
     const [dataTablePanelSize, setDataTablePanelSize] = useState<number>(100);
     const [isEditDialogVisible, setIsEditDialogVisible] = useState<boolean>(false);
     const [productDetails, setProductDetails] = useState<boolean>(false);
@@ -272,7 +261,7 @@ export default function Asset() {
     return (
         <div style={containerStyle}>
             <Toast ref={toast} />
-            <HorizontalNavbar count={alertCount} alerts={alerts} backgroundColor="rgb(194,212,224)" />
+            <HorizontalNavbar />
 
             {/* Applying 'desktop-view' class only when side panel is open and not in mobile view */}
             <div style={mainContentStyle}>
@@ -280,7 +269,7 @@ export default function Asset() {
                     {/* <Card className="" style={{ height: "auto", overflow: "auto" }}> */}
                     <div className="flex align-center justify-content-between mt-6  p-2" >
 
-                        <h2 className="  asset-heading font-bold p- mt-5 ml-4 pt-2">Assets Overview</h2>
+                        <h3 className="asset-heading font-bold ml-4">Assets Overview</h3>
 
                         <div className="mt-5 search-container">
                             <span className="p-input-icon-left">
@@ -294,7 +283,7 @@ export default function Asset() {
                         </div>
                         <div >
                             <button
-                                className="asset-btn ml-5 mt-5"
+                                className="asset-btn ml-1 mt-5"
                                 onClick={handleCreateAssetClick}
                             >Create  Asset</button>
                         </div>
@@ -408,7 +397,6 @@ export default function Asset() {
                 {selectedProduct && (
 
                     <Dialog visible={productDetails}
-                        header="Asset View"
                         onHide={() => setProductDetails(false)}
                         className="asset-overview-dialog"
                     >

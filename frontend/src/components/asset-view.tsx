@@ -4,8 +4,10 @@ import { Card } from "primereact/card";
 import "primereact/resources/primereact.min.css";
 import "primeflex/primeflex.css";
 import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
+import { TabPanel, TabView } from "primereact/tabview";
 import { classNames } from "primereact/utils";
 import { VirtualScroller } from "primereact/virtualscroller";
+import { TabMenu } from 'primereact/tabmenu';
 
 interface Asset {
   id: string;
@@ -50,10 +52,6 @@ export default function AssetDetailsCard({ asset }: AssetDetailsCardProps) {
     [key: string]: { type: string; value: string };
   } | null>(null);
 
-  const handleTabChange = (tabName: string) => {
-    setSelectedTab(tabName);
-  };
-
   // This is a sample function that handles row selection, you should adapt it to your actual use case.
   // const handleRowSelect = (data: any) => {
   //   setSelectedData(data);
@@ -69,12 +67,21 @@ export default function AssetDetailsCard({ asset }: AssetDetailsCardProps) {
             {Object.entries(asset).map(([key, value]) => {
               if (!key.includes("has")) {
                 return (
-                  <div key={key}>
-                    <p>
-                      <span className="font-semibold mr-2">{key.split("_").length == 1 ? key.charAt(0).toUpperCase() + key.slice(1).toLowerCase() : key.split("_")[0].charAt(0).toUpperCase() + key.split("_")[0].slice(1).toLowerCase() + " " + key.split("_")[1].charAt(0).toUpperCase() + key.split("_")[1].slice(1).toLowerCase()}:</span>
-                      <span>{value}</span>
-                    </p>
-                  </div>
+
+              <div className="surface-0">
+
+                  <ul className="list-none p-0 m-0">
+                      <li className="flex align-items-center py-3 px-2 border-top-1 border-300 flex-wrap">
+                          <div className="text-500 w-6 md:w-4 font-medium">{key.split("_").length == 1 ? key.charAt(0).toUpperCase() + key.slice(1).toLowerCase() : key.split("_")[0].charAt(0).toUpperCase() + key.split("_")[0].slice(1).toLowerCase() + " " + key.split("_")[1].charAt(0).toUpperCase() + key.split("_")[1].slice(1).toLowerCase()}</div>
+                          <div className="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{value}</div>  
+                      </li>
+                  </ul>
+              </div>
+     
+                    
+                      
+                  
+                  
                 );
               }
             })}
@@ -119,46 +126,23 @@ export default function AssetDetailsCard({ asset }: AssetDetailsCardProps) {
     }
   };
 
-  const renderContent = () => {
-    if (selectedTab === "general") {
-      return renderGeneralContent();
-    } else if (selectedTab === "relations") {
-      return renderRelationsContent();
-    }
-  };
-
   return (
-    <div>
-      <div className="grid">
-        <div className="xl:col-4 md:col-6">
-          <Button
-            label="General"
-            severity="secondary"
-            outlined
-            onClick={() => handleTabChange("general")}
-            className="text-center p-2 border-round-sm bg-primary font-bold"
-          />
-        </div>
-        <div className="xl:col-4 md:col-6">
-          <Button
-            label="Relations"
-            severity="secondary"
-            outlined
-            onClick={() => handleTabChange("relations")}
-            className="text-center p-2 border-round-sm bg-primary font-bold"
-          />
+        <div className="mt-1 ml-1">
+          <h1 style={{fontSize:"22px", fontWeight:"bold", marginTop:"1px"}}>
+          Asset Details
+        </h1>
+      <div className=" mt-2" style={{ width: "100%" }}>
+        <div className="flex flex-column align-items-left">
+          <Card className="border-gray-800 border-1 border-round-lg">
+            <div className="card">
+              <TabView>
+                <TabPanel header="General" leftIcon="pi pi-list mr-2" > {renderGeneralContent()} </TabPanel>
+                <TabPanel header="Relation" leftIcon="pi pi-link mr-2" > {renderRelationsContent()} </TabPanel>
+              </TabView>
+            </div>
+          </Card>
         </div>
       </div>
-
-      <hr />
-
-      <div className="grid">
-        <div className="col">
-          <div className="card-content scrollable-content">{renderContent()}</div>
-        </div>
-      </div>
-
     </div>
-
   );
 }

@@ -6,6 +6,8 @@ import { TabPanel, TabView } from "primereact/tabview";
 import { Badge } from "primereact/badge";
 import { useRouter } from "next/router";
 import axios from "axios";
+import HorizontalNavbar from "../components/horizontal-navbar";
+import { BlockUI } from "primereact/blockui";
 
 // Template data type
 type Template = {
@@ -45,7 +47,7 @@ const GetListTemplate: React.FC = () => {
   const router = useRouter();
 
   // Inside GetListTemplate component
-  const navigateToTemplate = (id: string) => {
+  const navigateToTemplate = (id: string, title: string) => {
     // Store the selected template ID in localStorage
     localStorage.setItem("selectedTemplateId", id);
 
@@ -69,6 +71,7 @@ const GetListTemplate: React.FC = () => {
 
         // Storing data in localStorage
         localStorage.setItem("templates", JSON.stringify(response.data));
+
       } catch (error) {
         console.error("Error fetching templates:", error);
       }
@@ -94,6 +97,8 @@ const GetListTemplate: React.FC = () => {
 
     return (
       <div className="grid">
+        
+        <HorizontalNavbar />
         {filteredTemplates.map((template) => (
           <div key={template.id} className={`${columnClass}`}>
             <Card
@@ -111,7 +116,7 @@ const GetListTemplate: React.FC = () => {
                   right: "40%",
                 }}
                 className="p-button-text hover:bg-blue-100 "
-                onClick={() => navigateToTemplate(template.id)} // Add onClick event
+                onClick={() => navigateToTemplate(template.id, template.title)} // Add onClick event
               />
             </Card>
           </div>
@@ -135,15 +140,13 @@ const GetListTemplate: React.FC = () => {
 
   // Component render
   return (
+    <BlockUI>
     <div className="mt-8 ml-6">
-      <div className="-mt-3">
-        <h5 className="text-lg" style={{}}>
-          Select Templates
-        </h5>
-      </div>
-      <div className=" mt-4" style={{ width: "100%" }}>
+        <h1 style={{fontSize: "20px"}}>
+          Templates
+        </h1>
+      <div className="mt-4" style={{ width: "100%" }}>
         <div className="flex flex-column align-items-left">
-          <h4 className="-mt-1"> Templates</h4>
 
           <Card className="border-gray-800 border-1 border-round-lg">
             <TabView className="-ml-3 -mt-5 ">
@@ -162,6 +165,7 @@ const GetListTemplate: React.FC = () => {
         </div>
       </div>
     </div>
+    </BlockUI>
   );
 };
 

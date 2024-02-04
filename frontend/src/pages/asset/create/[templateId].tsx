@@ -9,6 +9,9 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { MultiSelect } from "primereact/multiselect";
 import { ListBox } from "primereact/listbox";
+import HorizontalNavbar from "../../../components/horizontal-navbar";
+import { Card } from "primereact/card";
+import { Toast } from "primereact/toast";
 
 export interface RelationItem {
   label: string;
@@ -94,6 +97,7 @@ const createAssetForm: React.FC = () => {
     });
 
     setSelectedRelationsList(updatedList);
+    console.log("updatedlist", updatedList);
   }, [selectedRelations]);
   const handleBlur = (key: string) => {
     setFocusedFields({ ...focusedFields, [key]: false });
@@ -153,8 +157,9 @@ const createAssetForm: React.FC = () => {
               .flat();
 
             const filterOptions = hasRelations.map((relation) => ({
-              label: relation,
-              value: relation,
+              label: relation.replace(
+                "https://industry-fusion.org/types/v0.1/",""),
+              value: relation
             }));
 
             setFilterOptions(filterOptions);
@@ -287,10 +292,9 @@ const createAssetForm: React.FC = () => {
       type,
       title,
       description,
-      properties: { ...properties, hasFilter: relationId },
-      relations: selectedRelationsList,
+      properties: { ...properties}
     };
-
+    console.log("submissionData", submissionData);
     try {
       const response = await axios.post(
         API_URL + `/asset/${selectedTemplateId}`,
@@ -307,7 +311,9 @@ const createAssetForm: React.FC = () => {
       setIsFormSubmitted(true); // Set the flag to true on successful submission
       console.log("Submitted data:", submissionData);
       console.log("Response from server:", response.data);
-      router.push("/asset/asset-overview");
+      router.push("/asset-overview");
+      //add success message 
+      //Data not saving in background
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Error response:", error.response?.data);
@@ -364,7 +370,6 @@ const createAssetForm: React.FC = () => {
     console.log(newFormData, "what's in this");
 
     setFormData(newFormData);
-    setSelectedRelations([]);
     setSelectedRelationsList([]);
   };
 
@@ -376,10 +381,12 @@ const createAssetForm: React.FC = () => {
       <>
         {property.title === "Asset Status" ? null : property.title ===
           "URN-ID" ? null : (
+          
           <div
             className={`p-field  ${fieldClass}  flex flex-column `}
             key={key}
           >
+          
             {property.type === "string" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
@@ -525,51 +532,19 @@ const createAssetForm: React.FC = () => {
     return matchingTemplate ? matchingTemplate.id : null;
   };
 
-  const handleAddButtonClick = async (relationType: string, action: string) => {
-    const isEditing = !!relationType;
-    console.log("Relation Type before findTemplateId:", relationType);
-    const relationId = await findTemplateId(relationType);
-
-    console.log("Relation ID:", relationId);
-
-    if (relationId === null) {
-      return;
-    }
-
-    console.log("Navigating to:", `/ics/${templateId}/${relationId}`);
-    router.push({
-      pathname: `/ics/${templateId}/${relationId}`,
-      query: { relationType, action: "add" },
-    });
-  };
-  const relationItemTemplate = (option: RelationItem) => {
-    return (
-      <div className="p-d-flex p-ai-center p-jc-between">
-        <span>{option.label}</span>
-        <Button
-          label={option.isSubmitted ? "Edit" : "Add"}
-          className="p-button-outlined p-ml-2"
-          onClick={(e) => {
-            e.stopPropagation();
-
-            const action = option.isSubmitted ? "edit" : "add";
-            handleAddButtonClick(option.value, action);
-          }}
-        />
-      </div>
-    );
-  };
-
   return (
+    
     <div className="" style={{ padding: "1rem 1rem 2rem 4rem" }}>
+       <HorizontalNavbar/>
       {/* <Card> */}
       <div className="header">
-        <p className="hover" style={{ fontWeight: "bold", fontSize: "1.9em" }}>
-          Add Asset
+        <p className="hover" style={{ fontWeight: "bold", fontSize: "20px", marginTop:"55px" }}>
+          Create Asset
         </p>
       </div>
 
       <div>
+      <Card className="border-gray-500 border-1 border-round-lg">
         <form onSubmit={handleSubmit}>
           <div className=" flex p-fluid grid  shadow-lg">
             {schema.properties &&
@@ -579,26 +554,17 @@ const createAssetForm: React.FC = () => {
           </div>
 
           <div className="flex">
-            <div className="p-field col-4 mt-3 flex flex-column">
+            <div className="p-field col-8 mt-3 flex flex-column">
               <label className="relations-label">Relations</label>
-              <MultiSelect
-                value={selectedRelations}
+              {filterOptions.length===0 ?
+              (<label style={{fontSize:"15px", marginTop:"10px"}}>No Relations Existed</label>): 
+              (<label style={{fontSize:"15px", marginTop:"10px"}}>Below Relations can be added in Factory Manager</label>)}
+              <ListBox 
                 options={filterOptions}
-                onChange={(e) => setSelectedRelations(e.value)}
-                placeholder="Select Relations"
-                display="chip"
-                className="mt-2 relations-dropdown p-inputtext-lg"
-              />
-            </div>
-            <div className="p-field col-4 mt-3">
-              <label className="selected-relations">Selected Relations</label>
-              <ListBox
-                value={selectedRelations}
-                options={selectedRelationsList}
                 optionLabel="label"
-                itemTemplate={relationItemTemplate}
+                
                 className="mt-2 p-inputtext-lg"
-              />
+                />
             </div>
           </div>
           <div className="p-2 flex justify-content-end align-items-center">
@@ -627,6 +593,7 @@ const createAssetForm: React.FC = () => {
             />
           </div>
         </form>
+        </Card>
       </div>
     </div>
   );

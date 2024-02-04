@@ -25,11 +25,7 @@ interface HorizontalNavbarProps {
   backgroundColor: string;
 }
 
-const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({
-  count,
-  alerts,
-  backgroundColor
-}) => {
+const HorizontalNavbar: React.FC = () => {
   const router = useRouter();
   const isAssetOverviewRoute = router.pathname === '/asset-overview';
   const navbarStyle: CSSProperties = {
@@ -41,8 +37,12 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({
     justifyContent: "space-between",
     alignItems: "center",
     padding: "1rem 3.4rem 0px",
-    backgroundColor: backgroundColor,
+    backgroundColor: "white",
     zIndex: 1000,
+    borderBottom: "solid",
+    borderBottomWidth: "1px",
+    borderRadius: "5px",
+    borderColor: "#A9A9A9",
 
   };
 
@@ -74,9 +74,10 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({
         <img src="/industryFusion_icon-removebg-preview.png" alt="Logo" style={logoStyle} />
       </div>
       <div className="flex  justify-content-between align-items-center" >
-        <ul className="flex m-0 nav-lists " style={navList}>
+        <ul className="flex m-1 nav-lists " style={navList}>
           <li className="mr-4 ">About Us</li>
-          <li className="mr-8 ">Contact Us</li>
+          <li className="mr-4 ">Contact Us</li>
+          <li className="mr-2 pi pi-user"></li>
         </ul>
       </div>
     </div>
