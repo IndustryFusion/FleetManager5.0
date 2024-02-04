@@ -1,0 +1,28 @@
+.p-button.p-fileupload-choose {
+  color: #1241df;
+  background: #1521d424;
+  border: none;
+  padding: 5px 10px;
+  margin-top: 5px;
+}
+.relations-dropdown {
+  width: 90%;
+  padding: 10px;
+}
+.relations-label {
+  font-size: 18px;
+  border-bottom: 4px solid rgb(18 143 223);
+  width: 17%;
+  padding-bottom: 4px;
+}
+.selected-relations {
+  font-size: 18px;
+}
+.p-listbox-item div {
+  display: flex;
+  justify-content: space-between;
+}
+.p-inputtext-lg,
+.p-inputtext {
+  border-radius: 10px;
+}

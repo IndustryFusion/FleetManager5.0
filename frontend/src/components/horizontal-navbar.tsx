@@ -31,7 +31,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({
   backgroundColor
 }) => {
   const router = useRouter();
-  const isAssetOverviewRoute = router.pathname === '/asset/asset-overview';
+  const isAssetOverviewRoute = router.pathname === '/asset-overview';
   const navbarStyle: CSSProperties = {
     position: "fixed",
     top: 0,
@@ -59,7 +59,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({
   };
 
   const navigateToFleet = () => {
-    router.push("/asset/asset-overview");
+    router.push("/asset-overview");
   };
 
   const navigateToFactoryManager = () => {
@@ -69,7 +69,7 @@ const HorizontalNavbar: React.FC<HorizontalNavbarProps> = ({
   return (
     <div style={navbarStyle}>
       <div className="flex align-items-center logo-container cursor-pointer"
-        onClick={() => router.push("/asset/asset-overview")}
+        onClick={() => router.push("/asset-overview")}
       >
         <img src="/industryFusion_icon-removebg-preview.png" alt="Logo" style={logoStyle} />
       </div>

@@ -5,17 +5,18 @@ import { Menu } from "primereact/menu";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dialog } from "primereact/dialog";
-import AssetDetailsCard from "../../components/asset-list";
-import HorizontalNavbar from "../../components/horizontal-navbar";
-import Footer from "../../components/footer";
+import AssetDetailsCard from "../components/asset-view";
+import HorizontalNavbar from "../components/horizontal-navbar";
+import Footer from "../components/footer";
 import { Toast } from "primereact/toast";
 import { CiClock2 } from "react-icons/ci";
 import { GrView } from "react-icons/gr";
 import { ContextMenu } from 'primereact/contextmenu';
 import { InputText } from "primereact/inputtext";
-import "../../styles/asset-overview.css";
+import "../../public/styles/asset-overview.css";
 import { CSSProperties } from "react";
 import { Asset } from "@/interfaces/assetTypes";
+import { skip } from "node:test";
 
 // Alert Component Props
 interface Alerts {
@@ -65,6 +66,8 @@ export default function Asset() {
 
     // Function to map the backend data to the Asset structure
     const mapBackendDataToAsset = (backendData: any[]): Asset[] => {
+        console.log("Before Formatting", backendData);
+
         return backendData.map((item: any) => {
             const newItem: any = {};
             Object.keys(item).forEach((key) => {
@@ -73,10 +76,18 @@ export default function Asset() {
                         "http://www.industry-fusion.org/schema#",
                         ""
                     );
-                    newItem[newKey] =
-                        item[key].type === "Property" ? item[key].value : item[key];
-                } else {
-                    newItem[key] = item[key];
+
+                    if (item[key].type === "Property") {
+                        newItem[newKey] = item[key].value
+                    }
+                    else if (item[key].type === "Relationship") {
+                        newItem[newKey] = item[key].object
+                    }
+                }
+                else {
+                    if (key == "type" || key == "id") {
+                        newItem[key] = item[key]
+                    }
                 }
             });
             return newItem;
@@ -108,8 +119,8 @@ export default function Asset() {
 
 
     const onRowSelect = (rowData: Asset) => {
-        setSelectedProduct(rowData);
         setShowExtraCard(true);
+        setSelectedProduct(rowData);
         if (!isMobile) {
             setDataTablePanelSize(40);
         }
@@ -117,7 +128,7 @@ export default function Asset() {
     };
 
     const handleCreateAssetClick = () => {
-        router.push("/get-template-list"); // This will navigate to the /get-template route
+        router.push("/templates"); // This will navigate to the /templates
     };
 
 
@@ -186,46 +197,6 @@ export default function Asset() {
         { label: 'Duplicate', icon: 'pi pi-copy' }
     ]
 
-    class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-        constructor(props: ErrorBoundaryProps) {
-            super(props);
-            this.state = { hasError: false };
-        }
-
-        componentDidCatch(error: Error, info: ErrorInfo) {
-            console.error("Error caught by error boundary:", error, info);
-            this.setState({ hasError: true });
-        }
-
-        render() {
-            if (this.state.hasError) {
-                return <div>Something went wrong.</div>;
-            }
-
-            return this.props.children;
-        }
-    }
-
-
-    let clickTimer: NodeJS.Timeout | null = null;
-
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        clearTimeout(clickTimer as NodeJS.Timeout);
-
-        clickTimer = setTimeout(() => {
-            // Handle single click event
-            setProductDetails(true);
-            onRowSelect(e.data as Asset);
-        }, 300); // Delay in milliseconds
-    };
-
-    const handleDoubleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        clearTimeout(clickTimer as NodeJS.Timeout);
-
-        // Handle double click event
-        handleRowDoubleClick(e.data as Asset)
-    };
-
     const productIconTemplate = (rowData: any) => {
         return rowData?.product_icon ? (
             <img
@@ -256,7 +227,7 @@ export default function Asset() {
                     <i className="pi pi-trash"></i>
                 </button>
                 <button className="action-items-btn">
-                    <GrView />
+                    <GrView />    
                 </button>
             </div>
         )
@@ -309,7 +280,7 @@ export default function Asset() {
                     {/* <Card className="" style={{ height: "auto", overflow: "auto" }}> */}
                     <div className="flex align-center justify-content-between mt-6  p-2" >
 
-                        <h2 className="  asset-heading font-bold p- mt-5 ml-4 pt-2">Assets</h2>
+                        <h2 className="  asset-heading font-bold p- mt-5 ml-4 pt-2">Assets Overview</h2>
 
                         <div className="mt-5 search-container">
                             <span className="p-input-icon-left">
@@ -345,7 +316,6 @@ export default function Asset() {
                             style={{ width: "100%", marginTop: "0" }}
                             scrollable
                             scrollHeight="400px"
-                            onContextMenu={(e) => cm.current?.show(e.originalEvent)}
                             onContextMenuSelectionChange={(e) => setSelectedProduct(e.value)}
                             onRowClick={(e) => {
                                 setProductDetails(true)
@@ -438,13 +408,13 @@ export default function Asset() {
                 {selectedProduct && (
 
                     <Dialog visible={productDetails}
-                        header="Asset Overview"
+                        header="Asset View"
                         onHide={() => setProductDetails(false)}
                         className="asset-overview-dialog"
                     >
                         <div>
                             <AssetDetailsCard
-                                product={selectedProduct}
+                                asset={selectedProduct}
                             />
                         </div>
                     </Dialog>

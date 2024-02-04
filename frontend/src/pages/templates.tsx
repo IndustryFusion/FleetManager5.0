@@ -50,7 +50,7 @@ const GetListTemplate: React.FC = () => {
     localStorage.setItem("selectedTemplateId", id);
 
     // Navigate to the /ics page
-    router.push(`/ics/${id}`);
+    router.push(`/asset/create/${id}`);
   };
 
   // Fetching templates from the backend

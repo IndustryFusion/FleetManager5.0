@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import "primeflex/primeflex.css";
 import { Password } from 'primereact/password';
-import "../styles/login.css";
+import "../../public/styles/login.css";
 import 'primeicons/primeicons.css';
 import { redirect, useRouter } from 'next/navigation';
 
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
 
     useEffect(() => {
         // Always do navigations after the first render
-        isLoggedIn && router.push('/asset/asset-overview');
+        isLoggedIn && router.push('/asset-overview');
     }, [])
 
     // validate username, it should be  Alpha Numeric includes underscore _
@@ -80,7 +80,7 @@ const Login: React.FC = () => {
                         detail: "Welcome!",
                     });
                     setIsLoggedIn(true);
-                    router.push('/asset/asset-overview');
+                    router.push('/asset-overview');
                 }
 
                 else {
