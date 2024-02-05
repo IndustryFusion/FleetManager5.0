@@ -198,12 +198,13 @@ export default function Asset() {
         );
     };
 
-    const actionItemsTemplate = (rowData: any): React.ReactNode => {
+    const actionItemsTemplate = (rowData:any): React.ReactNode => {
+        console.log("rowData", rowData);
         return (
             <div className="flex">
                 <button
                     className="action-items-btn"
-                    onClick={() => router.push(`/asset/${rowData?.id}`)}
+                    onClick={() => router.push(`/asset/edit/${rowData?.id}`)}
                 >
                     <i className="pi pi-pencil"></i>
                 </button>

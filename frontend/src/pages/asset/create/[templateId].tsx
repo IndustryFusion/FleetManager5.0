@@ -12,40 +12,8 @@ import { ListBox } from "primereact/listbox";
 import HorizontalNavbar from "../../../components/horizontal-navbar";
 import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
+import { Property, Schema, RelationItem, DynamicFormSchema, FileLoadingState } from "@/interfaces/assetTypes";
 
-export interface RelationItem {
-  label: string;
-  value: string;
-  isSubmitted?: boolean;
-}
-
-export interface Property {
-  type: string;
-  title: string;
-  description: string;
-  readOnly?: boolean;
-  enum?: string[];
-  contentMediaType?: string;
-  unit?: string;
-  relationship: any;
-}
-
-export interface Schema {
-  type: string;
-  title: string;
-  description: string;
-  properties: Record<string, Property>;
-}
-// Define the interface for the schema
-interface DynamicFormSchema {
-  properties: Record<string, Property>;
-  type: string;
-  title: string;
-  description: string;
-}
-type FileLoadingState = {
-  [key: string]: boolean;
-};
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 // Initialize the state with a more specific type
 
@@ -177,8 +145,6 @@ const createAssetForm: React.FC = () => {
     fetchData();
   }, [selectedTemplateId]);
 
-  const assetType = "airfilter";
-
   // Function to render dynamic form fields
   const renderDynamicField = (key: any, property: any) => {
     switch (property.type) {
@@ -245,7 +211,7 @@ const createAssetForm: React.FC = () => {
   const handleUpload = async (file: any, key: any) => {
     if (!file) return;
 
-    setFileLoading((prevLoading) => ({ ...prevLoading, [key]: true }));
+    setFileLoading((prevLoading:any) => ({ ...prevLoading, [key]: true }));
 
     const formFileData = new FormData();
     formFileData.append("file", file);
@@ -279,7 +245,7 @@ const createAssetForm: React.FC = () => {
     } catch (error) {
       console.error("Error uploading file:", error);
     } finally {
-      setFileLoading((prevLoading) => ({ ...prevLoading, [key]: false }));
+      setFileLoading((prevLoading:any) => ({ ...prevLoading, [key]: false }));
     }
   };
 

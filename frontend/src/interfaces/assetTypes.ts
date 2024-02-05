@@ -32,4 +32,36 @@ export interface Asset {
     // Include any other properties that are common across both uses
   }
 
+  export interface RelationItem {
+    label: string;
+    value: string;
+    isSubmitted?: boolean;
+  }
   
+  export interface Property {
+    type: string;
+    title: string;
+    description: string;
+    readOnly?: boolean;
+    enum?: string[];
+    contentMediaType?: string;
+    unit?: string;
+    relationship: any;
+  }
+  
+  export interface Schema {
+    type: string;
+    title: string;
+    description: string;
+    properties: Record<string, Property>;
+  }
+  // Define the interface for the schema
+  export interface DynamicFormSchema {
+    properties: Record<string, Property>;
+    type: string;
+    title: string;
+    description: string;
+  }
+  export type FileLoadingState = {
+    [key: string]: boolean;
+  };
