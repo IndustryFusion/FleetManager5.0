@@ -14,7 +14,7 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { InputText } from "primereact/inputtext";
 import "../../public/styles/asset-overview.css";
 import { CSSProperties } from "react";
-import { Asset } from "@/interfaces/assetTypes";
+import { Asset, AssetRow } from "@/interfaces/assetTypes";
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -101,7 +101,7 @@ export default function Asset() {
         }
     };
 
-    const handleRowDoubleClick = (rowData: any) => {
+    const handleRowDoubleClick = (rowData: Asset) => {
         localStorage.setItem("currentAssetId", rowData.id);
         router.push("/asset/asset-specific");
     };
@@ -186,7 +186,7 @@ export default function Asset() {
         { label: 'Duplicate', icon: 'pi pi-copy' }
     ]
 
-    const productIconTemplate = (rowData: any) => {
+    const productIconTemplate = (rowData: Asset) => {
         return rowData?.product_icon ? (
             <img
                 src={rowData?.product_icon}
@@ -198,13 +198,12 @@ export default function Asset() {
         );
     };
 
-    const actionItemsTemplate = (rowData:any): React.ReactNode => {
-        console.log("rowData", rowData);
+    const actionItemsTemplate = (rowData:Asset): React.ReactNode => {
         return (
             <div className="flex">
                 <button
                     className="action-items-btn"
-                    onClick={() => router.push(`/asset/edit/${rowData?.id}`)}
+                    onClick={() => {router.push(`/asset/edit/${rowData?.id}`); console.log("rowData",rowData)}}
                 >
                     <i className="pi pi-pencil"></i>
                 </button>
@@ -223,7 +222,7 @@ export default function Asset() {
         )
     }
 
-    const manufacturerDataTemplate = (rowData: any): React.ReactNode => {
+    const manufacturerDataTemplate = (rowData: Asset): React.ReactNode => {
         return (
             <div className="flex flex-column">
                 <img src={rowData?.logo_manufacturer} alt="maufacturer_logo" style={{ width: "80px", height: "auto" }} />
@@ -232,7 +231,7 @@ export default function Asset() {
         )
     }
 
-    const statusBodyTemplate = (rowData: any): React.ReactNode => {
+    const statusBodyTemplate = (rowData: AssetRow): React.ReactNode => {
         return (
             <div className="flex align-items-center ">
                 {rowData?.status_type === 'Complete' ?
@@ -260,7 +259,7 @@ export default function Asset() {
 
 
     return (
-        <div style={containerStyle}>
+        <div style={{zoom:"85%"}}>
             <Toast ref={toast} />
             <HorizontalNavbar />
 
@@ -303,9 +302,9 @@ export default function Asset() {
                             currentPageReportTemplate="{first} to {last} of {totalRecords}"
                             onRowDoubleClick={(e) => handleRowDoubleClick(e.data as Asset)}
                             className="custom-row-padding"
-                            style={{ width: "100%", marginTop: "0" }}
+                            style={{ width: "100%", marginTop: "0", minHeight: 'calc(100vh-100px)'}}
                             scrollable
-                            scrollHeight="400px"
+                            scrollHeight="calc(100vh-150px)"
                             onContextMenuSelectionChange={(e) => setSelectedProduct(e.value)}
                             onRowClick={(e) => {
                                 setProductDetails(true)

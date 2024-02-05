@@ -13,6 +13,7 @@ import HorizontalNavbar from "../../../components/horizontal-navbar";
 import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
 import { Property, Schema, RelationItem, DynamicFormSchema, FileLoadingState } from "@/interfaces/assetTypes";
+import { BlockUI } from 'primereact/blockui';
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 // Initialize the state with a more specific type
@@ -48,7 +49,8 @@ const createAssetForm: React.FC = () => {
     relationType: null,
     submitted: false,
   });
-
+  const [loading, setLoading] = useState<Boolean>(false);
+  
   const handleFocus = (key: string) => {
     setFocusedFields({ ...focusedFields, [key]: true });
   };
@@ -143,6 +145,7 @@ const createAssetForm: React.FC = () => {
     };
 
     fetchData();
+    setLoading(true);
   }, [selectedTemplateId]);
 
   // Function to render dynamic form fields
@@ -499,7 +502,7 @@ const createAssetForm: React.FC = () => {
   };
 
   return (
-    
+    <BlockUI blocked={loading}>
     <div className="" style={{ padding: "1rem 1rem 2rem 4rem" }}>
        <HorizontalNavbar/>
       {/* <Card> */}
@@ -562,6 +565,7 @@ const createAssetForm: React.FC = () => {
         </Card>
       </div>
     </div>
+    </BlockUI>
   );
 };
 
