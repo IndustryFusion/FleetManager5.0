@@ -79,8 +79,14 @@ const AssetEdit = () => {
         if (asset) {
           setFormData(asset);
           setAsset(asset);
-          const templateId=
-            asset["https://industry-fusion.org/base/v0.1/templateId"]["value"];
+          const templateId= asset["https://industry-fusion.org/base/v0.1/templateId"]["value"];
+          
+          /* Buffer.from(
+              asset.type,
+              'base64',
+            ).toString('utf-8');
+            
+            console.log("templateId", Buffer.from(templateId).toString('base64')); */
           const response = await fetch(API_URL + `/templates/${templateId}`);
           console.log("response ", response);
           const data = await response.json();
@@ -320,20 +326,7 @@ const AssetEdit = () => {
                   Object.keys(schema.properties).map((key) =>
                   renderField(key, schema.properties[key])
                 )}
-                <div></div>
                 
-                <div className="p-field col-4 mt-3">
-                  <label className="font-bold">Relations</label>
-                  {selectedRelationsList.length===0 ?
-              (<label style={{fontSize:"15px", marginTop:"10px"}}>No Relations Existed</label>): 
-              (<label style={{fontSize:"15px", marginTop:"10px"}}>Below Relations can be added in Factory Manager</label>)}
-              <ListBox 
-                options={selectedRelationsList}
-                optionLabel="label"
-                
-                className="mt-2 p-inputtext-lg"
-                />
-                </div>
                 
               
                 <Button

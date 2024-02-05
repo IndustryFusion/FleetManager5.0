@@ -49,7 +49,7 @@ const createAssetForm: React.FC = () => {
     relationType: null,
     submitted: false,
   });
-  const [loading, setLoading] = useState<Boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   
   const handleFocus = (key: string) => {
     setFocusedFields({ ...focusedFields, [key]: true });
@@ -98,6 +98,7 @@ const createAssetForm: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (selectedTemplateId) {
+        console.log("template", selectedTemplateId);
         try {
           const response = await fetch(
             API_URL + `/templates/${selectedTemplateId}`
@@ -147,7 +148,7 @@ const createAssetForm: React.FC = () => {
     };
 
     fetchData();
-    setLoading(true);
+    setLoading(false);
   }, [selectedTemplateId]);
 
   // Function to render dynamic form fields

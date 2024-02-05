@@ -302,9 +302,9 @@ export default function Asset() {
                             currentPageReportTemplate="{first} to {last} of {totalRecords}"
                             onRowDoubleClick={(e) => handleRowDoubleClick(e.data as Asset)}
                             className="custom-row-padding"
-                            style={{ width: "100%", marginTop: "0", minHeight: 'calc(100vh-100px)'}}
+                            style={{ width: "100%", marginTop: "0", minHeight: 'calc(100vh-200px)'}}
                             scrollable
-                            scrollHeight="calc(100vh-150px)"
+                            scrollHeight="400px"
                             onContextMenuSelectionChange={(e) => setSelectedProduct(e.value)}
                             onRowClick={(e) => {
                                 setProductDetails(true)

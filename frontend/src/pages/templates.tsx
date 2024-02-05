@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import HorizontalNavbar from "../components/horizontal-navbar";
 import { BlockUI } from "primereact/blockui";
+import "../../public/styles/templates.css";
 
 // Template data type
 type Template = {
@@ -15,25 +16,7 @@ type Template = {
   title: string;
   description: string;
 };
-
-// Styles
-const buttonStyle = {
-  backgroundColor: "transparent",
-  color: "#4da5ff",
-  border: "none",
-};
-
 const cardTitleStyle = { fontSize: "16px" };
-
-const cardStyle: any = {
-  height: "100%",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  position: "relative",
-  padding: "1rem",
-};
-
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 // GetListTemplate component
@@ -43,7 +26,7 @@ const GetListTemplate: React.FC = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [selectTemplateId, setselectTemplateId] = useState(null);
   // Function to handle button click and navigate to the template detail page
-
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   // Inside GetListTemplate component
@@ -71,12 +54,11 @@ const GetListTemplate: React.FC = () => {
 
         // Storing data in localStorage
         localStorage.setItem("templates", JSON.stringify(response.data));
-
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching templates:", error);
       }
     };
-
     fetchTemplates();
   }, []);
 
@@ -104,18 +86,11 @@ const GetListTemplate: React.FC = () => {
             <Card
               title={<span style={cardTitleStyle}>{template.title}</span>}
               subTitle={template.description}
-              style={cardStyle}
-              className="ml-1 pl-2  border-1 border-round-lg"
+              className="ml-1 pl-2  border-1 border-round-lg cardStyle"
             >
               <Button
                 label="Select"
-                style={{
-                  ...buttonStyle,
-                  position: "absolute",
-                  bottom: "10px",
-                  right: "40%",
-                }}
-                className="p-button-text hover:bg-blue-100 "
+                className="p-button-text hover:bg-blue-100 .buttonStyle "
                 onClick={() => navigateToTemplate(template.id, template.title)} // Add onClick event
               />
             </Card>
@@ -140,7 +115,7 @@ const GetListTemplate: React.FC = () => {
 
   // Component render
   return (
-    <BlockUI>
+    <BlockUI blocked={loading}>
     <div className="mt-8 ml-6">
         <h1 style={{fontSize: "20px"}}>
           Templates
