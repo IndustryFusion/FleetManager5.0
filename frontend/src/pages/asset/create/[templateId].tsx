@@ -38,19 +38,14 @@ const createAssetForm: React.FC = () => {
     RelationItem[]
   >([]);
   const [selectedRelations, setSelectedRelations] = useState([]);
-  const [relationId, setRelationId] = useState(null);
   const [uploadedFileKeys, setUploadedFileKeys] = useState<string[]>([]);
   const [fileUploadKey, setFileUploadKey] = useState(0);
   const [fileLoading, setFileLoading] = useState<FileLoadingState>({});
   const fileInputRef = useRef(null);
-  const { templateId } = router.query;
+
   const [relationsOptions, setRelationsOptions] = useState<RelationItem[]>([]);
-  const [relationSubmitted, setRelationSubmitted] = useState({
-    relationType: null,
-    submitted: false,
-  });
   const [loading, setLoading] = useState<boolean>(true);
-  
+  const [currenTemplateID, setCurrentTemplateID] = useState<string | any>();
   const handleFocus = (key: string) => {
     setFocusedFields({ ...focusedFields, [key]: true });
   };
@@ -73,12 +68,6 @@ const createAssetForm: React.FC = () => {
     setFocusedFields({ ...focusedFields, [key]: false });
   };
 
-  const selectedTemplateId =
-    typeof window !== "undefined"
-      ? localStorage.getItem("selectedTemplateId")
-      : null;
-
-  console.log(selectedTemplateId);
   const [templateData, setTemplateData] = useState(null);
   // const location = useLocation();
 
@@ -96,12 +85,12 @@ const createAssetForm: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (selectedTemplateId) {
-        console.log("template", selectedTemplateId);
+    const fetchData = async (templateId: string | any) => {
+      if (templateId) {
+        console.log("template", templateId);
         try {
           const response = await fetch(
-            API_URL + `/templates/${selectedTemplateId}`
+            API_URL + `/templates/${templateId}`
           );
           const data = await response.json();
 
@@ -131,7 +120,7 @@ const createAssetForm: React.FC = () => {
 
             const filterOptions = hasRelations.map((relation) => ({
               label: relation.replace(
-                "https://industry-fusion.org/types/v0.1/",""),
+                "https://industry-fusion.org/types/v0.1/", ""),
               value: relation
             }));
 
@@ -147,9 +136,13 @@ const createAssetForm: React.FC = () => {
       }
     };
 
-    fetchData();
-    setLoading(false);
-  }, [selectedTemplateId]);
+    if (router.isReady) {
+      const { templateId } = router.query;
+      fetchData(templateId);
+      setCurrentTemplateID(templateId);
+      setLoading(false);
+    }
+  }, [router.isReady]);
 
   // Function to render dynamic form fields
   const renderDynamicField = (key: any, property: any) => {
@@ -217,7 +210,7 @@ const createAssetForm: React.FC = () => {
   const handleUpload = async (file: any, key: any) => {
     if (!file) return;
 
-    setFileLoading((prevLoading:any) => ({ ...prevLoading, [key]: true }));
+    setFileLoading((prevLoading: any) => ({ ...prevLoading, [key]: true }));
 
     const formFileData = new FormData();
     formFileData.append("file", file);
@@ -251,7 +244,7 @@ const createAssetForm: React.FC = () => {
     } catch (error) {
       console.error("Error uploading file:", error);
     } finally {
-      setFileLoading((prevLoading:any) => ({ ...prevLoading, [key]: false }));
+      setFileLoading((prevLoading: any) => ({ ...prevLoading, [key]: false }));
     }
   };
 
@@ -264,12 +257,12 @@ const createAssetForm: React.FC = () => {
       type,
       title,
       description,
-      properties: { ...properties}
+      properties: { ...properties }
     };
     console.log("submissionData", submissionData);
     try {
       const response = await axios.post(
-        API_URL + `/asset/${selectedTemplateId}`,
+        API_URL + `/asset/${currenTemplateID}`,
         submissionData,
         {
           headers: {
@@ -352,12 +345,12 @@ const createAssetForm: React.FC = () => {
     return (
       <>
         {property.title === "Asset Status" ? null : (
-          
+
           <div
             className={`p-field  ${fieldClass}  flex flex-column `}
             key={key}
           >
-          
+
             {property.type === "string" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
@@ -505,67 +498,67 @@ const createAssetForm: React.FC = () => {
 
   return (
     <BlockUI blocked={loading}>
-    <div className="" style={{ padding: "1rem 1rem 2rem 4rem" }}>
-       <HorizontalNavbar/>
-      {/* <Card> */}
-      <div className="header">
-        <p className="hover" style={{ fontWeight: "bold", fontSize: "20px", marginTop:"55px" }}>
-          Create Asset
-        </p>
-      </div>
+      <div className="" style={{ padding: "1rem 1rem 2rem 4rem" }}>
+        <HorizontalNavbar />
+        {/* <Card> */}
+        <div className="header">
+          <p className="hover" style={{ fontWeight: "bold", fontSize: "20px", marginTop: "55px" }}>
+            Create Asset
+          </p>
+        </div>
 
-      <div>
-      <Card className="border-gray-500 border-1 border-round-lg">
-        <form onSubmit={handleSubmit}>
-          <div className=" flex p-fluid grid  shadow-lg">
-            {schema.properties &&
-              Object.keys(schema.properties).map((key) =>
-                renderField(key, schema.properties[key])
-              )}
-          </div>
+        <div>
+          <Card className="border-gray-500 border-1 border-round-lg">
+            <form onSubmit={handleSubmit}>
+              <div className=" flex p-fluid grid  shadow-lg">
+                {schema.properties &&
+                  Object.keys(schema.properties).map((key) =>
+                    renderField(key, schema.properties[key])
+                  )}
+              </div>
 
-          <div className="flex">
-            <div className="p-field col-8 mt-3 flex flex-column">
-              <label className="relations-label">Relations</label>
-              {filterOptions.length===0 ?
-              (<label style={{fontSize:"15px", marginTop:"10px"}}>No Relations Exists for this Template.</label>): 
-              (<label style={{fontSize:"15px", marginTop:"10px"}}>Below Relations can be added in Factory Manager.</label>)}
-              <ListBox 
-                options={filterOptions}
-                optionLabel="label"
-                className="mt-2 p-inputtext-lg"
+              <div className="flex">
+                <div className="p-field col-8 mt-3 flex flex-column">
+                  <label className="relations-label">Relations</label>
+                  {filterOptions.length === 0 ?
+                    (<label style={{ fontSize: "15px", marginTop: "10px" }}>No Relations Exists for this Template.</label>) :
+                    (<label style={{ fontSize: "15px", marginTop: "10px" }}>Below Relations can be added in Factory Manager.</label>)}
+                  <ListBox
+                    options={filterOptions}
+                    optionLabel="label"
+                    className="mt-2 p-inputtext-lg"
+                  />
+                </div>
+              </div>
+              <div className="p-2 flex justify-content-end align-items-center">
+                <Button
+                  label="Cancel"
+                  severity="danger"
+                  outlined
+                  className="mr-2"
+                  type="button"
+                  onClick={handleCancel}
                 />
-            </div>
-          </div>
-          <div className="p-2 flex justify-content-end align-items-center">
-            <Button
-              label="Cancel"
-              severity="danger"
-              outlined
-              className="mr-2"
-              type="button"
-              onClick={handleCancel}
-            />
-            <Button
-              severity="secondary"
-              text
-              raised
-              label="Reset"
-              className="mr-2"
-              type="button"
-              onClick={handleReset}
-            />
-            <Button
-              label="Submit"
-              type="submit"
-              onSubmit={handleSubmit}
-              className="border-none    ml-2 mr-2"
-            />
-          </div>
-        </form>
-        </Card>
+                <Button
+                  severity="secondary"
+                  text
+                  raised
+                  label="Reset"
+                  className="mr-2"
+                  type="button"
+                  onClick={handleReset}
+                />
+                <Button
+                  label="Submit"
+                  type="submit"
+                  onSubmit={handleSubmit}
+                  className="border-none    ml-2 mr-2"
+                />
+              </div>
+            </form>
+          </Card>
+        </div>
       </div>
-    </div>
     </BlockUI>
   );
 };
