@@ -77,6 +77,8 @@ const createAssetForm: React.FC = () => {
     typeof window !== "undefined"
       ? localStorage.getItem("selectedTemplateId")
       : null;
+
+  console.log(selectedTemplateId);
   const [templateData, setTemplateData] = useState(null);
   // const location = useLocation();
 
@@ -95,7 +97,7 @@ const createAssetForm: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (templateId) {
+      if (selectedTemplateId) {
         try {
           const response = await fetch(
             API_URL + `/templates/${selectedTemplateId}`
@@ -294,7 +296,7 @@ const createAssetForm: React.FC = () => {
 
   const handleCancel = (event: any) => {
     event.preventDefault();
-    router.push("/get-template-list");
+    router.push("/templates");
   };
 
   const handleReset = (event: any) => {
@@ -348,8 +350,7 @@ const createAssetForm: React.FC = () => {
 
     return (
       <>
-        {property.title === "Asset Status" ? null : property.title ===
-          "URN-ID" ? null : (
+        {property.title === "Asset Status" ? null : (
           
           <div
             className={`p-field  ${fieldClass}  flex flex-column `}
@@ -526,12 +527,11 @@ const createAssetForm: React.FC = () => {
             <div className="p-field col-8 mt-3 flex flex-column">
               <label className="relations-label">Relations</label>
               {filterOptions.length===0 ?
-              (<label style={{fontSize:"15px", marginTop:"10px"}}>No Relations Existed</label>): 
-              (<label style={{fontSize:"15px", marginTop:"10px"}}>Below Relations can be added in Factory Manager</label>)}
+              (<label style={{fontSize:"15px", marginTop:"10px"}}>No Relations Exists for this Template.</label>): 
+              (<label style={{fontSize:"15px", marginTop:"10px"}}>Below Relations can be added in Factory Manager.</label>)}
               <ListBox 
                 options={filterOptions}
                 optionLabel="label"
-                
                 className="mt-2 p-inputtext-lg"
                 />
             </div>

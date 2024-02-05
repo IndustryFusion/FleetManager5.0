@@ -68,20 +68,20 @@ export default function AssetDetailsCard({ asset }: AssetDetailsCardProps) {
               if (!key.includes("has")) {
                 return (
 
-              <div className="surface-0">
+                  <div className="surface-0">
 
-                  <ul className="list-none p-0 m-0">
+                    <ul className="list-none p-0 m-0">
                       <li className="flex align-items-center py-3 px-2 border-top-1 border-300 flex-wrap">
-                          <div className="text-500 w-6 md:w-4 font-medium">{key.split("_").length == 1 ? key.charAt(0).toUpperCase() + key.slice(1).toLowerCase() : key.split("_")[0].charAt(0).toUpperCase() + key.split("_")[0].slice(1).toLowerCase() + " " + key.split("_")[1].charAt(0).toUpperCase() + key.split("_")[1].slice(1).toLowerCase()}</div>
-                          <div className="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{value}</div>  
+                        <div className="text-500 w-6 md:w-4 font-medium">{key.split("_").length == 1 ? key.charAt(0).toUpperCase() + key.slice(1).toLowerCase() : key.split("_")[0].charAt(0).toUpperCase() + key.split("_")[0].slice(1).toLowerCase() + " " + key.split("_")[1].charAt(0).toUpperCase() + key.split("_")[1].slice(1).toLowerCase()}</div>
+                        <div className="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{value}</div>
                       </li>
-                  </ul>
-              </div>
-     
-                    
-                      
-                  
-                  
+                    </ul>
+                  </div>
+
+
+
+
+
                 );
               }
             })}
@@ -92,45 +92,24 @@ export default function AssetDetailsCard({ asset }: AssetDetailsCardProps) {
   };
 
   const renderRelationsContent = () => {
-
-    if(Object.keys(asset).some(key => key.includes("has")) == false) {
-      return (
-        <div>
-          <p>
-            <span>No Relationships!</span>
-          </p>
-        </div>
-      )
-    }
-    else {
-      return (
-        <div>
-          {asset && (
-            <div>
-              {Object.entries(asset).map(([key, value]) => {
-                if (key.includes("has")) {
-                  return (
-                    <div key={key}>
-                      <p>
-                        <span className="font-semibold mr-2">{key.split(/(?=[A-Z])/)[1]}:</span>
-                        <span>{value}</span>
-                      </p>
-                    </div>
-                  );
-                }
-              })}
-            </div>
-          )}
-        </div>
-      );
-    }
+    return (
+      <div>
+        {asset && (
+          <div>
+            <p>
+              <h3>Use Factory Manager to manage relationships.</h3>
+            </p>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
-        <div className="mt-1 ml-1">
-          <h1 style={{fontSize:"22px", fontWeight:"bold", marginTop:"1px"}}>
-          Asset Details
-        </h1>
+    <div className="mt-1 ml-1">
+      <h1 style={{ fontSize: "22px", fontWeight: "bold", marginTop: "1px" }}>
+        Asset Details
+      </h1>
       <div className=" mt-2" style={{ width: "100%" }}>
         <div className="flex flex-column align-items-left">
           <Card className="border-gray-800 border-1 border-round-lg">
