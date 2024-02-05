@@ -62,9 +62,8 @@ export class AssetController {
       }
     } catch (err) {
       return { 
-        success: false, 
-        status: err.response.status,
-        message: err.response.data 
+        success: false,
+        message: err.response
       };
     }
   }
