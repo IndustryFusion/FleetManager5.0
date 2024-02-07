@@ -21,14 +21,14 @@ export class AssetService {
     try {
       const templateData = [];
       const templates = await this.templatesService.getTemplates();
-      console.log('templates ', templates);
+      console.log('templates while fetching all assets', templates);
       const headers = {
         'Content-Type': 'application/ld+json',
         'Accept': 'application/ld+json'
       };
       for (let i = 0; i < templates.length; i++) {
         let template = templates[i];
-        let id = Buffer.from(template.id, 'base64').toString('utf-8')
+        let id = Buffer.from(template.id, 'base64').toString('utf-8');
         const url = this.scorpioUrl + '?type=' + id;
         const response = await axios.get(url, { headers });
         if (response.data.length > 0) {
@@ -37,6 +37,7 @@ export class AssetService {
           });
         }
       }
+      
       return templateData;
     } catch (err) {
       throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
@@ -146,7 +147,7 @@ export class AssetService {
         "id": `urn:ngsi-ld:asset:2:${newUrn}`,
         "type": data.type
       }
-      
+
       for (let key in data.properties) {
         let resultKey = "http://www.industry-fusion.org/schema#" + key;
         if (key.includes("has")) {

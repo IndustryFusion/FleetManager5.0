@@ -87,8 +87,8 @@ export default function Asset() {
         try {
             const response = await axios.get(BACKEND_API_URL + "/asset", {
                 headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
+                    "Content-Type": "application/ld+json",
+                    "Accept": "application/ld+json"
                 }
             });
 
