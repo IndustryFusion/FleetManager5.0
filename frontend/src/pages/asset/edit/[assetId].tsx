@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef  } from "react";
+import React, { useState, useEffect, useRef } from "react";
 // import "primereact/resources/primereact.min.css";
 // import "primeflex/primeflex.css";
 // import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
@@ -19,6 +19,9 @@ import { BlockUI } from 'primereact/blockui';
 import HorizontalNavbar from "../../../components/horizontal-navbar";
 import { useMountEffect } from 'primereact/hooks';
 import { Messages } from 'primereact/messages';
+import Cookies from "js-cookie";
+import { Toast, ToastMessage } from "primereact/toast";
+import { Calendar } from "primereact/calendar";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -42,19 +45,22 @@ const AssetEdit = () => {
   const [fileLoading, setFileLoading] = useState<FileLoadingState>({});
   const [fileUploadKey, setFileUploadKey] = useState(0);
   const msgs = useRef<Messages>(null);
+  const toast = useRef<Toast>(null);
 
   useEffect(() => {
+    if (Cookies.get("login_flag") === "false") { router.push("/login"); } 
+        else {
     if (router.isReady) {
       const { assetId } = router.query;
       fetchData(assetId);
       setLoading(false);
-    }
+    } }
   }, [router.isReady]);
 
   useMountEffect(() => {
     msgs.current?.clear();
     msgs.current?.show({ sticky: true, life: 1000, severity: 'success', summary: 'Success', detail: 'Data Updated Succesfully ', closable: true });
-});
+  });
 
 
   const fetchAsset = async (assetId: string) => {
@@ -124,7 +130,10 @@ const AssetEdit = () => {
     }
   };
 
-  
+  const showToast = (severity: ToastMessage['severity'], summary:string, message: string) => {
+
+    toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
+};
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
@@ -151,18 +160,17 @@ const AssetEdit = () => {
         );
         console.log("response ", response);
         if (response.data.success) {
-          setStatus("Data Updated Succesfully ");
-          setShowStatus(true);
-          setUpdatedData({});
+          showToast('success', 'Edited Successfully', 'data updated succesfully');
         } else {
-          setStatus(response.data.message);
+          showToast('warn', 'Warning', response.data.message);
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error updating asset:", error);
+        showToast('error', 'Error', error);
       }
     } else {
       setShowStatus(true);
-      setStatus("You have not edited any field");
+      showToast('info', 'Info', "you have not edited any field");
     }
   };
 
@@ -181,7 +189,7 @@ const AssetEdit = () => {
     newFormData.documentation = formData.documentation;
 
     setFileUploadKey((prevKey) => prevKey + 1);
-    
+
   };
 
 
@@ -255,7 +263,51 @@ const AssetEdit = () => {
             key={key}
           >
 
-            {property.type === "string" && (
+{  property.title=== "Creation Date" && (
+            <div key={key} className="p-field">
+            <label className="mb-2" htmlFor={key}>
+              {property.title}
+            </label>
+            <br />
+                    <Calendar 
+                    value={value ? new Date(value) : null}
+                    className="p-inputtext-lg mt-2"
+                    style={{ width: "60%", borderRadius:"5px" }}
+                    dateFormat="dd/mm/yy"
+                    onChange={(e) =>{
+                      const selectedDate = String(e.value);
+                      const date = new Date(selectedDate);
+                      const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                      const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.'); 
+                      handleChange(key, formattedDate)
+                    } }
+                    
+                    />
+                      </div>)}
+                      {  property.title=== "Year of manufacturing" && (
+            <div key={key} className="p-field">
+            <label className="mb-2" htmlFor={key}>
+              {property.title}
+            </label>
+            <br />
+                    <Calendar 
+                    value={value ? new Date(value) : null}
+                    className="p-inputtext-lg mt-2"
+                    style={{ width: "60%", borderRadius:"5px" }}
+                    view="year"
+                    dateFormat="yy"
+                    onChange={(e) =>{
+                      const selectedDate = String(e.value);
+                      const date = new Date(selectedDate);
+                      const options: Intl.DateTimeFormatOptions = { year: 'numeric' };
+                      const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.'); 
+                      handleChange(key, formattedDate)
+                    } }
+                    
+                    />
+                      </div>)}
+
+            {property.type === "string" && property.title !== "Creation Date" &&  (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
                   {property.title}
@@ -274,7 +326,7 @@ const AssetEdit = () => {
                 />
               </div>
             )}
-            {property.type === "number" && (
+            {property.type === "number" &&  property.title!== "Year of manufacturing" && (
               <div key={key} className="p-field flex flex-column">
                 <label htmlFor={key}>{property.title}</label>
                 <InputNumber
@@ -349,35 +401,36 @@ const AssetEdit = () => {
   return (
     <BlockUI blocked={loading}>
       <HorizontalNavbar />
-      <div style={{ padding: "1rem 1rem 2rem 3rem", zoom:"80%" }}>
-        <div className="header">
-          <p className="hover" style={{ fontWeight: "bold", fontSize: "1.9em", marginTop: "80px"  }}>
+      <Toast ref={toast} />
+      <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "80%" }}>
+        <div>
+          <p className="hover" style={{fontWeight:"bold", fontSize: "1.8rem", marginTop: "80px" }}>
             Edit Asset
           </p>
-          <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color:"#226b11" }}>{assetType} form --  {asset.id}</h5>
+          <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form --  {asset.id}</h5>
         </div>
 
         <div>
           <Card className="border-gray-500 border-1 border-round-lg">
-            
+
             <form
               className="p-fluid grid flex shadow-lg"
               onSubmit={handleSubmit}
             >
-             <div className=" flex p-fluid grid  shadow-lg">
-              {schema && schema.properties &&
-                Object.keys(schema.properties).map((key) =>
-                  renderField(asset.id, key, schema.properties[key])
-                )}
-              </div> 
-                <div className="flex">
+              <div className=" flex p-fluid grid  shadow-lg">
+                {schema && schema.properties &&
+                  Object.keys(schema.properties).map((key) =>
+                    renderField(asset.id, key, schema.properties[key])
+                  )}
+              </div>
+              <div className="flex">
                 <div className="p-field col-13 mt-3 flex flex-column">
                   <label className="relations-label">Relations</label>
                   <label style={{ fontSize: "15px", marginTop: "10px" }}> Relations can be added in Factory Manager.</label>
                 </div>
               </div>
-              <div className="p-3 flex justify-content-end align-items-center" 
-                    style={{marginLeft:'calc(100vw - 20%)'}}>
+              <div className="p-3 flex justify-content-end align-items-center"
+                style={{ marginLeft: 'calc(100vw - 20%)' }}>
                 <Button
                   label="Cancel"
                   severity="danger"

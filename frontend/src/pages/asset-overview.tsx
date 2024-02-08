@@ -15,6 +15,11 @@ import { InputText } from "primereact/inputtext";
 import "../../public/styles/asset-overview.css";
 import { CSSProperties } from "react";
 import { Asset, AssetRow } from "@/interfaces/assetTypes";
+import { Button } from 'primereact/button';
+import { Toolbar } from 'primereact/toolbar';
+import { Tag } from 'primereact/tag';
+import Cookies from "js-cookie";
+import { Sidebar } from "primereact/sidebar";
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -37,11 +42,14 @@ export default function Asset() {
     const [productDetails, setProductDetails] = useState<boolean>(false);
     const [globalFilterValue, setGlobalFilter] = useState<string>('');
     const [searchedAssets, setSearchedAssets] = useState<Asset[]>([]);
+    const [selectedAssets, setSelectedAssets] = useState<Asset | null>(null);
     const toast = useRef<Toast>(null);
     const cm = useRef(null);
     const router = useRouter();
 
-    const dataTableCardWidth = showExtraCard ? "50%" : "85vw";
+    const [selectedAssetDetails, setSelectedAssetDetails] = useState<Asset | null>(null);
+    const dataTableCardWidth = showExtraCard ? "50%" : "100%";
+
     // Resize handler for responsiveness
     const handleResize = () => {
         setIsMobile(window.innerWidth <= 768);
@@ -103,18 +111,21 @@ export default function Asset() {
 
     const handleRowDoubleClick = (rowData: Asset) => {
         localStorage.setItem("currentAssetId", rowData.id);
-        router.push("/asset/asset-specific");
+       // router.push("/asset/asset-specific");
     };
 
 
     const onRowSelect = (rowData: Asset) => {
         setShowExtraCard(true);
         setSelectedProduct(rowData);
+        setSelectedAssets(rowData);
         if (!isMobile) {
             setDataTablePanelSize(40);
         }
         console.log("Opening side panel, DataTablePanelSize set to 30");
     };
+
+   
 
     const handleCreateAssetClick = () => {
         router.push("/templates"); // This will navigate to the /templates
@@ -149,10 +160,13 @@ export default function Asset() {
 
     // Adding resize event listener
     useEffect(() => {
-        fetchAsset();
-        handleResize(); // Call on mount for client-side rendering
-        window.addEventListener("resize", handleResize); // Add resize listener
-        return () => window.removeEventListener("resize", handleResize); // Clean up
+        if (Cookies.get("login_flag") === "false") { router.push("/login"); }
+        else {
+            fetchAsset();
+            handleResize(); // Call on mount for client-side rendering
+            window.addEventListener("resize", handleResize); // Add resize listener
+            return () => window.removeEventListener("resize", handleResize); // Clean up
+        }
     }, []);
 
     useEffect(() => {
@@ -172,8 +186,8 @@ export default function Asset() {
 
     const mainContentStyle: CSSProperties = {
         display: "flex",
-        flex: 1,
         padding: "1%",
+        zoom: "90%",
     };
 
     const dataTableStyle: CSSProperties = {
@@ -191,19 +205,19 @@ export default function Asset() {
             <img
                 src={rowData?.product_icon}
                 alt={rowData?.product_name}
-                style={{ width: "70px", height: "auto" }}
+                className="w-4rem shadow-2 border-round"
             />
         ) : (
             <span>No Image</span>
         );
     };
 
-    const actionItemsTemplate = (rowData:Asset): React.ReactNode => {
+    const actionItemsTemplate = (rowData: Asset): React.ReactNode => {
         return (
             <div className="flex">
                 <button
                     className="action-items-btn"
-                    onClick={() => {router.push(`/asset/edit/${rowData?.id}`); console.log("rowData",rowData)}}
+                    onClick={() => { router.push(`/asset/edit/${rowData?.id}`); console.log("rowData", rowData) }}
                 >
                     <i className="pi pi-pencil"></i>
                 </button>
@@ -216,7 +230,7 @@ export default function Asset() {
                     <i className="pi pi-trash"></i>
                 </button>
                 <button className="action-items-btn">
-                    <GrView />    
+                    <GrView />
                 </button>
             </div>
         )
@@ -225,7 +239,7 @@ export default function Asset() {
     const manufacturerDataTemplate = (rowData: Asset): React.ReactNode => {
         return (
             <div className="flex flex-column">
-                <img src={rowData?.logo_manufacturer} alt="maufacturer_logo" style={{ width: "80px", height: "auto" }} />
+                <img src={rowData?.logo_manufacturer} alt="maufacturer_logo" className="w-4rem shadow-2 border-round" />
                 <p className="m-0 mt-1">{rowData?.asset_manufacturer_name}</p>
             </div>
         )
@@ -233,19 +247,13 @@ export default function Asset() {
 
     const statusBodyTemplate = (rowData: AssetRow): React.ReactNode => {
         return (
-            <div className="flex align-items-center ">
-                {rowData?.status_type === 'Complete' ?
-                    <div className="status-complete-tag">
-                        <i className="pi pi-check mt-1 mr-1"></i>
-                        <span> Complete</span>
-                    </div>
+            <div>
+                {rowData?.status_type === 'complete' ?
+                    <Button label={"complete"} severity="success" text disabled className="mr-2 mt-1" icon="pi pi-check-circle"> </Button>
                     :
-                    <div className="status-incomplete-tag">
-                        <i className="mr-1 mt-1">  <CiClock2 /></i>
-                        <span> Incomplete</span>
-                    </div>
-                }
 
+                    <Button label={"incomplete"} severity="danger" text disabled className="mr-2 mt-1" icon="pi pi-exclamation-circle"> </Button>
+                }
             </div>
         );
     }
@@ -257,9 +265,51 @@ export default function Asset() {
         return <>{assetType}</>;
     };
 
+  
+
+    const exportJsonData = () => {
+        const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+            JSON.stringify(selectedAssets, null, 2)
+        )}`;
+        const link = document.createElement("a");
+        link.href = jsonString;
+        link.download = "data.json";
+        link.click();
+    };
+
+    const leftToolbarTemplate = () => {
+        return (
+            <div className="flex flex-wrap gap-2">
+                <Button label="New Asset" icon="pi pi-plus" className="bg-green-305 border-transparent" severity="success" onClick={handleCreateAssetClick} />
+            </div>
+        );
+    };
+
+    const centerContent = () => {
+        return (
+        <div className="search-container">
+            <span className="p-input-icon-left">
+                <i className="pi pi-search" />
+                <InputText
+                    value={globalFilterValue}
+                    onChange={onGlobalFilterChange}
+                    placeholder="Search..."
+                    className="searchbar-input" style={{ borderRadius: "10px" }} />
+            </span>
+        </div>
+    ); };
+
+    const rightToolbarTemplate = () => {
+
+        return (
+            <>
+                <Button label="Export" icon="pi pi-upload" className="p-button-help bg-purple-305  border-transparent" onClick={exportJsonData} />
+            </>
+        )
+    };
 
     return (
-        <div style={{zoom:"85%"}}>
+        <div>
             <Toast ref={toast} />
             <HorizontalNavbar />
 
@@ -269,69 +319,60 @@ export default function Asset() {
                     {/* <Card className="" style={{ height: "auto", overflow: "auto" }}> */}
                     <div className="flex align-center justify-content-between mt-6  p-2" >
 
-                        <h3 className="asset-heading font-bold ml-4">Assets Overview</h3>
-
-                        <div className="mt-5 search-container">
-                            <span className="p-input-icon-left">
-                                <i className="pi pi-search" />
-                                <InputText
-                                    value={globalFilterValue}
-                                    onChange={onGlobalFilterChange}
-                                    placeholder="Search..."
-                                    className="searchbar-input" />
-                            </span>
+                        <div>
+                            <p className="hover" style={{ fontWeight: "bold", fontSize: "1.4rem", marginTop: "20px", marginLeft: "20px" }}>
+                                Asset Overview
+                            </p>
                         </div>
-                        <div >
-                            <button
-                                className="asset-btn ml-1 mt-5"
-                                onClick={handleCreateAssetClick}
-                            >Create  Asset</button>
-                        </div>
-
                     </div>
                     <div className="pl-4 pr-4">
                         <ContextMenu model={menuModel} ref={cm} onHide={() => setSelectedProduct(null)} />
-
+                        <Toolbar start={leftToolbarTemplate} center={centerContent} end={rightToolbarTemplate}
+                            style={{ marginBottom: "-20px", marginTop: "-15px", backgroundColor: "#a7e3f985", borderColor: "white" }}></Toolbar>
                         <DataTable
                             value={searchedAssets || []} // Use the fetched assets as the data source
                             paginator
+                            selectionMode="multiple"
                             rows={4}
                             rowsPerPageOptions={[4, 10, 20]}
-                            selectionMode="single"
                             paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                             currentPageReportTemplate="{first} to {last} of {totalRecords}"
                             onRowDoubleClick={(e) => handleRowDoubleClick(e.data as Asset)}
                             className="custom-row-padding"
-                            style={{ width: "100%", marginTop: "0", maxHeight:"calc(calc(100vh-20%))"}}
+                            tableStyle={{ width: '100%', overflow: 'auto', maxHeight: 'calc(100vh - 250px)' }}
                             scrollable
-                            scrollHeight="{calc(100vh-20%)}"
+                            scrollHeight='calc(100vh - 300px)'
                             onContextMenuSelectionChange={(e) => setSelectedProduct(e.value)}
                             onRowClick={(e) => {
                                 setProductDetails(true)
                                 onRowSelect(e.data as Asset)
                             }
                             }
+                            selection={selectedAssets}
+                            onSelectionChange={(e) => {
+                                if (Array.isArray(e.value)) { setSelectedAssets(e.value); }
+                            }}
                         >
-
+                            <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
                             <Column
                                 field="product_name"
                                 header="Product Name"
                                 body={productNameBodyTemplate}
                                 style={{ width: "160px" }}
                                 sortable
-                                frozen
+
                             ></Column>
                             <Column
                                 field="product_icon"
                                 header="Product Image"
                                 body={productIconTemplate}
-                                style={{ width: "120px" }}
+                                style={{ width: "160px" }}
                             ></Column>
                             <Column
                                 field="asset_type"
                                 header="Asset Type"
                                 body={assetTypeBodyTemplate}
-                                style={{ width: "160px" }}
+                                style={{ width: "150px" }}
                             >
                             </Column>
 
@@ -339,13 +380,14 @@ export default function Asset() {
                                 field="asset_manufacturer_name"
                                 header="Manufacturer"
                                 body={manufacturerDataTemplate}
+                                style={{ width: "120px" }}
                             ></Column>
 
                             <Column
                                 field="manufacturing_year"
                                 header="Manufacturing Year"
                                 sortable
-                                style={{ width: "120px" }}
+                                style={{ width: "100px" }}
                             ></Column>
 
 
@@ -370,16 +412,15 @@ export default function Asset() {
                             <Column
                                 field="asset_communication_protocol"
                                 header="Protocol"
-                                style={{ width: "180px" }}
+                                style={{ width: "100px" }}
                             ></Column>
-                            <Column field="live_asset_status"
+                            <Column field="asset_status"
                                 header="Asset Status"
                                 body={statusBodyTemplate}
-                                frozen
+
                             ></Column>
                             <Column
                                 body={actionItemsTemplate}
-                                frozen
                             >
                             </Column>
                         </DataTable>
@@ -394,21 +435,15 @@ export default function Asset() {
                         {/* {editingAsset && renderEditForm()} */}
                     </Dialog>
                 </div>
-                {selectedProduct && (
-
-                    <Dialog visible={productDetails}
-                        onHide={() => setProductDetails(false)}
-                        className="asset-overview-dialog"
-                    >
-                        <div>
-                            <AssetDetailsCard
-                                asset={selectedProduct}
-                            />
-                        </div>
-                    </Dialog>
-                )}
+                        
+                {showExtraCard &&
+                    <div style={{ width: "30%" }}>
+                        
+                                <AssetDetailsCard asset={selectedProduct} setShowExtraCard={setShowExtraCard} />
+                            
+                    </div>
+                }
             </div>
-
             <Footer />
         </div>
     );

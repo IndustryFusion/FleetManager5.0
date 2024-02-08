@@ -1,19 +1,15 @@
 .buttonStyle {
-  background-color: "transparent";
   color: "#4da5ff";
-  border: "none";
   position: "absolute";
   bottom: "10px";
-  right: "40%"
+  right: "30%"
 }
 
 
 
 .cardStyle {
-  height: "100%";
   display: "flex";
   flex-direction: "column";
   justify-content: "flex-start";
   position: "relative";
-  padding: "1rem"
 }

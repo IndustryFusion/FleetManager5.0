@@ -11,9 +11,11 @@ import { MultiSelect } from "primereact/multiselect";
 import { ListBox } from "primereact/listbox";
 import HorizontalNavbar from "../../../components/horizontal-navbar";
 import { Card } from "primereact/card";
-import { Toast } from "primereact/toast";
+import { Toast, ToastMessage } from "primereact/toast";
 import { Property, Schema, RelationItem, DynamicFormSchema, FileLoadingState } from "@/interfaces/assetTypes";
 import { BlockUI } from 'primereact/blockui';
+import Cookies from "js-cookie";
+import { Calendar } from "primereact/calendar";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 // Initialize the state with a more specific type
@@ -42,7 +44,8 @@ const createAssetForm: React.FC = () => {
   const [fileUploadKey, setFileUploadKey] = useState(0);
   const [fileLoading, setFileLoading] = useState<FileLoadingState>({});
   const fileInputRef = useRef(null);
-
+  const toast = useRef<Toast>(null);
+  const [assetType, setAssetType] = useState<string>();
   const [relationsOptions, setRelationsOptions] = useState<RelationItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currenTemplateID, setCurrentTemplateID] = useState<string | any>();
@@ -87,13 +90,15 @@ const createAssetForm: React.FC = () => {
   useEffect(() => {
     const fetchData = async (templateId: string | any) => {
       if (templateId) {
+        
         console.log("template", templateId);
         try {
           const response = await fetch(
             API_URL + `/templates/${templateId}`
           );
           const data = await response.json();
-
+            console.log("TempData", data[0].title);
+            setAssetType(data[0].title);
           if (data && Array.isArray(data)) {
             const template = data[0];
             setSchema(template);
@@ -135,13 +140,14 @@ const createAssetForm: React.FC = () => {
         }
       }
     };
-
+    if (Cookies.get("login_flag") === "false") { router.push("/login"); } 
+        else {
     if (router.isReady) {
       const { templateId } = router.query;
       fetchData(templateId);
       setCurrentTemplateID(templateId);
       setLoading(false);
-    }
+    }}
   }, [router.isReady]);
 
   // Function to render dynamic form fields
@@ -276,14 +282,19 @@ const createAssetForm: React.FC = () => {
       setIsFormSubmitted(true); // Set the flag to true on successful submission
       console.log("Submitted data:", submissionData);
       console.log("Response from server:", response.data);
-      router.push("/asset-overview");
-      //add success message 
-      //Data not saving in background
-    } catch (error) {
+      if (response.data.success) { 
+        showToast('success', 'Added Successfully', 'new asset added successfully')
+        //router.push("/asset-overview");
+      } else {
+        showToast('warn', 'Warning', response.data.message);
+      }
+    } catch (error:any) {
       if (axios.isAxiosError(error)) {
         console.error("Error response:", error.response?.data);
+        showToast('error', 'Error',error.response?.data.message);
       } else {
         console.error("Error:", error);
+        showToast('error', 'Error', error);
       }
     }
   };
@@ -350,8 +361,50 @@ const createAssetForm: React.FC = () => {
             className={`p-field  ${fieldClass}  flex flex-column `}
             key={key}
           >
-
-            {property.type === "string" && (
+            {  property.title=== "Creation Date" && (
+            <div key={key} className="p-field">
+            <label className="mb-2" htmlFor={key}>
+              {property.title}
+            </label>
+            <br />
+                    <Calendar 
+                    value={value ? new Date(value) : null}
+                    className="p-inputtext-lg mt-2"
+                    style={{ width: "60%", borderRadius:"5px" }}
+                    dateFormat="dd/mm/yy"
+                    onChange={(e) =>{
+                      const selectedDate = String(e.value);
+                      const date = new Date(selectedDate);
+                      const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                      const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.'); 
+                      handleChange(key, formattedDate)
+                    } }
+                    
+                    />
+                      </div>)}
+                      {  property.title=== "Year of manufacturing" && (
+            <div key={key} className="p-field">
+            <label className="mb-2" htmlFor={key}>
+              {property.title}
+            </label>
+            <br />
+                    <Calendar 
+                    value={value ? new Date(value) : null}
+                    className="p-inputtext-lg mt-2"
+                    style={{ width: "60%", borderRadius:"5px" }}
+                    view="year"
+                    dateFormat="yy"
+                    onChange={(e) =>{
+                      const selectedDate = String(e.value);
+                      const date = new Date(selectedDate);
+                      const options: Intl.DateTimeFormatOptions = { year: 'numeric' };
+                      const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.'); 
+                      handleChange(key, formattedDate)
+                    } }
+                    
+                    />
+                      </div>)}
+            {property.type === "string" && property.title !== "Creation Date" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
                   {property.title}
@@ -370,7 +423,7 @@ const createAssetForm: React.FC = () => {
                 />
               </div>
             )}
-            {property.type === "number" && (
+            {property.type === "number" &&  property.title!== "Year of manufacturing" && (
               <div key={key} className="p-field flex flex-column">
                 <label htmlFor={key}>{property.title}</label>
                 <InputNumber
@@ -496,18 +549,27 @@ const createAssetForm: React.FC = () => {
     return matchingTemplate ? matchingTemplate.id : null;
   };
 
+  const showToast = (severity: ToastMessage['severity'], summary:string, message: string) => {
+
+    toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
+};
+
   return (
     <BlockUI blocked={loading}>
-      <div className="" style={{ padding: "1rem 1rem 2rem 4rem" }}>
+      
+      
         <HorizontalNavbar />
         {/* <Card> */}
-        <div className="header">
-          <p className="hover" style={{ fontWeight: "bold", fontSize: "20px", marginTop: "55px" }}>
+        <Toast ref={toast} />
+        <div className="" style={{ padding: "1rem 1rem 2rem 4rem", zoom: "80%" }}>
+        <div>
+          <p className="hover" style={{ fontWeight:"bold", fontSize: "1.8rem", marginTop: "80px" }}>
             Create Asset
           </p>
+          <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form </h5>
         </div>
 
-        <div>
+        <div style={{ }}>
           <Card className="border-gray-500 border-1 border-round-lg">
             <form onSubmit={handleSubmit}>
               <div className=" flex p-fluid grid  shadow-lg">

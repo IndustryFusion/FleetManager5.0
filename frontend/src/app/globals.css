@@ -1,16 +1,11 @@
-/* @tailwind base;
-@tailwind components;
-@tailwind utilities; */
-
 .footer-container {
   text-align: center;
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: #000;
+  background-color: #424040;
   color: #fff;
-  z-index: 1000;
-  padding: 10px;
-  box-shadow: rgba(229, 222, 222, 0.2) 0px 2px 8px 0px;
+  box-shadow: rgba(37, 34, 34, 0.2);
+  height: 45px;
 }

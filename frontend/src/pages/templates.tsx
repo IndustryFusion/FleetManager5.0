@@ -9,14 +9,14 @@ import axios from "axios";
 import HorizontalNavbar from "../components/horizontal-navbar";
 import { BlockUI } from "primereact/blockui";
 import "../../public/styles/templates.css";
-
+import Cookies from "js-cookie";
 // Template data type
 type Template = {
   id: string;
   title: string;
   description: string;
 };
-const cardTitleStyle = { fontSize: "16px" };
+const cardTitleStyle = { fontSize: "17px", color: "#54a60a", padding:"1rem, 2rem, 1rem, 2rem" };
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 // GetListTemplate component
@@ -59,7 +59,8 @@ const GetListTemplate: React.FC = () => {
         console.error("Error fetching templates:", error);
       }
     };
-    fetchTemplates();
+    if (Cookies.get("login_flag") === "false") { router.push("/login"); } 
+        else { fetchTemplates(); }
   }, []);
 
   // Function to render templates grid based on filter
@@ -75,22 +76,21 @@ const GetListTemplate: React.FC = () => {
     );
 
     // Set 'col-12 md:col-6 lg:col-4' for three templates per row on large screens
-    const columnClass = "col-12 md:col-6 lg:col-4 ";
+    const columnClass = "col-12 md:col-6 lg:col-3 ";
 
     return (
       <div className="grid">
-        
-        <HorizontalNavbar />
         {filteredTemplates.map((template) => (
           <div key={template.id} className={`${columnClass}`}>
             <Card
-              title={<span style={cardTitleStyle}>{template.title}</span>}
-              subTitle={template.description}
-              className="ml-1 pl-2  border-1 border-round-lg cardStyle"
+              title={<span  style={cardTitleStyle}>{template.title}</span>}
+              subTitle={<span  style={{color:"#7d7d79", marginTop:"10px"}}>{ template.description}</span>}
+              className="ml-3 pl-3 border-1 border-round-lg"
             >
               <Button
                 label="Select"
-                className="p-button-text hover:bg-blue-100 .buttonStyle "
+                className="p-button-text  bg-blue-100 hover:bg-blue-200 .buttonStyle " 
+                style={{color:"#4f4f4d", fontWeight:"medium", marginLeft:"2px"}}
                 onClick={() => navigateToTemplate(template.id, template.title)} // Add onClick event
               />
             </Card>
@@ -116,30 +116,33 @@ const GetListTemplate: React.FC = () => {
   // Component render
   return (
     <BlockUI blocked={loading}>
-    <div className="mt-8 ml-6">
-        <h1 style={{fontSize: "20px"}}>
-          Templates
-        </h1>
-      <div className="mt-4" style={{ width: "100%" }}>
-        <div className="flex flex-column align-items-left">
+      <HorizontalNavbar />
+      <div style={{padding: "1rem 1rem 2rem 3rem", zoom:"85%"}}>
+        <div>
+          <p className="hover" style={{fontWeight:"bold", fontSize: "1.5rem", marginTop: "80px" }}>
+            Asset Templates
+          </p>
+        </div>
+        <div className="mt-4" style={{ width: "100%" }}>
+          <div className="flex flex-column align-items-left">
 
-          <Card className="border-gray-800 border-1 border-round-lg">
-            <TabView className="-ml-3 -mt-5 ">
-              <TabPanel header={allTabHeader}>{renderGrid("All")}</TabPanel>
-              <TabPanel header="Air filter" className="">
-                {renderGrid("Air filter")}
-              </TabPanel>
-              <TabPanel header="Laser cutter">
-                {renderGrid("Laser cutter")}
-              </TabPanel>
-              <TabPanel header="Plasma cutter">
-                {renderGrid("Plasma cutter")}
-              </TabPanel>
-            </TabView>
-          </Card>
+            <Card className="border-gray-800 border-1 border-round-lg">
+              <TabView className="-ml-3 -mt-5 ">
+                <TabPanel header={allTabHeader}>{renderGrid("All")}</TabPanel>
+                <TabPanel header="Air filter">
+                  {renderGrid("Air filter")}
+                </TabPanel>
+                <TabPanel header="Laser cutter">
+                  {renderGrid("Laser cutter")}
+                </TabPanel>
+                <TabPanel header="Plasma cutter">
+                  {renderGrid("Plasma cutter")}
+                </TabPanel>
+              </TabView>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
     </BlockUI>
   );
 };

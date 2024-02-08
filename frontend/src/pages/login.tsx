@@ -20,7 +20,8 @@ const Login: React.FC = () => {
     const [passwordValid, setPasswordValid] = useState<boolean>(true);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const toast = useRef<Toast>(null);
-    const router = useRouter()
+    const router = useRouter();
+    const submitButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         // Always do navigations after the first render
@@ -106,6 +107,13 @@ const Login: React.FC = () => {
         setUsername('');
     };
 
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter' && submitButtonRef.current) {
+          event.preventDefault(); // Prevent default form submission behavior
+          submitButtonRef.current.click(); // Programmatically click the button
+        }
+      };
+
     //Function to get tooltip error message for username
     const getUsernameTooltip = (): string | undefined => {
         if (!usernameValid && username) {
@@ -160,7 +168,8 @@ const Login: React.FC = () => {
                             <Password value={password} className={`${!passwordValid ? "p-invalid" : ""}`}
                                 toggleMask
                                 onChange={(handlePasswordChange)}
-                                inputStyle={{ width: "20rem" }} />
+                                inputStyle={{ width: "20rem" }} 
+                                onKeyDown={handleKeyPress}/>
                             <small id="password-help">
                                 {getPasswordTooltip()}
                             </small>
@@ -178,6 +187,9 @@ const Login: React.FC = () => {
                                 label="Submit"
                                 onClick={handleLogin}
                                 raised
+                                ref={(submitButtonRef) => {
+                                    submitButtonRef = submitButtonRef;
+                                  }}
                                 disabled={!usernameValid || !passwordValid || !username || !password}
                                 style={{ marginLeft: "2rem", width: "6rem" }}
                             />

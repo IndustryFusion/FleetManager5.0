@@ -11,8 +11,8 @@ import { CSSProperties } from "react";
 import { Image } from "primereact/image";
 import { useRouter } from "next/router";
 // import NavLink from "../components/nav-links";
-
-
+import { Tooltip } from 'primereact/tooltip';
+import Cookies from "js-cookie";
 interface Alerts {
   text: string;
   resource: string;
@@ -53,7 +53,8 @@ const HorizontalNavbar: React.FC = () => {
   }
 
   const logoStyle: CSSProperties = {
-    height: "53px", // Adjust as needed
+    height: "53px",
+    width: "9rem",
     marginRight: "1rem",
     paddingBottom: "1rem" // Spacing after the logo
   };
@@ -66,6 +67,17 @@ const HorizontalNavbar: React.FC = () => {
     router.push("/factory-manager");
   };
 
+  const navigateToIndustryFusion = () => {
+    router.push("https://industry-fusion.org/de");
+  };
+
+  const logout = () => {
+    Cookies.set("login_flag", "false");
+    router.push("/login");
+  };
+
+  
+
   return (
     <div style={navbarStyle}>
       <div className="flex align-items-center logo-container cursor-pointer"
@@ -74,11 +86,17 @@ const HorizontalNavbar: React.FC = () => {
         <img src="/industryFusion_icon-removebg-preview.png" alt="Logo" style={logoStyle} />
       </div>
       <div className="flex  justify-content-between align-items-center" >
-        <ul className="flex m-1 nav-lists " style={navList}>
-          <li className="mr-4 ">About Us</li>
-          <li className="mr-4 ">Contact Us</li>
-          <li className="mr-2 pi pi-user"></li>
-        </ul>
+          <Button label="About Us" link onClick={navigateToIndustryFusion}
+          className="mr-2"  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} />
+          <Button label="Contact Us" link
+          className="mr-2"  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} />
+
+          <Button  icon= "pi pi-user" link 
+          className="mr-2 "  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} tooltip="Profile Details" tooltipOptions={{ position: 'bottom'}}/>
+
+          <Button onClick={logout} icon= "pi pi-sign-out" link 
+          className="mr-2"  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} tooltip="logout" tooltipOptions={{ position: 'bottom'}}  />
+
       </div>
     </div>
   );
