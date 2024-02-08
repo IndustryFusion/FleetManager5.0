@@ -16,7 +16,7 @@ type Template = {
   title: string;
   description: string;
 };
-const cardTitleStyle = { fontSize: "17px", color: "#54a60a", padding:"1rem, 2rem, 1rem, 2rem" };
+const cardTitleStyle = { fontSize: "17px", color: "rgb(0, 51, 0)", padding:"1rem, 2rem, 1rem, 2rem" };
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 // GetListTemplate component
