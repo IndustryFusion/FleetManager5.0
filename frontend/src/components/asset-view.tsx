@@ -83,7 +83,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
           text
           className="p-button-rounded p-button-secondary p-button-sm"
           onClick={() => setShowExtraCard(false)}
-          style={{marginLeft: "25rem", marginTop:"-50px", fontSize:"2rem"}}
+          style={{marginLeft: '90%', marginTop:"-50px", fontSize:"2rem"}}
         />
               <TabView scrollable>
                 <TabPanel header="General" leftIcon="pi pi-list mr-2" > {renderGeneralContent()} </TabPanel>

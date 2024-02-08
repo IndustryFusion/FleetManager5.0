@@ -117,13 +117,18 @@ body {
   overflow: auto !important;
 }
 
-.p-datatable .p-datatable-tbody>tr:nth-child(even) {
+/*  .p-datatable .p-datatable-tbody>tr:nth-child(even) {
   background-color: #f4f7f880;
-}
-.p-datatable .p-datatable-tbody>tr:nth-child(even)::selection {
+} */
+/*.p-datatable .p-datatable-tbody>tr:nth-child:hover {
   background-color: #a8dbeaeb;
   color: #212529;
-} 
+}  */  
+
+.p-datatable .p-datatable-tbody > tr.p-highlight {
+  background: transparent;
+  color: #000;
+}
 
 .p-datatable .p-datatable-tbody>tr>td {
   font-size: 14px;
