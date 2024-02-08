@@ -246,6 +246,17 @@ const AssetEdit = () => {
     console.log("updatedData ", updatedData);
   };
 
+  const handleFileLabel = (value: any) => {
+    if(value !== null){
+      if (value && (typeof value == 'string') && (value.includes('png') || value.includes('jpg') || value.includes('jpeg') || value.includes('.pdf'))) {
+         
+        console.log("updatedData ", value.split('/').pop());
+        return value.split('/').pop();
+      }
+    } else return "Upload File";
+  };
+  
+
   const renderField = (id: string, key: string, property: Property) => {
     const fieldClass = "col-4";
     const value = formData[key];
@@ -383,8 +394,9 @@ const AssetEdit = () => {
                         background: "",
                         width: "90% !important",
                         marginTop: "1%",
+                        height: "20px",
                       }}
-                      chooseLabel="Upload File"
+                      chooseLabel={handleFileLabel(value)}
                     />
                     {fileLoading[key] && <p>Loading...</p>}
                   </div>

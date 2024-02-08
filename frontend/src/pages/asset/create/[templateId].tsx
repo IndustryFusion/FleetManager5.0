@@ -46,6 +46,7 @@ const createAssetForm: React.FC = () => {
   const fileInputRef = useRef(null);
   const toast = useRef<Toast>(null);
   const [assetType, setAssetType] = useState<string>();
+  const [assetCategory, setAssetCategory] = useState<string>();
   const [relationsOptions, setRelationsOptions] = useState<RelationItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currenTemplateID, setCurrentTemplateID] = useState<string | any>();
@@ -99,6 +100,9 @@ const createAssetForm: React.FC = () => {
           const data = await response.json();
             console.log("TempData", data[0].title);
             setAssetType(data[0].title);
+            const assetCategoryType= data[0].title;
+            const assetCategoryTypeXX = assetCategoryType.replace(" template", "");
+            setAssetCategory(assetCategoryTypeXX);
           if (data && Array.isArray(data)) {
             const template = data[0];
             setSchema(template);
@@ -404,7 +408,27 @@ const createAssetForm: React.FC = () => {
                     
                     />
                       </div>)}
-            {property.type === "string" && property.title !== "Creation Date" && (
+
+             {property.title === "Asset Category" && (
+              <div key={key} className="p-field">
+                <label className="mb-2" htmlFor={key}>
+                  {property.title}
+                </label>
+                <br />
+                <InputText
+                  id={key}
+                  value={assetCategory || ""}
+                  onChange={(e) => handleChange(key, e.target.value)}
+                  onFocus={() => handleFocus(key)}
+                  onBlur={() => handleBlur(key)}
+                  readOnly={property.readOnly}
+                  className="p-inputtext-lg mt-2"
+                  style={{ width: "90%" }}
+                  placeholder={""}
+                />
+              </div>
+            )}         
+            {property.type === "string" && property.title !== "Creation Date" && property.title !== "Asset Category" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
                   {property.title}
