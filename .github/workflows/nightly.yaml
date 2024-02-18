@@ -1,0 +1,50 @@
+name: Nigthly
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: private
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      DOCKER_PREFIX: ${{ secrets.DOCKER_PREFIX }}
+    outputs:
+      DOCKER_TAG: ${{ steps.build.outputs.NIGHTLY_DOCKER_TAG }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      - id: build
+        name: Build & Push Image
+        shell: bash
+        run: |
+          export DOCKER_TAG="latest"
+          NIGHTLY_DOCKER_TAG=nightly-`date -I`-`date +%s`
+          docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
+          docker compose build
+          docker tag ${DOCKER_PREFIX}/factory50-backend:${DOCKER_TAG} ${DOCKER_PREFIX}/factory50-backend:${NIGHTLY_DOCKER_TAG}
+          docker tag ${DOCKER_PREFIX}/factory50-frontend:${DOCKER_TAG} ${DOCKER_PREFIX}/factory50-frontend:${NIGHTLY_DOCKER_TAG}
+          docker push ${DOCKER_PREFIX}/factory50-backend:${DOCKER_TAG}
+          docker push ${DOCKER_PREFIX}/factory50-backend:${NIGHTLY_DOCKER_TAG}
+          docker push ${DOCKER_PREFIX}/factory50-frontend:${DOCKER_TAG}
+          docker push ${DOCKER_PREFIX}/factory50-frontend:${NIGHTLY_DOCKER_TAG}
+          docker rmi ${DOCKER_PREFIX}/factory50-backend:${DOCKER_TAG}
+          docker rmi ${DOCKER_PREFIX}/factory50-backend:${NIGHTLY_DOCKER_TAG}
+          docker rmi ${DOCKER_PREFIX}/factory50-frontend:${DOCKER_TAG}
+          docker rmi ${DOCKER_PREFIX}/factory50-frontend:${NIGHTLY_DOCKER_TAG}
+          echo "NIGHTLY_DOCKER_TAG=${NIGHTLY_DOCKER_TAG}" >> "${GITHUB_OUTPUT}"
+  deploy:
+    needs: build
+    uses: IndustryFusion/GitOpsRepo/.github/workflows/deploy.yaml@main
+    with:
+      APPS: factory50
+      DOCKER_TAG: ${{ needs.build.outputs.DOCKER_TAG }}
+    secrets:
+      PRIVATE_GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_TOKEN }}
+      S3_URL: ${{ secrets.S3_URL }}
+      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
