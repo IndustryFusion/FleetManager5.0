@@ -9,7 +9,7 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cors({
-    origin: ['http://85.215.128.232:3001', 'http://localhost:3001'],
+    origin: ['http://85.215.129.117/3001', 'http://localhost:3001'],
     credentials: true,
   }));
   app.use(cookieParser());
