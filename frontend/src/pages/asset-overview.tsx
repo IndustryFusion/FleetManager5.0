@@ -111,7 +111,7 @@ export default function Asset() {
 
     const handleRowDoubleClick = (rowData: Asset) => {
         localStorage.setItem("currentAssetId", rowData.id);
-       // router.push("/asset/asset-specific");
+        // router.push("/asset/asset-specific");
     };
 
 
@@ -125,7 +125,7 @@ export default function Asset() {
         console.log("Opening side panel, DataTablePanelSize set to 30");
     };
 
-   
+
 
     const handleCreateAssetClick = () => {
         router.push("/templates"); // This will navigate to the /templates
@@ -265,12 +265,35 @@ export default function Asset() {
         return <>{assetType}</>;
     };
 
-  
 
-    const exportJsonData = () => {
+
+    const exportJsonData = async () => {
+        let newExportdata = []
+        console.log(searchedAssets);
+        for (let i = 0; i < selectedAssets.length; i++) {
+            try {
+                const response = await axios.get(
+                    BACKEND_API_URL + `/asset/${selectedAssets[i].id}`,
+                    {
+                        headers: {
+                            "Content-Type": "application/ld+json",
+                            "Accept": "application/ld+json",
+                        },
+                        withCredentials: true,
+                    }
+                );
+                if (response) { newExportdata.push(response.data); }
+            }
+            catch(err){
+                console.log('Failed to get data for export ' + err);
+            }
+        }
+
+
         const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-            JSON.stringify(selectedAssets, null, 2)
+            JSON.stringify(newExportdata, null, 2)
         )}`;
+
         const link = document.createElement("a");
         link.href = jsonString;
         link.download = "data.json";
@@ -287,17 +310,18 @@ export default function Asset() {
 
     const centerContent = () => {
         return (
-        <div className="search-container">
-            <span className="p-input-icon-left">
-                <i className="pi pi-search" />
-                <InputText
-                    value={globalFilterValue}
-                    onChange={onGlobalFilterChange}
-                    placeholder="Search..."
-                    className="searchbar-input" style={{ borderRadius: "10px" }} />
-            </span>
-        </div>
-    ); };
+            <div className="search-container">
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
+                    <InputText
+                        value={globalFilterValue}
+                        onChange={onGlobalFilterChange}
+                        placeholder="Search..."
+                        className="searchbar-input" style={{ borderRadius: "10px" }} />
+                </span>
+            </div>
+        );
+    };
 
     const rightToolbarTemplate = () => {
 
@@ -435,12 +459,12 @@ export default function Asset() {
                         {/* {editingAsset && renderEditForm()} */}
                     </Dialog>
                 </div>
-                        
+
                 {showExtraCard &&
                     <div style={{ width: "30%" }}>
-                        
-                                <AssetDetailsCard asset={selectedProduct} setShowExtraCard={setShowExtraCard} />
-                            
+
+                        <AssetDetailsCard asset={selectedProduct} setShowExtraCard={setShowExtraCard} />
+
                     </div>
                 }
             </div>
