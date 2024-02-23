@@ -10,7 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // Using NestJS built-in CORS support with corrected origin format
   app.enableCors({
-    origin: ['http://85.215.129.117:3001', 'http://localhost:3001'],
+    origin: [process.env.CORS_ORIGIN],
     credentials: true,
   });
   app.use(cookieParser());
