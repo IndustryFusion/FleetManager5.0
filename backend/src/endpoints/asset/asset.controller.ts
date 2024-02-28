@@ -59,6 +59,8 @@ export class AssetController {
           message: response['statusText'],
           id: response['id'],
         }
+      } else {
+        return response;
       }
     } catch (err) {
       return { 
@@ -78,6 +80,8 @@ export class AssetController {
           status: response['status'],
           message: 'Updated Successfully',
         }
+      } else {
+        return response;
       }
     } catch (err) {
       return { 
