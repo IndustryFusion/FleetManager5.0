@@ -118,71 +118,84 @@ export class AssetService {
   */
   async setTemplateData(id: string, data: TemplateDescriptionDto) {
     try {
-      //fetch the last urn from scorpio and create a new urn
-      const fetchLastUrnUrl = `${this.scorpioUrl}/urn:ngsi-ld:id-store`;
       const headers = {
         'Content-Type': 'application/ld+json',
         'Accept': 'application/ld+json'
       };
-      let getLastUrn = await axios.get(fetchLastUrnUrl, {
-        headers
-      });
-      getLastUrn = getLastUrn.data;
-      let newUrn = '';
-      
-      try {
-        for (let key in getLastUrn) {
-          if (key.includes('last-urn')) {
-            newUrn = getLastUrn[key]['value'].split(':')[4];
-            newUrn = (parseInt(newUrn, 10) + 1).toString().padStart(newUrn.length, "0");
+
+      let checkUrl = `${this.scorpioUrl}?type=${data.type}&q=http://www.industry-fusion.org/schema%23product_name==%22${data.properties['product_name']}%22`;
+      let assetData = await axios.get(checkUrl, { headers });
+
+      if(!assetData.data.length) {
+        //fetch the last urn from scorpio and create a new urn
+        const fetchLastUrnUrl = `${this.scorpioUrl}/urn:ngsi-ld:id-store`;
+        let getLastUrn = await axios.get(fetchLastUrnUrl, {
+          headers
+        });
+        getLastUrn = getLastUrn.data;
+        let newUrn = '';
+        
+        try {
+          for (let key in getLastUrn) {
+            if (key.includes('last-urn')) {
+              newUrn = getLastUrn[key]['value'].split(':')[4];
+              newUrn = (parseInt(newUrn, 10) + 1).toString().padStart(newUrn.length, "0");
+            }
           }
         }
-      }
-      catch (e) {
-        console.log(e);
-      }
+        catch (e) {
+          console.log(e);
+        }
 
-      const result = {
-        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
-        "id": `urn:ngsi-ld:asset:2:${newUrn}`,
-        "type": data.type
-      }
+        const result = {
+          "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+          "id": `urn:ngsi-ld:asset:2:${newUrn}`,
+          "type": data.type
+        }
 
-      for (let key in data.properties) {
-        let resultKey = "http://www.industry-fusion.org/schema#" + key;
-        if (key.includes("has")) {
-          let obj = {
-            type: "Relationship",
-            object: data.properties[key]
+        for (let key in data.properties) {
+          let resultKey = "http://www.industry-fusion.org/schema#" + key;
+          if (key.includes("has")) {
+            let obj = {
+              type: "Relationship",
+              object: data.properties[key]
+            }
+            result[resultKey] = obj;
+          } else {
+            result[resultKey] = data.properties[key];
           }
-          result[resultKey] = obj;
-        } else {
-          result[resultKey] = data.properties[key];
+        }
+        
+        const lastURNVar = { 
+          "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+          "last-urn": { "type": "Property", "value": `urn:ngsi-ld:asset:2:${newUrn}`}
+        };
+
+        const updateLastUrnUrl = `${this.scorpioUrl}/urn:ngsi-ld:id-store/attrs`;
+        try{
+          await axios.patch(updateLastUrnUrl, lastURNVar, { headers });
+        }
+        catch(e){
+          console.log(e)
+        }
+
+        //store the template data to scorpio
+        const response = await axios.post(this.scorpioUrl, result, { headers });
+        console.log('response ', response.statusText);
+        return {
+          id: result.id,
+          status: response.status,
+          statusText: response.statusText,
+          data: response.data
+        }
+      } else{
+        return {
+          "success": false,
+          "status": 409,
+          "message": "Product Name Already Exists"
         }
       }
       
-      const lastURNVar = { 
-        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
-        "last-urn": { "type": "Property", "value": `urn:ngsi-ld:asset:2:${newUrn}`}
-      };
-
-      const updateLastUrnUrl = `${this.scorpioUrl}/urn:ngsi-ld:id-store/attrs`;
-      try{
-        await axios.patch(updateLastUrnUrl, lastURNVar, { headers });
-      }
-      catch(e){
-        console.log(e)
-      }
-
-      //store the template data to scorpio
-      const response = await axios.post(this.scorpioUrl, result, { headers });
-      console.log('response ', response.statusText);
-      return {
-        id: result.id,
-        status: response.status,
-        statusText: response.statusText,
-        data: response.data
-      }
     } catch (err) {
       throw err;
     }
@@ -199,16 +212,34 @@ export class AssetService {
   */
   async updateAssetById(id: string, data) {
     try {
-      data['@context'] = "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.3.jsonld";
       const headers = {
         'Content-Type': 'application/ld+json',
-        'Accept': 'application/ld+json'
+        Accept: 'application/ld+json',
       };
-      const url = this.scorpioUrl + '/' + id + '/attrs';
-      const response = await axios.post(url, data, { headers });
-      return {
-        status: response.status,
-        data: response.data
+      let flag = true;
+      if(data["http://www.industry-fusion.org/schema#product_name"]) {
+        let productName = data["http://www.industry-fusion.org/schema#product_name"];
+        let checkUrl = `${this.scorpioUrl}?type=${data.type}&q=http://www.industry-fusion.org/schema%23product_name==%22${productName}%22`;
+        let assetData = await axios.get(checkUrl, { headers });
+
+        if(assetData.data.length) {
+          flag = false;
+        }
+      }
+      if(flag) {
+        data['@context'] = "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.3.jsonld";
+        const url = this.scorpioUrl + '/' + id + '/attrs';
+        const response = await axios.post(url, data, { headers });
+        return {
+          status: response.status,
+          data: response.data
+        }
+      } else {
+        return {
+          "success": false,
+          "status": 409,
+          "message": "Product Name Already Exists"
+        }
       }
     } catch (err) {
       throw err;
