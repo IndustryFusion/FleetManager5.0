@@ -7,7 +7,7 @@ import { Dialog } from "primereact/dialog";
 import AssetDetailsCard from "../components/asset-view";
 import HorizontalNavbar from "../components/horizontal-navbar";
 import Footer from "../components/footer";
-import { Toast } from "primereact/toast";
+import { Toast,ToastMessage } from "primereact/toast";
 import { CiClock2 } from "react-icons/ci";
 import { GrView } from "react-icons/gr";
 import { ContextMenu } from 'primereact/contextmenu';
@@ -104,9 +104,16 @@ export default function Asset() {
             const mappedData = mapBackendDataToAsset(responseData);
             console.log("Formatted data:: ", mappedData);
             setAssets(mappedData);
-        } catch (error) {
-            console.error("Error:", error);
-        }
+            
+        } catch (error:any) {
+            if (axios.isAxiosError(error)) {
+              console.error("Error response:", error.response?.data.message);
+              showToast('error', 'Error','Fetching assets');
+            } else {
+              console.error("Error:", error);
+              showToast('error', 'Error', error);
+            }
+          }
     };
 
     const handleRowDoubleClick = (rowData: Asset) => {
@@ -124,8 +131,6 @@ export default function Asset() {
         }
         console.log("Opening side panel, DataTablePanelSize set to 30");
     };
-
-
 
     const handleCreateAssetClick = () => {
         router.push("/templates"); // This will navigate to the /templates
@@ -147,15 +152,20 @@ export default function Asset() {
             if (response.status === 200) {
                 const updatedAssets = assets.filter(asset => asset.id !== assetId)
                 setAssets(updatedAssets)
-
+                showToast('success', 'Deleted success', 'Asset deleted successfully')
                 console.log("Asset deleted successfully");
-                // Handle successful deletion (e.g., refresh the asset list)
             } else {
                 console.error("Failed to delete asset");
             }
-        } catch (error) {
-            console.error("Error deleting asset:", error);
-        }
+        } catch (error:any) {
+            if (axios.isAxiosError(error)) {
+              console.error("Error response:", error.response?.data.message);
+              showToast('error', 'Error','Deleting asset');
+            } else {
+              console.error("Error:", error);
+              showToast('error', 'Error', error);
+            }
+          }
     };
 
     // Adding resize event listener
@@ -264,13 +274,15 @@ export default function Asset() {
         const assetType = rowData?.type?.split('/')[5];
         return <>{assetType}</>;
     };
-
+    const showToast = (severity: ToastMessage['severity'], summary:string, message: string) => {
+        toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
+    };
 
 
     const exportJsonData = async () => {
         let newExportdata = []
         console.log(searchedAssets);
-        for (let i = 0; i < selectedAssets.length; i++) {
+        for (let i = 0; i < selectedAssets?.length; i++) {
             try {
                 const response = await axios.get(
                     BACKEND_API_URL + `/asset/${selectedAssets[i].id}`,
@@ -284,11 +296,10 @@ export default function Asset() {
                 );
                 if (response) { newExportdata.push(response.data); }
             }
-            catch(err){
+            catch (err) {
                 console.log('Failed to get data for export ' + err);
             }
         }
-
 
         const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
             JSON.stringify(newExportdata, null, 2)
