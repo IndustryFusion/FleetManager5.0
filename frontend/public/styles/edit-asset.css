@@ -26,4 +26,9 @@
   .p-inputtext {
     border-radius: 10px;
   }
+  .input-invalid-text{
+    font-size: 12px;
+    color: #ff0000;
+    font-weight: bold;
+  }
   

@@ -1,8 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-// import "primereact/resources/primereact.min.css";
-// import "primeflex/primeflex.css";
-// import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
-// import "primeicons/primeicons.css";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import axios from "axios";
@@ -44,17 +40,23 @@ const AssetEdit = () => {
   const [assetType, setAssetType] = useState<string>();
   const [fileLoading, setFileLoading] = useState<FileLoadingState>({});
   const [fileUploadKey, setFileUploadKey] = useState(0);
+  const [validateAsset, setValidateAsset] = useState({
+    product_name: false,
+    asset_manufacturer_name: false,
+    asset_serial_number: false
+  })
   const msgs = useRef<Messages>(null);
   const toast = useRef<Toast>(null);
 
   useEffect(() => {
-    if (Cookies.get("login_flag") === "false") { router.push("/login"); } 
-        else {
-    if (router.isReady) {
-      const { assetId } = router.query;
-      fetchData(assetId);
-      setLoading(false);
-    } }
+    if (Cookies.get("login_flag") === "false") { router.push("/login"); }
+    else {
+      if (router.isReady) {
+        const { assetId } = router.query;
+        fetchData(assetId);
+        setLoading(false);
+      }
+    }
   }, [router.isReady]);
 
   useMountEffect(() => {
@@ -95,14 +97,19 @@ const AssetEdit = () => {
 
       }, {} as Asset);
       return flattenedData;
-    } catch (error) {
-      console.error("Error fetching asset data:", error);
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error response:", error.response?.data.message);
+        showToast('error', 'Error', 'Error fetching asset data');
+      } else {
+        console.error("Error:", error);
+        showToast('error', 'Error', error);
+      }
     }
   };
 
   const fetchData = async (assetId: any) => {
     try {
-      console.log("asset id inside fetch data ", assetId);
       if (assetId) {
         const asset: Asset | any = await fetchAsset(assetId);
         if (asset) {
@@ -120,58 +127,87 @@ const AssetEdit = () => {
             setSchema(template);
           } else {
             console.error("Fetched data is not in the expected format");
+            showToast('error', 'Error', "Fetched data is not in the expected format")
           }
         }
       } else {
         console.error("Cannot able to get asset Id");
+        showToast('error', 'Error', 'Cannot able to get asset Id');
       }
-    } catch (error) {
-      console.error("Error fetching template:", error);
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error response:", error.response?.data.message);
+        showToast('error', 'Error', 'Error fetching template');
+      } else {
+        console.error("Error:", error);
+        showToast('error', 'Error', error);
+      }
     }
   };
 
-  const showToast = (severity: ToastMessage['severity'], summary:string, message: string) => {
-
+  const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
     toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
-};
+  };
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    if (Object.keys(updatedData).length > 0) {
-      const payload = Object.keys(updatedData).reduce((acc: any, key: any) => {
-        acc[`http://www.industry-fusion.org/schema#${key}`] = {
-          type: "Property",
-          value: updatedData[key],
-        };
-        return acc;
-      }, {});
-      console.log("payload ", payload);
-      try {
-        const response = await axios.patch(
-          API_URL + `/asset/${formData.id}`,
-          payload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            withCredentials: true,
-          }
-        );
-        console.log("response ", response);
-        if (response.data.success) {
-          showToast('success', 'Edited Successfully', 'data updated succesfully');
-        } else {
-          showToast('warn', 'Warning', response.data.message);
-        }
-      } catch (error:any) {
-        console.error("Error updating asset:", error);
-        showToast('error', 'Error', error);
+    console.log(updatedData, "what's the edited data");
+
+    const { product_name, asset_manufacturer_name, asset_serial_number } = updatedData;
+
+    console.log(product_name, asset_manufacturer_name, "its updatedData");
+
+    const assetKeys = Object.keys(validateAsset);
+    for (let assetKey of assetKeys) {
+      if (updatedData[assetKey] === "") {
+        setValidateAsset(validateAsset => ({ ...validateAsset, [assetKey]: true }));
       }
-    } else {
-      setShowStatus(true);
-      showToast('info', 'Info', "you have not edited any field");
     }
+
+    if (product_name === "" ||
+      asset_manufacturer_name === "" || asset_serial_number === "") {
+      console.log("is coming here");
+      showToast('error', "Error", "Please fill all required fields")
+    } else {
+      if (Object.keys(updatedData).length > 0) {
+        const payload = Object.keys(updatedData).reduce((acc: any, key: any) => {
+          acc[`http://www.industry-fusion.org/schema#${key}`] = {
+            type: "Property",
+            value: updatedData[key],
+          };
+          return acc;
+        }, {});
+        console.log("payload ", payload);
+        try {
+          const response = await axios.patch(
+            API_URL + `/asset/${formData.id}`,
+            payload,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              withCredentials: true,
+            }
+          );
+          console.log("response ", response);
+          if (response.data.success) {
+            showToast('success', 'Edited Successfully', 'data updated succesfully');
+          } else {
+            showToast('warn', 'Warning', response.data.message);
+          }
+        } catch (error: any) {
+          console.error("Error updating asset:", error);
+          showToast('error', 'Error', error);
+        }
+      } else {
+
+        showToast('info', 'Info', "you have not edited any field");
+      }
+    }
+
+
+
   };
 
   const handleCancel = (event: any) => {
@@ -188,15 +224,18 @@ const AssetEdit = () => {
     newFormData.ce_marking = formData.ce_marking;
     newFormData.documentation = formData.documentation;
 
+    const assetKeys = Object.keys(validateAsset);
+    for (let assetKey of assetKeys) {
+      if (newFormData[assetKey] === "") {
+        setValidateAsset(validateAsset => ({ ...validateAsset, [assetKey]: false }));
+      }
+    }
     setFileUploadKey((prevKey) => prevKey + 1);
-
   };
-
 
   const handleBlur = (key: string) => {
     setFocusedFields({ ...focusedFields, [key]: false });
   };
-
 
   const handleUpload = async (file: any, key: any) => {
     if (!file) return;
@@ -223,8 +262,9 @@ const AssetEdit = () => {
         const text = await response.text();
         setUpdatedData({ ...updatedData, [key]: text });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading file:", error);
+      showToast('error', 'Error', error);
     }
     finally {
       setFileLoading((prevLoading: any) => ({ ...prevLoading, [key]: false }));
@@ -235,11 +275,21 @@ const AssetEdit = () => {
     setFocusedFields({ ...focusedFields, [key]: true });
   };
 
+  const validateInput = (key: string) => {
+    const assetKeys = Object.keys(validateAsset);
+    for (let assetKey of assetKeys) {
+      if (assetKey === key) {
+        setValidateAsset(validateAsset => ({ ...validateAsset, [key]: false }));
+      }
+    }
+  }
+
   const handleChange = (key: string, value: any) => {
     if (key === "file") {
       const file = value as File;
       setFile(file);
     } else {
+      validateInput(key)
       setFormData({ ...formData, [key]: value });
       setUpdatedData({ ...updatedData, [key]: value });
     }
@@ -247,15 +297,14 @@ const AssetEdit = () => {
   };
 
   const handleFileLabel = (value: any) => {
-    if(value !== null){
+    if (value !== null) {
       if (value && (typeof value == 'string') && (value.includes('png') || value.includes('jpg') || value.includes('jpeg') || value.includes('.pdf'))) {
-         
+
         console.log("updatedData ", value.split('/').pop());
         return value.split('/').pop();
       }
     } else return "Upload File";
   };
-  
 
   const renderField = (id: string, key: string, property: Property) => {
     const fieldClass = "col-4";
@@ -268,57 +317,55 @@ const AssetEdit = () => {
     return (
       <>
         {property.title === "Asset Status" ? null : (
-
           <div
             className={`p-field  ${fieldClass}  flex flex-column `}
             key={key}
           >
+            {property.title === "Creation Date" && (
+              <div key={key} className="p-field">
+                <label className="mb-2" htmlFor={key}>
+                  {property.title}
+                </label>
+                <br />
+                <Calendar
+                  value={value ? new Date(value) : null}
+                  className="p-inputtext-lg mt-2"
+                  style={{ width: "60%", borderRadius: "5px" }}
+                  dateFormat="dd/mm/yy"
+                  onChange={(e) => {
+                    const selectedDate = String(e.value);
+                    const date = new Date(selectedDate);
+                    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                    const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.');
+                    handleChange(key, formattedDate)
+                  }}
 
-{  property.title=== "Creation Date" && (
-            <div key={key} className="p-field">
-            <label className="mb-2" htmlFor={key}>
-              {property.title}
-            </label>
-            <br />
-                    <Calendar 
-                    value={value ? new Date(value) : null}
-                    className="p-inputtext-lg mt-2"
-                    style={{ width: "60%", borderRadius:"5px" }}
-                    dateFormat="dd/mm/yy"
-                    onChange={(e) =>{
-                      const selectedDate = String(e.value);
-                      const date = new Date(selectedDate);
-                      const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-                      const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.'); 
-                      handleChange(key, formattedDate)
-                    } }
-                    
-                    />
-                      </div>)}
-                      {  property.title=== "Year of manufacturing" && (
-            <div key={key} className="p-field">
-            <label className="mb-2" htmlFor={key}>
-              {property.title}
-            </label>
-            <br />
-                    <Calendar 
-                    value={value ? new Date(value) : null}
-                    className="p-inputtext-lg mt-2"
-                    style={{ width: "60%", borderRadius:"5px" }}
-                    view="year"
-                    dateFormat="yy"
-                    onChange={(e) =>{
-                      const selectedDate = String(e.value);
-                      const date = new Date(selectedDate);
-                      const options: Intl.DateTimeFormatOptions = { year: 'numeric' };
-                      const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.'); 
-                      handleChange(key, formattedDate)
-                    } }
-                    
-                    />
-                      </div>)}
+                />
+              </div>)}
+            {property.title === "Year of manufacturing" && (
+              <div key={key} className="p-field">
+                <label className="mb-2" htmlFor={key}>
+                  {property.title}
+                </label>
+                <br />
+                <Calendar
+                  value={value ? new Date(value) : null}
+                  className="p-inputtext-lg mt-2"
+                  style={{ width: "60%", borderRadius: "5px" }}
+                  view="year"
+                  dateFormat="yy"
+                  onChange={(e) => {
+                    const selectedDate = String(e.value);
+                    const date = new Date(selectedDate);
+                    const options: Intl.DateTimeFormatOptions = { year: 'numeric' };
+                    const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.');
+                    handleChange(key, formattedDate)
+                  }}
 
-            {property.type === "string" && property.title !== "Creation Date" &&  (
+                />
+              </div>)}
+
+            {property.type === "string" && property.title !== "Creation Date" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
                   {property.title}
@@ -335,9 +382,15 @@ const AssetEdit = () => {
                   style={{ width: "90%" }}
                   placeholder={""}
                 />
+                {property.title === "Product Name" && validateAsset.product_name &&
+                  <p className="input-invalid-text">Product Name is required</p>}
+                {property.title === "Asset Manufacturer Name" && validateAsset.asset_manufacturer_name
+                  && <p className="input-invalid-text">Asset Manufacturer Name is required</p>}
+                {property.title === "Serial Number" && validateAsset.asset_serial_number &&
+                  <p className="input-invalid-text">Serial Number is required</p>}
               </div>
             )}
-            {property.type === "number" &&  property.title!== "Year of manufacturing" && (
+            {property.type === "number" && property.title !== "Year of manufacturing" && (
               <div key={key} className="p-field flex flex-column">
                 <label htmlFor={key}>{property.title}</label>
                 <InputNumber
@@ -416,7 +469,7 @@ const AssetEdit = () => {
       <Toast ref={toast} />
       <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "80%" }}>
         <div>
-          <p className="hover" style={{fontWeight:"bold", fontSize: "1.8rem", marginTop: "80px" }}>
+          <p className="hover" style={{ fontWeight: "bold", fontSize: "1.8rem", marginTop: "80px" }}>
             Edit Asset
           </p>
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form --  {asset.id}</h5>
