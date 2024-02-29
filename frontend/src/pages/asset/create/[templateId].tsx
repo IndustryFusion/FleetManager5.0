@@ -335,7 +335,6 @@ const createAssetForm: React.FC = () => {
     return (
       <>
         {property.title === "Asset Status" ? null : (
-
           <div
             className={`p-field  ${fieldClass}  flex flex-column `}
             key={key}
@@ -383,7 +382,6 @@ const createAssetForm: React.FC = () => {
 
                 />
               </div>)}
-
             {property.title === "Asset Category" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
@@ -430,7 +428,9 @@ const createAssetForm: React.FC = () => {
             )}
             {property.type === "number" && property.title !== "Year of manufacturing" && (
               <div key={key} className="p-field flex flex-column">
-                <label htmlFor={key}>{property.title}</label>
+                <label htmlFor={key}>{property.title}
+                <span className="ml-1 text-gray-500">({property.unit})</span>              
+                </label>
                 <InputNumber
                   id={key}
                   value={value || ""}
@@ -556,6 +556,8 @@ const createAssetForm: React.FC = () => {
   const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
     toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
   };
+
+  console.log(schema.properties , "what's all property");
 
   return (
     <BlockUI blocked={loading}>
