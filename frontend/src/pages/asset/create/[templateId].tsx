@@ -7,7 +7,6 @@ import { FileUpload } from "primereact/fileupload";
 import "../../../../public/styles/create-form.css";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { MultiSelect } from "primereact/multiselect";
 import { ListBox } from "primereact/listbox";
 import HorizontalNavbar from "../../../components/horizontal-navbar";
 import { Card } from "primereact/card";
@@ -32,7 +31,6 @@ const createAssetForm: React.FC = () => {
 
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [dialogFormData, setDialogFormData] = useState<Record<string, any>>({});
-  // Initialize the state with a more specific type
   const [dynamicFormSchema, setDynamicFormSchema] =
     useState<DynamicFormSchema | null>(null);
 
@@ -43,16 +41,18 @@ const createAssetForm: React.FC = () => {
   const [uploadedFileKeys, setUploadedFileKeys] = useState<string[]>([]);
   const [fileUploadKey, setFileUploadKey] = useState(0);
   const [fileLoading, setFileLoading] = useState<FileLoadingState>({});
-  const fileInputRef = useRef(null);
   const toast = useRef<Toast>(null);
   const [assetType, setAssetType] = useState<string>();
   const [assetCategory, setAssetCategory] = useState<string>();
   const [relationsOptions, setRelationsOptions] = useState<RelationItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currenTemplateID, setCurrentTemplateID] = useState<string | any>();
-  const handleFocus = (key: string) => {
-    setFocusedFields({ ...focusedFields, [key]: true });
-  };
+  const [validateAsset, setValidateAsset] = useState({
+    product_name: false,
+    asset_manufacturer_name: false,
+    asset_serial_number: false
+  })
+
 
   useEffect(() => {
     const updatedList = selectedRelations.map((relation) => {
@@ -68,41 +68,22 @@ const createAssetForm: React.FC = () => {
     setSelectedRelationsList(updatedList);
     console.log("updatedlist", updatedList);
   }, [selectedRelations]);
-  const handleBlur = (key: string) => {
-    setFocusedFields({ ...focusedFields, [key]: false });
-  };
-
-  const [templateData, setTemplateData] = useState(null);
-  // const location = useLocation();
-
-  const handleChange = (key: string, value: any) => {
-    const fieldType = schema?.properties[key]?.type;
-
-    // Update formData with both value and type
-    setFormData({ ...formData, [key]: { value, type: fieldType } });
-    if (key === "file") {
-      const file = value as File;
-      setFile(file);
-    } else {
-      setFormData({ ...formData, [key]: value });
-    }
-  };
 
   useEffect(() => {
     const fetchData = async (templateId: string | any) => {
       if (templateId) {
-        
+
         console.log("template", templateId);
         try {
           const response = await fetch(
             API_URL + `/templates/${templateId}`
           );
           const data = await response.json();
-            console.log("TempData", data[0].title);
-            setAssetType(data[0].title);
-            const assetCategoryType= data[0].title;
-            const assetCategoryTypeXX = assetCategoryType.replace(" template", "");
-            setAssetCategory(assetCategoryTypeXX);
+          console.log("TempData", data[0].title);
+          setAssetType(data[0].title);
+          const assetCategoryType = data[0].title;
+          const assetCategoryTypeXX = assetCategoryType.replace(" template", "");
+          setAssetCategory(assetCategoryTypeXX);
           if (data && Array.isArray(data)) {
             const template = data[0];
             setSchema(template);
@@ -137,83 +118,61 @@ const createAssetForm: React.FC = () => {
 
             console.log("FilterOptions: ", filterOptions);
           } else {
+            showToast('error','Error', 'Fetched data is not in the expected format');
             console.error("Fetched data is not in the expected format");
           }
-        } catch (error) {
-          console.error("Error fetching template:", error);
+        }catch (error:any) {
+          if (axios.isAxiosError(error)) {
+            console.error("Error response:", error.response?.data.message);
+            showToast('error','Error', 'Error fetching template');
+          } else {
+            console.error("Error:", error);
+            showToast('error', 'Error', error);
+          }
         }
       }
     };
-    if (Cookies.get("login_flag") === "false") { router.push("/login"); } 
-        else {
-    if (router.isReady) {
-      const { templateId } = router.query;
-      fetchData(templateId);
-      setCurrentTemplateID(templateId);
-      setLoading(false);
-    }}
+
+    if (Cookies.get("login_flag") === "false") { router.push("/login"); }
+    else {
+      if (router.isReady) {
+        const { templateId } = router.query;
+        fetchData(templateId);
+        setCurrentTemplateID(templateId);
+        setLoading(false);
+      }
+    }
   }, [router.isReady]);
 
-  // Function to render dynamic form fields
-  const renderDynamicField = (key: any, property: any) => {
-    switch (property.type) {
-      case "string":
-        return (
-          <div key={key} className="p-field">
-            <label htmlFor={key}>{property.title}</label>
-            <InputText
-              id={key}
-              value={dialogFormData[key] || ""}
-              onChange={(e) => handleDialogFormChange(key, e.target.value)}
-              readOnly={property.readOnly}
-              className="p-inputtext-lg "
-            />
-          </div>
-        );
-      case "number":
-        return (
-          <div key={key} className="p-field">
-            <label htmlFor={key}>{property.title}</label>
-            <InputNumber
-              id={key}
-              value={dialogFormData[key] || ""}
-              onValueChange={(e) => handleDialogFormChange(key, e.target.value)}
-              className="p-inputtext-lg "
-            />
-          </div>
-        );
-      case "object":
-        // Assuming object type is for file uploads
-        return (
-          <div key={key} className="p-field flex">
-            <label htmlFor={key}>{property.title}</label>
-            <FileUpload
-              ref={fileInputRef}
-              name={key}
-              mode="basic"
-              accept={property.contentMediaType}
-              maxFileSize={1000000}
-              customUpload={true}
-              uploadHandler={(e) => handleUpload(e.files[0], key)}
-              className="p-fileupload-choose custom-file-upload"
-            />
-          </div>
-        );
-      case "array":
-        return (
-          <div key={key} className="p-field">
-            <label htmlFor={key}>{property.title}</label>
-            <Dropdown
-              id={key}
-              value={dialogFormData[key]}
-              options={property.enum.map((e: any) => ({ label: e, value: e }))}
-              onChange={(e) => handleDialogFormChange(key, e.value)}
-              placeholder="Select"
-            />
-          </div>
-        );
-      default:
-        return null;
+  const validateInput = (key: string) => {
+    const assetKeys = Object.keys(validateAsset);
+    for(let assetKey of assetKeys){   
+      if(assetKey === key){
+        setValidateAsset(validateAsset => ({ ...validateAsset, [key]: false }));    
+      }
+    }
+  }
+
+  const handleFocus = (key: string) => {
+    setFocusedFields({ ...focusedFields, [key]: true });
+  };
+
+  const handleBlur = (key: string) => {
+    setFocusedFields({ ...focusedFields, [key]: false });
+  };
+
+  const handleChange = (key: string, value: any) => {
+    const fieldType = schema?.properties[key]?.type;
+    validateInput(key)
+
+
+    // Update formData with both value and type
+    setFormData({ ...formData, [key]: { value, type: fieldType } });
+    if (key === "file") {
+      const file = value as File;
+      setFile(file);
+    } else {
+      setFormData({ ...formData, [key]: value });
     }
   };
 
@@ -251,8 +210,9 @@ const createAssetForm: React.FC = () => {
         // Track uploaded file key
         setUploadedFileKeys((prevKeys) => [...prevKeys, key]);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error uploading file:", error);
+      showToast('error', 'Error uploading file', error);
     } finally {
       setFileLoading((prevLoading: any) => ({ ...prevLoading, [key]: false }));
     }
@@ -262,6 +222,7 @@ const createAssetForm: React.FC = () => {
     event.preventDefault();
     // Extract type, title, and description
     const { type, title, description, ...properties } = formData;
+
     // Structure the data for submission
     const submissionData = {
       type,
@@ -270,35 +231,55 @@ const createAssetForm: React.FC = () => {
       properties: { ...properties }
     };
     console.log("submissionData", submissionData);
-    try {
-      const response = await axios.post(
-        API_URL + `/asset/${currenTemplateID}`,
-        submissionData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-
-      setIsFormSubmitted(true); // Set the flag to true on successful submission
-      console.log("Submitted data:", submissionData);
-      console.log("Response from server:", response.data);
-      if (response.data.success) { 
-        showToast('success', 'Added Successfully', 'new asset added successfully')
-        //router.push("/asset-overview");
-      } else {
-        showToast('warn', 'Warning', response.data.message);
+   
+    const {product_name,asset_manufacturer_name, asset_serial_number } = submissionData?.properties;
+    
+    const assetKeys = Object.keys(validateAsset);
+    for(let assetKey of assetKeys){   
+      if (submissionData?.properties[assetKey] === undefined || submissionData?.properties[assetKey] === "") {
+             
+        setValidateAsset(validateAsset => ({ ...validateAsset, [assetKey]: true }));    
       }
-    } catch (error:any) {
-      if (axios.isAxiosError(error)) {
-        console.error("Error response:", error.response?.data);
-        showToast('error', 'Error',error.response?.data.message);
-      } else {
-        console.error("Error:", error);
-        showToast('error', 'Error', error);
+    }
+
+    if (product_name === undefined || product_name === "" || 
+    asset_manufacturer_name === undefined || asset_manufacturer_name === "" 
+    || asset_serial_number === undefined || asset_serial_number === "") {
+      console.log("is coming here");    
+      showToast('error', "Error", "Please fill all required fields")
+    }
+
+    else{
+      try {
+        const response = await axios.post(
+          API_URL + `/asset/${currenTemplateID}`,
+          submissionData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+  
+        setIsFormSubmitted(true); // Set the flag to true on successful submission
+        console.log("Submitted data:", submissionData);
+        console.log("Response from server:", response.data);
+        if (response.data.success) {
+          showToast('success', 'Added Successfully', 'new asset added successfully')
+          //router.push("/asset-overview");
+        } else {
+          showToast('warn', 'Warning', response.data.message);
+        }
+      } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+          console.error("Error response:", error.response?.data);
+          showToast('error', 'Error', error.response?.data.message);
+        } else {
+          console.error("Error:", error);
+          showToast('error', 'Error', error);
+        }
       }
     }
   };
@@ -328,13 +309,9 @@ const createAssetForm: React.FC = () => {
         typeof property === "object" &&
         property.contentMediaType
       ) {
-        // Check if the file was uploaded during form filling
         if (uploadedFileKeys.includes(key)) {
-          // Exclude the file by resetting the URL
           newFormData[key] = "";
-          // Reset the FileUpload component input element
         } else {
-          // Handle file-related properties separately
           newFormData[key] = null;
         }
       } else {
@@ -346,11 +323,9 @@ const createAssetForm: React.FC = () => {
         }
       }
     });
-
-    console.log(newFormData, "what's in this");
-
     setFormData(newFormData);
     setSelectedRelationsList([]);
+    showToast('success', 'Reset Success', 'Form resetted successfully')
   };
 
   const renderField = (key: string, property: Property) => {
@@ -365,51 +340,51 @@ const createAssetForm: React.FC = () => {
             className={`p-field  ${fieldClass}  flex flex-column `}
             key={key}
           >
-            {  property.title=== "Creation Date" && (
-            <div key={key} className="p-field">
-            <label className="mb-2" htmlFor={key}>
-              {property.title}
-            </label>
-            <br />
-                    <Calendar 
-                    value={value ? new Date(value) : null}
-                    className="p-inputtext-lg mt-2"
-                    style={{ width: "60%", borderRadius:"5px" }}
-                    dateFormat="dd/mm/yy"
-                    onChange={(e) =>{
-                      const selectedDate = String(e.value);
-                      const date = new Date(selectedDate);
-                      const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-                      const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.'); 
-                      handleChange(key, formattedDate)
-                    } }
-                    
-                    />
-                      </div>)}
-                      {  property.title=== "Year of manufacturing" && (
-            <div key={key} className="p-field">
-            <label className="mb-2" htmlFor={key}>
-              {property.title}
-            </label>
-            <br />
-                    <Calendar 
-                    value={value ? new Date(value) : null}
-                    className="p-inputtext-lg mt-2"
-                    style={{ width: "60%", borderRadius:"5px" }}
-                    view="year"
-                    dateFormat="yy"
-                    onChange={(e) =>{
-                      const selectedDate = String(e.value);
-                      const date = new Date(selectedDate);
-                      const options: Intl.DateTimeFormatOptions = { year: 'numeric' };
-                      const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.'); 
-                      handleChange(key, formattedDate)
-                    } }
-                    
-                    />
-                      </div>)}
+            {property.title === "Creation Date" && (
+              <div key={key} className="p-field">
+                <label className="mb-2" htmlFor={key}>
+                  {property.title}
+                </label>
+                <br />
+                <Calendar
+                  value={value ? new Date(value) : null}
+                  className="p-inputtext-lg mt-2"
+                  style={{ width: "60%", borderRadius: "5px" }}
+                  dateFormat="dd/mm/yy"
+                  onChange={(e) => {
+                    const selectedDate = String(e.value);
+                    const date = new Date(selectedDate);
+                    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                    const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.');
+                    handleChange(key, formattedDate)
+                  }}
 
-             {property.title === "Asset Category" && (
+                />
+              </div>)}
+            {property.title === "Year of manufacturing" && (
+              <div key={key} className="p-field">
+                <label className="mb-2" htmlFor={key}>
+                  {property.title}
+                </label>
+                <br />
+                <Calendar
+                  value={value ? new Date(value) : null}
+                  className="p-inputtext-lg mt-2"
+                  style={{ width: "60%", borderRadius: "5px" }}
+                  view="year"
+                  dateFormat="yy"
+                  onChange={(e) => {
+                    const selectedDate = String(e.value);
+                    const date = new Date(selectedDate);
+                    const options: Intl.DateTimeFormatOptions = { year: 'numeric' };
+                    const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.');
+                    handleChange(key, formattedDate)
+                  }}
+
+                />
+              </div>)}
+
+            {property.title === "Asset Category" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
                   {property.title}
@@ -427,7 +402,7 @@ const createAssetForm: React.FC = () => {
                   placeholder={""}
                 />
               </div>
-            )}         
+            )}
             {property.type === "string" && property.title !== "Creation Date" && property.title !== "Asset Category" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
@@ -445,9 +420,15 @@ const createAssetForm: React.FC = () => {
                   style={{ width: "90%" }}
                   placeholder={""}
                 />
+                {property.title === "Product Name" && validateAsset.product_name && 
+                <p className="input-invalid-text">Product Name is required</p>}
+                {property.title === "Asset Manufacturer Name" && validateAsset.asset_manufacturer_name 
+                && <p className="input-invalid-text">Asset Manufacturer Name is required</p>}
+                {property.title === "Serial Number" && validateAsset.asset_serial_number && 
+                 <p className="input-invalid-text">Serial Number is required</p>}
               </div>
             )}
-            {property.type === "number" &&  property.title!== "Year of manufacturing" && (
+            {property.type === "number" && property.title !== "Year of manufacturing" && (
               <div key={key} className="p-field flex flex-column">
                 <label htmlFor={key}>{property.title}</label>
                 <InputNumber
@@ -461,7 +442,9 @@ const createAssetForm: React.FC = () => {
                   readOnly={property.readOnly}
                   placeholder={"0"}
                 />
+
               </div>
+
             )}
             {property.type === "array" && (
               <div key={key} className="p-field">
@@ -519,10 +502,7 @@ const createAssetForm: React.FC = () => {
   };
 
   if (!schema) return <div>Loading...</div>;
-  const handleDialogFormChange = (key: string, value: any) => {
-    setDialogFormData({ ...dialogFormData, [key]: value });
-  };
-
+ 
   const findTemplateId = async (relationType: any) => {
     if (!relationType) {
       console.error("relationType is undefined");
@@ -573,27 +553,23 @@ const createAssetForm: React.FC = () => {
     return matchingTemplate ? matchingTemplate.id : null;
   };
 
-  const showToast = (severity: ToastMessage['severity'], summary:string, message: string) => {
-
+  const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
     toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
-};
+  };
 
   return (
     <BlockUI blocked={loading}>
-      
-      
-        <HorizontalNavbar />
-        {/* <Card> */}
-        <Toast ref={toast} />
-        <div className="" style={{ padding: "1rem 1rem 2rem 4rem", zoom: "80%" }}>
+      <HorizontalNavbar />
+      <Toast ref={toast} />
+      <div className="" style={{ padding: "1rem 1rem 2rem 4rem", zoom: "80%" }}>
         <div>
-          <p className="hover" style={{ fontWeight:"bold", fontSize: "1.8rem", marginTop: "80px" }}>
+          <p className="hover" style={{ fontWeight: "bold", fontSize: "1.8rem", marginTop: "80px" }}>
             Create Asset
           </p>
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form </h5>
         </div>
 
-        <div style={{ }}>
+        <div style={{}}>
           <Card className="border-gray-500 border-1 border-round-lg">
             <form onSubmit={handleSubmit}>
               <div className=" flex p-fluid grid  shadow-lg">
@@ -616,7 +592,7 @@ const createAssetForm: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="p-2 flex justify-content-end align-items-center">
+              <div className="form-btn-container mb-6  flex justify-content-end align-items-center">
                 <Button
                   label="Cancel"
                   severity="danger"

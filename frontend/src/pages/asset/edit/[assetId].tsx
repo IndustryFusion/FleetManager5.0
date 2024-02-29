@@ -231,6 +231,7 @@ const AssetEdit = () => {
       }
     }
     setFileUploadKey((prevKey) => prevKey + 1);
+    showToast('success', 'Reset Success', 'Form resetted successfully')
   };
 
   const handleBlur = (key: string) => {
@@ -479,7 +480,7 @@ const AssetEdit = () => {
           <Card className="border-gray-500 border-1 border-round-lg">
 
             <form
-              className="p-fluid grid flex shadow-lg"
+             
               onSubmit={handleSubmit}
             >
               <div className=" flex p-fluid grid  shadow-lg">
@@ -494,8 +495,7 @@ const AssetEdit = () => {
                   <label style={{ fontSize: "15px", marginTop: "10px" }}> Relations can be added in Factory Manager.</label>
                 </div>
               </div>
-              <div className="p-3 flex justify-content-end align-items-center"
-                style={{ marginLeft: 'calc(100vw - 20%)' }}>
+              <div className="form-btn-container mb-6  flex justify-content-end align-items-center">
                 <Button
                   label="Cancel"
                   severity="danger"
@@ -519,7 +519,8 @@ const AssetEdit = () => {
                   onSubmit={handleSubmit}
                   className="border-none    ml-2 mr-2"
                 />
-                {showStatus && <p className="font-semibold" style={{ paddingTop: '30px', marginLeft: '20px', fontWeight: 'bold', color: '#008000' }}>{status}</p>}
+                {showStatus && <p className="font-semibold"
+                 style={{ paddingTop: '30px', marginLeft: '20px', fontWeight: 'bold', color: '#008000' }}>{status}</p>}
               </div>
             </form>
           </Card>

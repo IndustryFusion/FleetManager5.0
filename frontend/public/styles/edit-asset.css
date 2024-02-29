@@ -31,4 +31,13 @@
     color: #ff0000;
     font-weight: bold;
   }
-  
+  .form-btn-container {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+    bottom: 0.2rem;
+    padding-right: 5rem;
+    z-index: 100;
+    background-color: transparent;
+  }
