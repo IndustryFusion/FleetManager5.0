@@ -335,7 +335,6 @@ export default function Asset() {
     };
 
     const rightToolbarTemplate = () => {
-
         return (
             <>
                 <Button label="Export" icon="pi pi-upload" className="p-button-help bg-purple-305  border-transparent" onClick={exportJsonData} />
@@ -347,7 +346,6 @@ export default function Asset() {
         <div>
             <Toast ref={toast} />
             <HorizontalNavbar />
-
             {/* Applying 'desktop-view' class only when side panel is open and not in mobile view */}
             <div style={mainContentStyle}>
                 <div style={{ ...dataTableStyle, width: dataTableCardWidth }}>
