@@ -150,22 +150,58 @@ export class AssetService {
         const result = {
           "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
           "id": `urn:ngsi-ld:asset:2:${newUrn}`,
-          "type": data.type
+          "type": data.type,
+          templateId: id,
         }
-
-        for (let key in data.properties) {
-          let resultKey = "http://www.industry-fusion.org/schema#" + key;
-          if (key.includes("has")) {
-            let obj = {
-              type: "Relationship",
-              object: data.properties[key]
+        let templateData = await this.templatesService.getTemplateById(id);
+        console.log('data ',data.properties);
+        let statusCount = -1, totalCount = -1;
+        for(let key in templateData[0].properties) {
+          if(data.properties[key]) {
+            let resultKey = "http://www.industry-fusion.org/schema#" + key;
+            if (key.includes("has")) {
+              let obj = {
+                type: "Relationship",
+                object: data.properties[key]
+              }
+              result[resultKey] = obj;
+            } else {
+              result[resultKey] = data.properties[key];
+              statusCount++;
+              totalCount++;
             }
-            result[resultKey] = obj;
           } else {
-            result[resultKey] = data.properties[key];
+            let resultKey = "http://www.industry-fusion.org/schema#" + key;
+            if (key.includes("has")) {
+              let obj = {
+                type: "Relationship",
+                object: ""
+              }
+              result[resultKey] = obj;
+            } else {
+              if(templateData[0].properties[key].type == 'number'){
+                result[resultKey] = 0;
+              } else if (templateData[0].properties[key].type == 'object'){
+                result[resultKey] = {};
+              } else if (templateData[0].properties[key].type == 'array'){
+                result[resultKey] = [];
+              } else {
+                result[resultKey] = '';
+              }
+              
+              totalCount++;
+            }
           }
         }
-        
+        console.log('totalCount ',totalCount);
+        console.log('statusCount ',statusCount);
+        if(statusCount === totalCount) {
+          result["http://www.industry-fusion.org/schema#asset_status"] = "complete"
+        } else {
+          result["http://www.industry-fusion.org/schema#asset_status"] = "incomplete"
+        }
+        console.log('result ',result);
+
         const lastURNVar = { 
           "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
           "last-urn": { "type": "Property", "value": `urn:ngsi-ld:asset:2:${newUrn}`}
