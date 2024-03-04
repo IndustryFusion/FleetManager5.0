@@ -38,6 +38,19 @@ export class AssetService {
         }
       }
       
+      templateData.sort((a, b) => {
+        const idA = a.id;
+        const idB = b.id;
+      
+        if (idA > idB) {
+          return -1; 
+        } else if (idA < idB) {
+          return 1; 
+        } else {
+          return 0; 
+        }
+      });
+      
       return templateData;
     } catch (err) {
       throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
