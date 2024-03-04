@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "primereact/card";
 import "primereact/resources/primereact.min.css";
 import "primeflex/primeflex.css";
@@ -6,12 +6,17 @@ import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import { TabPanel, TabView } from "primereact/tabview";
 import { Asset } from "@/interfaces/assetTypes";
 import { Button } from "primereact/button";
+import axios from "axios";
 interface AssetDetailsCardProps {
-  asset: Asset | null;
-  setShowExtraCard: any;
+  asset?: Asset | null;
+  setShowExtraCard?: any;
+  schema?: any;
 }
 
-export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetailsCardProps) {
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+
+export default function AssetDetailsCard({ asset, setShowExtraCard, schema }: AssetDetailsCardProps) {
+
   const [selectedTab, setSelectedTab] = useState("general");
   const [selectedData, setSelectedData] = useState<{
     [key: string]: { type: string; value: string };
@@ -22,7 +27,27 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
   //   setSelectedData(data);
   // };
 
-  console.log("card details.", asset);
+console.log(schema, "getting schema");
+
+
+ useEffect(() => {
+  const fetchTemplates = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_API_URL}/templates`, {
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+      console.log(response, "asset template response");
+      
+    }catch(error:any){
+      console.error(error)
+    }
+  }
+  fetchTemplates();
+      } ,[]);
+
+ 
 
   const renderGeneralContent = () => {
     return (
@@ -30,8 +55,9 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
         {asset && (
           <div>
             {Object.entries(asset).map(([key, value]) => {
-              if (!key.includes("has")) {
-                
+    
+              
+              if (!key.includes("has")) {              
                 return (
                   <div >
                     <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
@@ -47,6 +73,9 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
                     </ul>
                 </div>
                 );
+              }
+              else{
+                return null;
               }
             })}
           </div>
@@ -69,6 +98,14 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
     );
   };
 
+  const renderParametersContent =()=>{
+
+  }
+
+
+
+
+
   return (
     <div className="mt-1 ml-1">
       <h1 style={{ fontSize: "22px", fontWeight: "bold", marginTop: "1px" }}>
@@ -88,6 +125,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
               <TabView scrollable>
                 <TabPanel header="General" leftIcon="pi pi-list mr-2" > {renderGeneralContent()} </TabPanel>
                 <TabPanel header="Relation" leftIcon="pi pi-link mr-2" > {renderRelationsContent()} </TabPanel>
+                <TabPanel header="Parameters" leftIcon="pi pi-link mr-2" > {renderParametersContent()} </TabPanel>
               </TabView>
             </div>
           </Card>

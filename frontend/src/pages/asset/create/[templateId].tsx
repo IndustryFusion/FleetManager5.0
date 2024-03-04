@@ -15,6 +15,7 @@ import { Property, Schema, RelationItem, DynamicFormSchema, FileLoadingState } f
 import { BlockUI } from 'primereact/blockui';
 import Cookies from "js-cookie";
 import { Calendar } from "primereact/calendar";
+import AssetDetailsCard from "@/components/asset-view";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 // Initialize the state with a more specific type
@@ -68,6 +69,10 @@ const createAssetForm: React.FC = () => {
     setSelectedRelationsList(updatedList);
     console.log("updatedlist", updatedList);
   }, [selectedRelations]);
+
+  const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
+    toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
+  };
 
   useEffect(() => {
     const fetchData = async (templateId: string | any) => {
@@ -143,6 +148,9 @@ const createAssetForm: React.FC = () => {
       }
     }
   }, [router.isReady]);
+
+  console.log(schema?.properties, "what's the schema here");
+  
 
   const validateInput = (key: string) => {
     const assetKeys = Object.keys(validateAsset);
@@ -268,7 +276,7 @@ const createAssetForm: React.FC = () => {
         console.log("Response from server:", response.data);
         if (response.data.success) {
           showToast('success', 'Added Successfully', 'new asset added successfully')
-          //router.push("/asset-overview");
+      router.push("/asset-overview");
         } else {
           showToast('warn', 'Warning', response.data.message);
         }
@@ -553,9 +561,7 @@ const createAssetForm: React.FC = () => {
     return matchingTemplate ? matchingTemplate.id : null;
   };
 
-  const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
-    toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
-  };
+
 
   console.log(schema.properties , "what's all property");
 
@@ -570,7 +576,6 @@ const createAssetForm: React.FC = () => {
           </p>
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form </h5>
         </div>
-
         <div style={{}}>
           <Card className="border-gray-500 border-1 border-round-lg">
             <form onSubmit={handleSubmit}>
@@ -580,7 +585,6 @@ const createAssetForm: React.FC = () => {
                     renderField(key, schema.properties[key])
                   )}
               </div>
-
               <div className="flex">
                 <div className="p-field col-8 mt-3 flex flex-column">
                   <label className="relations-label">Relations</label>
@@ -622,7 +626,8 @@ const createAssetForm: React.FC = () => {
             </form>
           </Card>
         </div>
-      </div>
+      </div> 
+      <AssetDetailsCard schema={schema?.properties} />
     </BlockUI>
   );
 };

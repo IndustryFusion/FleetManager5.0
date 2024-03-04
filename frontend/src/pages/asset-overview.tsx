@@ -7,7 +7,7 @@ import { Dialog } from "primereact/dialog";
 import AssetDetailsCard from "../components/asset-view";
 import HorizontalNavbar from "../components/horizontal-navbar";
 import Footer from "../components/footer";
-import { Toast,ToastMessage } from "primereact/toast";
+import { Toast, ToastMessage } from "primereact/toast";
 import { CiClock2 } from "react-icons/ci";
 import { GrView } from "react-icons/gr";
 import { ContextMenu } from 'primereact/contextmenu';
@@ -17,23 +17,16 @@ import { CSSProperties } from "react";
 import { Asset, AssetRow } from "@/interfaces/assetTypes";
 import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
-import { Tag } from 'primereact/tag';
 import Cookies from "js-cookie";
-import { Sidebar } from "primereact/sidebar";
-
-interface ErrorBoundaryProps {
-    children: ReactNode;
-}
-
-interface ErrorBoundaryState {
-    hasError: boolean;
-}
+import AssetTable from "@/components/asset-table";
+import { fetchAssets } from "@/utility/asset";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
-export default function Asset() {
+const Asset: React.FC = () => {
 
     const [selectedProduct, setSelectedProduct] = useState<Asset | null>(null);
+    const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<string>("4");
     const [assets, setAssets] = useState<Asset[]>([]);
     const [showExtraCard, setShowExtraCard] = useState<boolean>(false);
     const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -43,86 +36,23 @@ export default function Asset() {
     const [globalFilterValue, setGlobalFilter] = useState<string>('');
     const [searchedAssets, setSearchedAssets] = useState<Asset[]>([]);
     const [selectedAssets, setSelectedAssets] = useState<Asset | null>(null);
+    const [selectedAssetDetails, setSelectedAssetDetails] = useState<Asset | null>(null);
     const toast = useRef<Toast>(null);
     const cm = useRef(null);
     const router = useRouter();
-
-    const [selectedAssetDetails, setSelectedAssetDetails] = useState<Asset | null>(null);
     const dataTableCardWidth = showExtraCard ? "50%" : "100%";
 
-    // Resize handler for responsiveness
+    //Resize handler for responsiveness
     const handleResize = () => {
         setIsMobile(window.innerWidth <= 768);
     };
-
-    const onGlobalFilterChange = (e: any) => {
-        const value = e.target.value;
-        setGlobalFilter(value);
-    };
-
-
-    // Function to map the backend data to the Asset structure
-    const mapBackendDataToAsset = (backendData: any[]): Asset[] => {
-        console.log("Before Formatting", backendData);
-
-        return backendData.map((item: any) => {
-            const newItem: any = {};
-            Object.keys(item).forEach((key) => {
-                if (key.includes("http://www.industry-fusion.org/schema#")) {
-                    const newKey = key.replace(
-                        "http://www.industry-fusion.org/schema#",
-                        ""
-                    );
-
-                    if (item[key].type === "Property") {
-                        newItem[newKey] = item[key].value
-                    }
-                    else if (item[key].type === "Relationship") {
-                        newItem[newKey] = item[key].object
-                    }
-                }
-                else {
-                    if (key == "type" || key == "id") {
-                        newItem[key] = item[key]
-                    }
-                }
-            });
-            return newItem;
-        });
-    };
-
-    const fetchAsset = async () => {
-        try {
-            const response = await axios.get(BACKEND_API_URL + "/asset", {
-                headers: {
-                    "Content-Type": "application/ld+json",
-                    "Accept": "application/ld+json"
-                }
-            });
-
-            const responseData = response.data;
-            const mappedData = mapBackendDataToAsset(responseData);
-            console.log("Formatted data:: ", mappedData);
-            setAssets(mappedData);
-            
-        } catch (error:any) {
-            if (axios.isAxiosError(error)) {
-              console.error("Error response:", error.response?.data.message);
-              showToast('error', 'Error','Fetching assets');
-            } else {
-              console.error("Error:", error);
-              showToast('error', 'Error', error);
-            }
-          }
-    };
-
     const handleRowDoubleClick = (rowData: Asset) => {
         localStorage.setItem("currentAssetId", rowData.id);
         // router.push("/asset/asset-specific");
     };
-
-
     const onRowSelect = (rowData: Asset) => {
+        console.log(rowData, "what's in this");
+        
         setShowExtraCard(true);
         setSelectedProduct(rowData);
         setSelectedAssets(rowData);
@@ -131,12 +61,12 @@ export default function Asset() {
         }
         console.log("Opening side panel, DataTablePanelSize set to 30");
     };
-
+    const handleRowsPerPageChange = (event: any) => {
+        setSelectedRowsPerPage(event.target.value);
+    };
     const handleCreateAssetClick = () => {
         router.push("/templates"); // This will navigate to the /templates
     };
-
-
     const handleDeleteAsset = async (assetId: string) => {
         try {
             const response = await axios.delete(
@@ -157,21 +87,47 @@ export default function Asset() {
             } else {
                 console.error("Failed to delete asset");
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (axios.isAxiosError(error)) {
-              console.error("Error response:", error.response?.data.message);
-              showToast('error', 'Error','Deleting asset');
+                console.error("Error response:", error.response?.data.message);
+                showToast('error', 'Error', 'Deleting asset');
             } else {
-              console.error("Error:", error);
-              showToast('error', 'Error', error);
+                console.error("Error:", error);
+                showToast('error', 'Error', error);
             }
-          }
+        }
     };
+    const fetchAsset = async () => {
+        try {
+            const response = await fetchAssets();
+            console.log(response, "assets data");
+            
+            setAssets(response || []);
 
-    // Adding resize event listener
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                console.error("Error response:", error.response?.data.message);
+                showToast('error', 'Error', 'Fetching assets');
+            } else {
+                console.error("Error:", error);
+                showToast('error', 'Error', error);
+            }
+        }
+    }
+    
+    console.log(showExtraCard , "what's the boolean val");
+    
+
+    //Adding resize event listener
     useEffect(() => {
         if (Cookies.get("login_flag") === "false") { router.push("/login"); }
         else {
+            const storedValue = localStorage.getItem('selectedRowsPerPage');
+
+            if (storedValue) {
+                setSelectedRowsPerPage(parseInt(storedValue, 10));
+            }
+
             fetchAsset();
             handleResize(); // Call on mount for client-side rendering
             window.addEventListener("resize", handleResize); // Add resize listener
@@ -180,13 +136,39 @@ export default function Asset() {
     }, []);
 
     useEffect(() => {
-        const filteredAssets = globalFilterValue.length > 0 ? assets.filter(ele =>
-            ele?.product_name.toLowerCase().includes(globalFilterValue.toLowerCase())
-        ) : assets;
+        localStorage.setItem('selectedRowsPerPage', String(selectedRowsPerPage));
 
-        // Update the searchedAssets state
-        setSearchedAssets(filteredAssets);
-    }, [globalFilterValue, assets]);
+        const paginator = document.querySelector('.p-paginator');
+        if (paginator) {
+            // Check if the select element already exists
+            let selectElement = paginator.querySelector('select');
+            if (!selectElement) {
+                // If not, create and insert the select element
+                selectElement = document.createElement('select');
+                selectElement.value = selectedRowsPerPage;
+                selectElement.onchange = handleRowsPerPageChange;
+
+                selectElement.classList.add('paginator-dropdown-row');
+
+                const options = ['4', '10', '20'].map(value => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = value;
+                    if (value === selectedRowsPerPage) option.setAttribute('selected', '');
+                    return option;
+                });
+
+                options.forEach(option => selectElement.appendChild(option));
+                paginator.insertBefore(selectElement, paginator.firstChild);
+            } else {
+                // If the select element already exists, just update its value
+                selectElement.value = selectedRowsPerPage;
+            }
+        }
+    }, [selectedRowsPerPage, handleRowsPerPageChange]);
+
+
+    
 
     const containerStyle: CSSProperties = {
         display: "flex",
@@ -261,7 +243,6 @@ export default function Asset() {
                 {rowData?.status_type === 'complete' ?
                     <Button label={"complete"} severity="success" text disabled className="mr-2 mt-1" icon="pi pi-check-circle"> </Button>
                     :
-
                     <Button label={"incomplete"} severity="danger" text disabled className="mr-2 mt-1" icon="pi pi-exclamation-circle"> </Button>
                 }
             </div>
@@ -274,11 +255,10 @@ export default function Asset() {
         const assetType = rowData?.type?.split('/')[5];
         return <>{assetType}</>;
     };
-    const showToast = (severity: ToastMessage['severity'], summary:string, message: string) => {
+
+    const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
         toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
     };
-
-
     const exportJsonData = async () => {
         let newExportdata = []
         console.log(searchedAssets);
@@ -311,6 +291,25 @@ export default function Asset() {
         link.click();
     };
 
+    console.log(searchedAssets, "what's the array");
+    
+   
+
+    const onFilter=(e: React.ChangeEvent<HTMLInputElement>)=>{
+        const value = e.target.value;
+        setGlobalFilter(value);
+
+        if (value.length === 0) {
+            fetchAsset();
+        }
+        else{
+            const filteredAssets = value.length > 0 ? [...assets].filter(ele =>
+                ele?.product_name.toLowerCase().includes(globalFilterValue.toLowerCase())
+            ) : assets;
+            setAssets(filteredAssets);  
+        }
+    }
+
     const leftToolbarTemplate = () => {
         return (
             <div className="flex flex-wrap gap-2">
@@ -326,7 +325,7 @@ export default function Asset() {
                     <i className="pi pi-search" />
                     <InputText
                         value={globalFilterValue}
-                        onChange={onGlobalFilterChange}
+                        onChange={onFilter}
                         placeholder="Search..."
                         className="searchbar-input" style={{ borderRadius: "10px" }} />
                 </span>
@@ -342,6 +341,8 @@ export default function Asset() {
         )
     };
 
+
+
     return (
         <div>
             <Toast ref={toast} />
@@ -351,7 +352,6 @@ export default function Asset() {
                 <div style={{ ...dataTableStyle, width: dataTableCardWidth }}>
                     {/* <Card className="" style={{ height: "auto", overflow: "auto" }}> */}
                     <div className="flex align-center justify-content-between mt-6  p-2" >
-
                         <div>
                             <p className="hover" style={{ fontWeight: "bold", fontSize: "1.4rem", marginTop: "20px", marginLeft: "20px" }}>
                                 Asset Overview
@@ -363,11 +363,10 @@ export default function Asset() {
                         <Toolbar start={leftToolbarTemplate} center={centerContent} end={rightToolbarTemplate}
                             style={{ marginBottom: "-20px", marginTop: "-15px", backgroundColor: "#a7e3f985", borderColor: "white" }}></Toolbar>
                         <DataTable
-                            value={searchedAssets || []} // Use the fetched assets as the data source
+                            value={assets} // Use the fetched assets as the data source
                             paginator
                             selectionMode="multiple"
-                            rows={4}
-                            rowsPerPageOptions={[4, 10, 20]}
+                            rows={Number(selectedRowsPerPage)}
                             paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                             currentPageReportTemplate="{first} to {last} of {totalRecords}"
                             onRowDoubleClick={(e) => handleRowDoubleClick(e.data as Asset)}
@@ -408,22 +407,18 @@ export default function Asset() {
                                 style={{ width: "150px" }}
                             >
                             </Column>
-
                             <Column
                                 field="asset_manufacturer_name"
                                 header="Manufacturer"
                                 body={manufacturerDataTemplate}
                                 style={{ width: "120px" }}
                             ></Column>
-
                             <Column
                                 field="manufacturing_year"
                                 header="Manufacturing Year"
                                 sortable
                                 style={{ width: "100px" }}
                             ></Column>
-
-
                             <Column
                                 field="asset_serial_number"
                                 header="Serial Number"
@@ -434,7 +429,6 @@ export default function Asset() {
                                 sortable
                             >
                             </Column>
-
                             <Column field="voltage_type"
                                 header="Voltage Type"
                             ></Column>
@@ -457,27 +451,17 @@ export default function Asset() {
                             >
                             </Column>
                         </DataTable>
-
                     </div>
-                    <Dialog
-                        header="Edit Asset"
-                        visible={isEditDialogVisible}
-                        onHide={() => setIsEditDialogVisible(false)}
-                        style={{ width: "90vw" }}
-                    >
-                        {/* {editingAsset && renderEditForm()} */}
-                    </Dialog>
                 </div>
-
                 {showExtraCard &&
-                    <div style={{ width: "30%" }}>
-
-                        <AssetDetailsCard asset={selectedProduct} setShowExtraCard={setShowExtraCard} />
-
-                    </div>
-                }
+                <div style={{ width: "30%" }}>
+                    <AssetDetailsCard asset={selectedProduct} setShowExtraCard={setShowExtraCard} />
+                </div>
+            }
             </div>
             <Footer />
         </div>
     );
 }
+
+export default Asset;

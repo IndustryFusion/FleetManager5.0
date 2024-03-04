@@ -193,6 +193,7 @@ const AssetEdit = () => {
           console.log("response ", response);
           if (response.data.success) {
             showToast('success', 'Edited Successfully', 'data updated succesfully');
+            router.back();
           } else {
             showToast('warn', 'Warning', response.data.message);
           }
