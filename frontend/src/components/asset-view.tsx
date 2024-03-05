@@ -62,10 +62,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
       <div>
         {asset && (
           <div>
-            {Object.entries(asset).map(([key, value]) => {
-
-               
-               
+            {Object.entries(asset).map(([key, value]) => {    
               if (!key.includes("has") && typeof value !== "number") {
                 return (
                   <div >
@@ -77,7 +74,6 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
                         <div className="flex justify-content-end flex-wrap">
                           <label className="text-900">{value}</label>
                         </div>
-
                       </li>
                     </ul>
                   </div>
@@ -107,16 +103,12 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
     );
   };
 
-  // console.log(templateObject, "what's in this object");
- 
-  
-
 
   const renderParametersContent = () => {
     console.log(templateKeys, "all temmplate keys");
     let obj:any = {}
     for (let key of templateKeys) {
-      if (asset?.hasOwnProperty(key) && templateObject[key].type ===  "number" ) {
+      if (asset?.hasOwnProperty(key) && templateObject[key].type ===  "number" && key !== "manufacturing_year" ) {
         obj[key] = {
           title:templateObject[key].title,
           unit:templateObject[key].unit   
@@ -142,20 +134,11 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
                         </div>
                         </li>
                         </ul>
-            
-        </>
+                    </>
       )
-
-        
-
-      )
-     
+      )    
     )
-
   }
-
-
-
 
 
   return (
