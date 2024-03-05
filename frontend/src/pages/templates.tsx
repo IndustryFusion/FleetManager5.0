@@ -10,6 +10,7 @@ import { BlockUI } from "primereact/blockui";
 import "../../public/styles/templates.css";
 import Cookies from "js-cookie";
 import { Toast, ToastMessage } from "primereact/toast";
+import { InputText } from "primereact/inputtext";
 
 // Template data type
 type Template = {
@@ -17,12 +18,16 @@ type Template = {
   title: string;
   description: string;
 };
+const initialTemplates: Template[] = [];
+
 const cardTitleStyle = { fontSize: "17px", color: "rgb(0, 51, 0)", padding: "1rem, 2rem, 1rem, 2rem" };
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const GetListTemplate: React.FC = () => {
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [templates, setTemplates] = useState<Template[]>(initialTemplates);
+  const [filteredTemplates, setFilteredTemplates] = useState<Template[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [searchTemplate, setSearchTemplate] = useState("");
   const router = useRouter();
   const toast = useRef<Toast>(null);
 
@@ -32,6 +37,9 @@ const GetListTemplate: React.FC = () => {
     router.push(`/asset/create/${id}`);
   };
 
+  const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
+    toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
+  };
   // Fetching templates from the backend
   //${process.env.APP_URL}
   useEffect(() => {
@@ -63,17 +71,13 @@ const GetListTemplate: React.FC = () => {
     else { fetchTemplates(); }
   }, []);
 
-  const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
-    toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
-  };
-
   // Function to render templates grid based on filter
   const renderGrid = (filter: string) => {
     if (!Array.isArray(templates)) {
       return <div>Loading...</div>; // or any other loading/error state
     }
 
-    const filteredTemplates = templates.filter(
+    const filteredTemplate = filteredTemplates || templates.filter(
       (template) =>
         filter === "All" ||
         template.title.toLowerCase().includes(filter.toLowerCase())
@@ -84,7 +88,7 @@ const GetListTemplate: React.FC = () => {
 
     return (
       <div className="grid">
-        {filteredTemplates.map((template) => (
+        {filteredTemplate.map((template) => (
           <div key={template.id} className={`${columnClass}`}>
             <Card
               title={<span style={cardTitleStyle}>{template.title}</span>}
@@ -117,20 +121,49 @@ const GetListTemplate: React.FC = () => {
     </span>
   );
 
+  //search functionality
+  const onFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTemplate(value);
+
+    if (value.length === 0) {
+      setFilteredTemplates(null)
+    } else {
+      const filtered = value.length > 0 ?
+        templates?.filter((template) => {
+          return (
+            template?.title.toLowerCase().includes(value.toLowerCase())
+          )
+        }) : templates;
+      setFilteredTemplates(filtered)
+    }
+
+  }
 
   return (
     <BlockUI blocked={loading}>
       <HorizontalNavbar />
       <Toast ref={toast} />
       <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "85%" }}>
-        <div>
+        <div className="flex gap-5">
           <p className="hover" style={{ fontWeight: "bold", fontSize: "1.5rem", marginTop: "80px" }}>
             Asset Templates
           </p>
+          <div style={{ marginTop: "5rem" }}>
+            <span className="p-input-icon-left">
+              <i className="pi pi-search" />
+              <InputText
+                style={{ width: "30rem" }}
+                placeholder="Search by templates"
+                type="search"
+                value={searchTemplate}
+                onChange={onFilter}
+              />
+            </span>
+          </div>
         </div>
         <div className="mt-4" style={{ width: "100%" }}>
           <div className="flex flex-column align-items-left">
-
             <Card className="border-gray-800 border-1 border-round-lg">
               <TabView className="-ml-3 -mt-5 ">
                 <TabPanel header={allTabHeader}>{renderGrid("All")}</TabPanel>
@@ -150,6 +183,7 @@ const GetListTemplate: React.FC = () => {
       </div>
     </BlockUI>
   );
+
 };
 
 export default GetListTemplate;

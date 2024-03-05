@@ -193,6 +193,7 @@ const AssetEdit = () => {
           console.log("response ", response);
           if (response.data.success) {
             showToast('success', 'Edited Successfully', 'data updated succesfully');
+            router.back();
           } else {
             showToast('warn', 'Warning', response.data.message);
           }
@@ -393,7 +394,9 @@ const AssetEdit = () => {
             )}
             {property.type === "number" && property.title !== "Year of manufacturing" && (
               <div key={key} className="p-field flex flex-column">
-                <label htmlFor={key}>{property.title}</label>
+                <label htmlFor={key}>{property.title}
+                <span className="ml-1 text-gray-500">({property.unit})</span>
+                </label>
                 <InputNumber
                   id={key}
                   value={value || ""}
