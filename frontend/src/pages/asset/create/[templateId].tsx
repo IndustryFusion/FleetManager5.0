@@ -230,7 +230,7 @@ const createAssetForm: React.FC = () => {
     event.preventDefault();
     // Extract type, title, and description
     const { type, title, description, ...properties } = formData;
-
+    properties['asset_category'] = assetCategory;
     // Structure the data for submission
     const submissionData = {
       type,

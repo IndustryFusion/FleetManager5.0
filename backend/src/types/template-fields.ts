@@ -9,7 +9,10 @@ export interface IcsField {
       | 'datetime'
       | 'file'
       | 'image'
-      | 'select';
+      | 'select'
+      | 'string'
+      | 'object'
+      | 'array';
     required?: boolean;
     unit?: 'mm' | 'kg' | 'm' | 's' | 'min' | 'h' | 'd' | '°C' | '°F' | '°K';
     description?: string;
