@@ -627,7 +627,7 @@ const createAssetForm: React.FC = () => {
           </Card>
         </div>
       </div> 
-      <AssetDetailsCard schema={schema?.properties} />
+
     </BlockUI>
   );
 };

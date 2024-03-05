@@ -29,6 +29,7 @@ export interface Asset {
     documentation: string;
     ce_marking: string;
     hasObject: string;
+    templateId: string;
     // Include any other properties that are common across both uses
   }
 

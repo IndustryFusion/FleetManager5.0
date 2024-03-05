@@ -122,7 +122,10 @@ body {
 .p-datatable .p-datatable-tbody>tr>td {
   font-size: 14px;
   text-align: left;
-  height: 200px;
+ 
+}
+.p-datatable .p-datatable-tbody>tr{
+  height: 120px;
 }
 
 .p-datatable .p-datatable-thead>tr>th {

@@ -25,8 +25,10 @@ const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
                     }
                 }
                 else {
-                    if (key == "type" || key == "id") {
+                    if (key == "type" || key == "id" ) {
                         newItem[key] = item[key]
+                    }else if(key=="templateId" ){
+                        newItem[key] = item[key].value;
                     }
                 }
             });

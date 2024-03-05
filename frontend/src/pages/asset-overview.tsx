@@ -37,6 +37,7 @@ const Asset: React.FC = () => {
     const [searchedAssets, setSearchedAssets] = useState<Asset[]>([]);
     const [selectedAssets, setSelectedAssets] = useState<Asset | null>(null);
     const [selectedAssetDetails, setSelectedAssetDetails] = useState<Asset | null>(null);
+    const [currentPage, setCurrentPage] = useState(0);
     const toast = useRef<Toast>(null);
     const cm = useRef(null);
     const router = useRouter();
@@ -49,10 +50,11 @@ const Asset: React.FC = () => {
     const handleRowDoubleClick = (rowData: Asset) => {
         localStorage.setItem("currentAssetId", rowData.id);
         // router.push("/asset/asset-specific");
+        setCurrentPage(Math.floor(e.first / Number(selectedRowsPerPage)));
     };
     const onRowSelect = (rowData: Asset) => {
         console.log(rowData, "what's in this");
-        
+
         setShowExtraCard(true);
         setSelectedProduct(rowData);
         setSelectedAssets(rowData);
@@ -63,7 +65,15 @@ const Asset: React.FC = () => {
     };
     const handleRowsPerPageChange = (event: any) => {
         setSelectedRowsPerPage(event.target.value);
+       
+
     };
+  
+
+       console.log(currentPage , "the page number values");
+       
+
+
     const handleCreateAssetClick = () => {
         router.push("/templates"); // This will navigate to the /templates
     };
@@ -101,7 +111,7 @@ const Asset: React.FC = () => {
         try {
             const response = await fetchAssets();
             console.log(response, "assets data");
-            
+
             setAssets(response || []);
 
         } catch (error: any) {
@@ -114,9 +124,9 @@ const Asset: React.FC = () => {
             }
         }
     }
-    
-    console.log(showExtraCard , "what's the boolean val");
-    
+
+    console.log(showExtraCard, "what's the boolean val");
+
 
     //Adding resize event listener
     useEffect(() => {
@@ -168,7 +178,7 @@ const Asset: React.FC = () => {
     }, [selectedRowsPerPage, handleRowsPerPageChange]);
 
 
-    
+
 
     const containerStyle: CSSProperties = {
         display: "flex",
@@ -292,21 +302,21 @@ const Asset: React.FC = () => {
     };
 
     console.log(searchedAssets, "what's the array");
-    
-   
 
-    const onFilter=(e: React.ChangeEvent<HTMLInputElement>)=>{
+
+
+    const onFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setGlobalFilter(value);
 
         if (value.length === 0) {
             fetchAsset();
         }
-        else{
+        else {
             const filteredAssets = value.length > 0 ? [...assets].filter(ele =>
                 ele?.product_name.toLowerCase().includes(globalFilterValue.toLowerCase())
             ) : assets;
-            setAssets(filteredAssets);  
+            setAssets(filteredAssets);
         }
     }
 
@@ -364,12 +374,18 @@ const Asset: React.FC = () => {
                             style={{ marginBottom: "-20px", marginTop: "-15px", backgroundColor: "#a7e3f985", borderColor: "white" }}></Toolbar>
                         <DataTable
                             value={assets} // Use the fetched assets as the data source
+                            currentPage={currentPage}
+                            first={currentPage * Number(selectedRowsPerPage)}
                             paginator
                             selectionMode="multiple"
                             rows={Number(selectedRowsPerPage)}
                             paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                             currentPageReportTemplate="{first} to {last} of {totalRecords}"
-                            onRowDoubleClick={(e) => handleRowDoubleClick(e.data as Asset)}
+                            onRowDoubleClick={(e) => {
+                                
+                                handleRowDoubleClick(e.data as Asset)
+                            }
+                            }
                             className="custom-row-padding"
                             tableStyle={{ width: '100%', overflow: 'auto', maxHeight: 'calc(100vh - 300px)' }}
                             scrollable
@@ -378,12 +394,14 @@ const Asset: React.FC = () => {
                             onRowClick={(e) => {
                                 setProductDetails(true)
                                 onRowSelect(e.data as Asset)
+                                setCurrentPage(Math.floor(e.first / Number(selectedRowsPerPage)));
                             }
                             }
                             selection={selectedAssets}
                             onSelectionChange={(e) => {
                                 if (Array.isArray(e.value)) { setSelectedAssets(e.value); }
                             }}
+                            
                         >
                             <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
                             <Column
@@ -454,10 +472,10 @@ const Asset: React.FC = () => {
                     </div>
                 </div>
                 {showExtraCard &&
-                <div style={{ width: "30%" }}>
-                    <AssetDetailsCard asset={selectedProduct} setShowExtraCard={setShowExtraCard} />
-                </div>
-            }
+                    <div style={{ width: "30%" }}>
+                        <AssetDetailsCard asset={selectedProduct} setShowExtraCard={setShowExtraCard} />
+                    </div>
+                }
             </div>
             <Footer />
         </div>

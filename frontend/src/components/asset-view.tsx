@@ -7,47 +7,55 @@ import { TabPanel, TabView } from "primereact/tabview";
 import { Asset } from "@/interfaces/assetTypes";
 import { Button } from "primereact/button";
 import axios from "axios";
+import { log } from "util";
 interface AssetDetailsCardProps {
-  asset?: Asset | null;
-  setShowExtraCard?: any;
-  schema?: any;
+  asset: Asset | null;
+  setShowExtraCard: any;
+  templateId?: any;
 }
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
-export default function AssetDetailsCard({ asset, setShowExtraCard, schema }: AssetDetailsCardProps) {
+export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetailsCardProps) {
 
   const [selectedTab, setSelectedTab] = useState("general");
   const [selectedData, setSelectedData] = useState<{
     [key: string]: { type: string; value: string };
   } | null>(null);
-
+  const [templateKeys, setTemplateKeys] = useState<string[]>([]);
+  const [templateObject, setTemplateObject] = useState<any>({});
   // This is a sample function that handles row selection, you should adapt it to your actual use case.
   // const handleRowSelect = (data: any) => {
   //   setSelectedData(data);
   // };
 
-console.log(schema, "getting schema");
+  console.log(asset, "what's in asset");
 
 
- useEffect(() => {
-  const fetchTemplates = async () => {
-    try {
-      const response = await axios.get(`${BACKEND_API_URL}/templates`, {
-        headers: {
-          "Content-Type": "application/json",
-        }
-      })
-      console.log(response, "asset template response");
-      
-    }catch(error:any){
-      console.error(error)
+
+  useEffect(() => {
+    const fetchSchema = async () => {
+
+      try {
+        const response = await axios.get(BACKEND_API_URL + `/templates/${asset?.templateId}`, {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
+        console.log(response, "what's tenplate response");
+        console.log(response.data?.[0]?.properties, "what are all properties");
+        console.log(Object.keys(response.data?.[0]?.properties), "all keys",);
+        setTemplateKeys(Object.keys(response.data?.[0]?.properties));
+
+        setTemplateObject(response.data?.[0]?.properties)
+      } catch (error: any) {
+        console.error(error)
+      }
     }
-  }
-  fetchTemplates();
-      } ,[]);
+    fetchSchema();
+  }, []);
 
- 
+
 
   const renderGeneralContent = () => {
     return (
@@ -55,9 +63,10 @@ console.log(schema, "getting schema");
         {asset && (
           <div>
             {Object.entries(asset).map(([key, value]) => {
-    
-              
-              if (!key.includes("has")) {              
+
+               
+               
+              if (!key.includes("has") && typeof value !== "number") {
                 return (
                   <div >
                     <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
@@ -71,10 +80,10 @@ console.log(schema, "getting schema");
 
                       </li>
                     </ul>
-                </div>
+                  </div>
                 );
               }
-              else{
+              else {
                 return null;
               }
             })}
@@ -98,7 +107,50 @@ console.log(schema, "getting schema");
     );
   };
 
-  const renderParametersContent =()=>{
+  // console.log(templateObject, "what's in this object");
+ 
+  
+
+
+  const renderParametersContent = () => {
+    console.log(templateKeys, "all temmplate keys");
+    let obj:any = {}
+    for (let key of templateKeys) {
+      if (asset?.hasOwnProperty(key) && templateObject[key].type ===  "number" ) {
+        obj[key] = {
+          title:templateObject[key].title,
+          unit:templateObject[key].unit   
+        }
+      } else {
+        continue;
+      }
+    }
+    console.log(obj, "whta's the obj");
+    
+    return(
+      Object.keys(obj).map( template => (
+        <>
+         <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
+                      <li className=" py-2 px-2 border-top-1 border-300 ">
+                        <div className="flex justify-content-start flex-wrap">
+                          <label className="text-900  font-medium" >{obj[template].title}
+                        </label>
+                        <span className="ml-1 text-gray-500">{obj[template].unit}</span>
+                        </div>
+                        <div className="flex justify-content-end flex-wrap">
+                          <label className="text-900 ">{asset[template]}</label>
+                        </div>
+                        </li>
+                        </ul>
+            
+        </>
+      )
+
+        
+
+      )
+     
+    )
 
   }
 
@@ -115,13 +167,13 @@ console.log(schema, "getting schema");
         <div style={{ overflow: 'auto', maxHeight: 'calc(100vh - 80px)' }}>
           <Card className="border-gray-800 border-1 border-round-lg">
             <div className="card">
-            <Button
-          icon="pi pi-times" 
-          text
-          className="p-button-rounded p-button-secondary p-button-sm"
-          onClick={() => setShowExtraCard(false)}
-          style={{marginLeft: '90%', marginTop:"-50px", fontSize:"2rem"}}
-        />
+              <Button
+                icon="pi pi-times"
+                text
+                className="p-button-rounded p-button-secondary p-button-sm"
+                onClick={() => setShowExtraCard(false)}
+                style={{ marginLeft: '90%', marginTop: "-50px", fontSize: "2rem" }}
+              />
               <TabView scrollable>
                 <TabPanel header="General" leftIcon="pi pi-list mr-2" > {renderGeneralContent()} </TabPanel>
                 <TabPanel header="Relation" leftIcon="pi pi-link mr-2" > {renderRelationsContent()} </TabPanel>
