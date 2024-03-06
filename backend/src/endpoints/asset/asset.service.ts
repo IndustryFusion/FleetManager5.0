@@ -195,11 +195,11 @@ export class AssetService {
               if(templateData[0].properties[key].type == 'number'){
                 result[resultKey] = 0;
               } else if (templateData[0].properties[key].type == 'object'){
-                result[resultKey] = {};
+                result[resultKey] = 'NULL';
               } else if (templateData[0].properties[key].type == 'array'){
-                result[resultKey] = [];
+                result[resultKey] = ['NULL'];
               } else {
-                result[resultKey] = '';
+                result[resultKey] = 'NULL';
               }
               
               totalCount++;
