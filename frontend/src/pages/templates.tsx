@@ -146,7 +146,7 @@ const GetListTemplate: React.FC = () => {
       <Toast ref={toast} />
       <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "85%" }}>
         <div className="flex gap-5">
-          <p className="hover" style={{ fontWeight: "bold", fontSize: "1.5rem", marginTop: "80px" }}>
+          <p className="hover" style={{ fontWeight: "bold", fontSize: "2rem", marginTop: "80px" }}>
             Asset Templates
           </p>
           <div style={{ marginTop: "5rem", marginLeft: "30rem"}}>
@@ -156,7 +156,7 @@ const GetListTemplate: React.FC = () => {
                         value={searchTemplate}
                         onChange={onFilter}
                         placeholder="Search by templates"
-                        className="searchbar-input" style={{ borderRadius: "10px", width:"30rem" }} 
+                        style={{ borderRadius: "10px", width:"30rem", height:"3.5rem" }} 
                         type="search"
                       />    
             </span>
