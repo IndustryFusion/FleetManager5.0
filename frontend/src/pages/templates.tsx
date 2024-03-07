@@ -149,16 +149,16 @@ const GetListTemplate: React.FC = () => {
           <p className="hover" style={{ fontWeight: "bold", fontSize: "1.5rem", marginTop: "80px" }}>
             Asset Templates
           </p>
-          <div style={{ marginTop: "5rem" }}>
-            <span className="p-input-icon-left">
-              <i className="pi pi-search" />
-              <InputText
-                style={{ width: "30rem" }}
-                placeholder="Search by templates"
-                type="search"
-                value={searchTemplate}
-                onChange={onFilter}
-              />
+          <div style={{ marginTop: "5rem", marginLeft: "30rem"}}>
+          <span className="p-input-icon-left" style={{width:"30rem" }}>
+                    <i className="pi pi-search" />
+                    <InputText
+                        value={searchTemplate}
+                        onChange={onFilter}
+                        placeholder="Search by templates"
+                        className="searchbar-input" style={{ borderRadius: "10px", width:"30rem" }} 
+                        type="search"
+                      />    
             </span>
           </div>
         </div>
