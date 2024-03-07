@@ -150,13 +150,13 @@ const GetListTemplate: React.FC = () => {
             Asset Templates
           </p>
           <div style={{ marginTop: "5rem", marginLeft: "30rem"}}>
-          <span className="p-input-icon-left" style={{width:"30rem" }}>
+          <span className="p-input-icon-left" style={{width:"30rem", height:"3.5rem" }}>
                     <i className="pi pi-search" />
                     <InputText
                         value={searchTemplate}
                         onChange={onFilter}
                         placeholder="Search by templates"
-                        style={{ borderRadius: "10px", width:"30rem", height:"3.5rem" }} 
+                        style={{ borderRadius: "10px", width:"30rem", height:"3.5rem", marginLeft:"2rem"}} 
                         type="search"
                       />    
             </span>
