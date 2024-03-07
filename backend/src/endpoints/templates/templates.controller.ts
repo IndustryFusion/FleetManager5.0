@@ -1,4 +1,4 @@
-import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Param, NotFoundException, Query } from '@nestjs/common';
 import { TemplatesService } from './templates.service';
 import { TemplateDto } from './dto/template.dto';
 import { TemplateDescriptionDto } from './dto/templateDescription.dto';
@@ -11,6 +11,15 @@ export class TemplatesController {
   getTemplates(): Promise<TemplateDto[]> {
     try {
       return this.templatesService.getTemplates();
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  @Get('/template-name')
+  getTemplateByName(@Query('name') name: string): Promise<TemplateDescriptionDto[]> {
+    try {
+      return this.templatesService.getTemplateByName(name);
     } catch (err) {
       throw new NotFoundException();
     }

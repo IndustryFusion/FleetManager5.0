@@ -163,8 +163,7 @@ export class AssetService {
         const result = {
           "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
           "id": `urn:ngsi-ld:asset:2:${newUrn}`,
-          "type": data.type,
-          templateId: id,
+          "type": data.type
         }
         let templateData = await this.templatesService.getTemplateById(id);
         console.log('data ',data.properties);
