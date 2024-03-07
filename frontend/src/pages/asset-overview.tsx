@@ -14,7 +14,7 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { InputText } from "primereact/inputtext";
 import "../../public/styles/asset-overview.css";
 import { CSSProperties } from "react";
-import { Asset, AssetRow } from "@/interfaces/assetTypes";
+import { Asset } from "@/interfaces/assetTypes";
 import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
 import Cookies from "js-cookie";
@@ -247,10 +247,11 @@ const Asset: React.FC = () => {
         )
     }
 
-    const statusBodyTemplate = (rowData: AssetRow): React.ReactNode => {
+    const statusBodyTemplate = (rowData: Asset): React.ReactNode => {
+        console.log("rowValue", rowData);
         return (
             <div>
-                {rowData?.status_type === 'complete' ?
+                {rowData?.asset_status === 'complete' ?
                     <Button label={"complete"} severity="success" text disabled className="mr-2 mt-1" icon="pi pi-check-circle"> </Button>
                     :
                     <Button label={"incomplete"} severity="danger" text disabled className="mr-2 mt-1" icon="pi pi-exclamation-circle"> </Button>

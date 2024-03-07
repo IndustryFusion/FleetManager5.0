@@ -168,7 +168,7 @@ export class AssetService {
         }
         let templateData = await this.templatesService.getTemplateById(id);
         console.log('data ',data.properties);
-        let statusCount = -1, totalCount = -1;
+        let statusCount = -1, totalCount = -2;
         for(let key in templateData[0].properties) {
           if(data.properties[key]) {
             let resultKey = "http://www.industry-fusion.org/schema#" + key;
