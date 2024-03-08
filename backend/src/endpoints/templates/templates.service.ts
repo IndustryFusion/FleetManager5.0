@@ -114,4 +114,54 @@ export class TemplatesService {
       );
     }
   }
+
+  async getTemplateByName(name: string): Promise<TemplateDescriptionDto[]> {
+    try {
+      console.log('name ',name);
+      let splitArr = name.split(/[\s!-,]+/);
+      console.log('splitArr ',splitArr);
+      splitArr[0] = splitArr[0].toLowerCase();
+      for (let i = 1; i < splitArr.length; i++) {
+        splitArr[i] = splitArr[i].charAt(0).toUpperCase() + splitArr[i].slice(1);
+      }
+
+      // Join the modified words back together
+      let finalName = splitArr.join('');
+      finalName = `${finalName}_schema.json`;
+      console.log('finalName ',finalName);
+      const url = `${this.baseUrl}/${finalName}`;
+      console.log('url ',url);
+      const templateDescriptions: TemplateDescriptionDto[] = [];
+
+      const headers = {
+        Authorization: 'Bearer ' + this.token,
+        'Content-Type': 'application/json',
+      };
+      const response = await axios.get(url, {
+        headers,
+      });
+
+      if (response.data.encoding === 'base64' && response.data.content) {
+        // Decode Base64 content to UTF-8 string
+        const decodedContent = Buffer.from(
+          response.data.content,
+          'base64',
+        ).toString('utf-8');
+        const parsedContent = JSON.parse(decodedContent);
+        templateDescriptions.push({
+          type: parsedContent.$id,
+          title: parsedContent.title,
+          description: parsedContent.description,
+          properties: parsedContent.properties,
+        });
+      }
+
+      console.log('templateDescriptions ', templateDescriptions);
+      return templateDescriptions;
+    } catch (err) {
+      throw new NotFoundException(
+        `Failed to fetch repository data: ${err.message}`,
+      );
+    }
+  }
 }
