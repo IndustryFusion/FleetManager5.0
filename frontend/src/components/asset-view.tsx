@@ -24,29 +24,24 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
   } | null>(null);
   const [templateKeys, setTemplateKeys] = useState<string[]>([]);
   const [templateObject, setTemplateObject] = useState<any>({});
-  // This is a sample function that handles row selection, you should adapt it to your actual use case.
-  // const handleRowSelect = (data: any) => {
-  //   setSelectedData(data);
-  // };
-
-  console.log(asset, "what's in asset");
-
 
 
   useEffect(() => {
     const fetchSchema = async () => {
 
       try {
-        const response = await axios.get(BACKEND_API_URL + `/templates/${asset?.templateId}`, {
+        const response = await axios.get(BACKEND_API_URL + `/templates/template-name/`, {
+          params: {
+            name: asset?.asset_category
+          },
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json"
           }
         })
-        console.log(response, "what's tenplate response");
-        console.log(response.data?.[0]?.properties, "what are all properties");
-        console.log(Object.keys(response.data?.[0]?.properties), "all keys",);
-        setTemplateKeys(Object.keys(response.data?.[0]?.properties));
 
+        // console.log(response.data?.[0]?.properties, "what's tenplate response");
+        setTemplateKeys(Object.keys(response.data?.[0]?.properties));
         setTemplateObject(response.data?.[0]?.properties)
       } catch (error: any) {
         console.error(error)
@@ -62,7 +57,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
       <div>
         {asset && (
           <div>
-            {Object.entries(asset).map(([key, value]) => {    
+            {Object.entries(asset).map(([key, value]) => {
               if (!key.includes("has") && typeof value !== "number") {
                 return (
                   <div >
@@ -103,40 +98,38 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
     );
   };
 
-
   const renderParametersContent = () => {
-    console.log(templateKeys, "all temmplate keys");
-    let obj:any = {}
+    let newTemplate: any = {}
     for (let key of templateKeys) {
-      if (asset?.hasOwnProperty(key) && templateObject[key].type ===  "number" && key !== "manufacturing_year" ) {
-        obj[key] = {
-          title:templateObject[key].title,
-          unit:templateObject[key].unit   
+      if (asset?.hasOwnProperty(key) && templateObject[key].type === "number" && key !== "manufacturing_year") {
+        newTemplate[key] = {
+          title: templateObject[key].title,
+          unit: templateObject[key].unit
         }
       } else {
         continue;
       }
     }
-    console.log(obj, "whta's the obj");
-    
-    return(
-      Object.keys(obj).map( template => (
+    console.log(newTemplate, "whta's the parameters");
+
+    return (
+      Object.keys(newTemplate).map(template => (
         <>
-         <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
-                      <li className=" py-2 px-2 border-top-1 border-300 ">
-                        <div className="flex justify-content-start flex-wrap">
-                          <label className="text-900  font-medium" >{obj[template].title}
-                        </label>
-                        <span className="ml-1 text-gray-500">{obj[template].unit}</span>
-                        </div>
-                        <div className="flex justify-content-end flex-wrap">
-                          <label className="text-900 ">{asset[template]}</label>
-                        </div>
-                        </li>
-                        </ul>
-                    </>
+          <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
+            <li className=" py-2 px-2 border-top-1 border-300 ">
+              <div className="flex justify-content-start flex-wrap">
+                <label className="text-900  font-medium" >{newTemplate[template].title}
+                </label>
+                <span className="ml-1 text-gray-500">{newTemplate[template].unit}</span>
+              </div>
+              <div className="flex justify-content-end flex-wrap">
+                <label className="text-900 ">{asset[template]}</label>
+              </div>
+            </li>
+          </ul>
+        </>
       )
-      )    
+      )
     )
   }
 
