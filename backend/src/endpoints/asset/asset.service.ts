@@ -145,13 +145,13 @@ export class AssetService {
         let getLastUrn = await axios.get(fetchLastUrnUrl, {
           headers
         });
-        getLastUrn = getLastUrn.data;
+        const lastUrn = getLastUrn.data;
         let newUrn = '';
         
         try {
-          for (let key in getLastUrn) {
+          for (let key in lastUrn) {
             if (key.includes('last-urn')) {
-              newUrn = getLastUrn[key]['value'].split(':')[4];
+              newUrn = lastUrn[key]['value'].split(':')[4];
               newUrn = (parseInt(newUrn, 10) + 1).toString().padStart(newUrn.length, "0");
             }
           }
@@ -168,13 +168,14 @@ export class AssetService {
         let templateData = await this.templatesService.getTemplateById(id);
         console.log('data ',data.properties);
         let statusCount = -1, totalCount = -2;
-        for(let key in templateData[0].properties) {
+        const templateProperties = templateData[0].properties;
+        for(let key in templateProperties) {
           if(data.properties[key]) {
             let resultKey = "http://www.industry-fusion.org/schema#" + key;
             if (key.includes("has")) {
               let obj = {
                 type: "Relationship",
-                class: key["class"],
+                class: templateProperties[key]["class"],
                 object: data.properties[key]
               }
               result[resultKey] = obj;
@@ -191,17 +192,17 @@ export class AssetService {
             if (key.includes("has")) {
               let obj = {
                 type: "Relationship",
-                class: templateData[0].properties[key]["class"],
+                class: templateProperties[key]["class"],
                 object: ""
               }
               result[resultKey] = obj;
             } else {
               let emptyValue;
-              if(templateData[0].properties[key].type == 'number'){
+              if(templateProperties[key].type == 'number'){
                 emptyValue = 0;
-              } else if (templateData[0].properties[key].type == 'object'){
+              } else if (templateProperties[key].type == 'object'){
                 emptyValue = 'NULL';
-              } else if (templateData[0].properties[key].type == 'array'){
+              } else if (templateProperties[key].type == 'array'){
                 emptyValue = ['NULL'];
               } else {
                 emptyValue = 'NULL';
