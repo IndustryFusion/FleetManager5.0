@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card } from "primereact/card";
 import "primereact/resources/primereact.min.css";
 import "primeflex/primeflex.css";
@@ -8,6 +8,7 @@ import { Asset } from "@/interfaces/assetTypes";
 import { Button } from "primereact/button";
 import axios from "axios";
 import { log } from "util";
+import { Toast, ToastMessage } from "primereact/toast";
 interface AssetDetailsCardProps {
   asset: Asset | null;
   setShowExtraCard: any;
@@ -24,11 +25,15 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
   } | null>(null);
   const [templateKeys, setTemplateKeys] = useState<string[]>([]);
   const [templateObject, setTemplateObject] = useState<any>({});
+  const toast = useRef<any>(null);
 
+  const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
+    toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
+};
+ 
 
   useEffect(() => {
     const fetchSchema = async () => {
-
       try {
         const response = await axios.get(BACKEND_API_URL + `/templates/template-name/`, {
           params: {
@@ -44,12 +49,15 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
         setTemplateKeys(Object.keys(response.data?.[0]?.properties));
         setTemplateObject(response.data?.[0]?.properties)
       } catch (error: any) {
-        console.error(error)
+        console.error(error);
+        showToast('error', "Error", 'Fetching template schema');
       }
     }
     fetchSchema();
   }, []);
 
+
+ 
 
 
   const renderGeneralContent = () => {
@@ -136,6 +144,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
   return (
     <div className="mt-1 ml-1">
+       <Toast ref={toast} />
       <h1 style={{ fontSize: "22px", fontWeight: "bold", marginTop: "1px" }}>
         Asset Details
       </h1>
