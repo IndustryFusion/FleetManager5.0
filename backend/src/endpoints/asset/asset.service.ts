@@ -281,6 +281,10 @@ export class AssetService {
         'Content-Type': 'application/ld+json',
         Accept: 'application/ld+json',
       };
+       /*each property field should have this structure  {
+                type: "Property",
+                value: "585"
+              };*/
       let flag = true;
       if(data["http://www.industry-fusion.org/schema#product_name"]) {
         let productName = data["http://www.industry-fusion.org/schema#product_name"];
