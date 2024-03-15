@@ -140,7 +140,7 @@ export class AssetService {
       let assetData = await axios.get(checkUrl, { headers });
 
       if(!assetData.data.length) {
-        //fetch the last urn from scorpio and create a new urn
+        // fetch the last urn from scorpio and create a new urn
         const fetchLastUrnUrl = `${this.scorpioUrl}/urn:ngsi-ld:id-store`;
         let getLastUrn = await axios.get(fetchLastUrnUrl, {
           headers
@@ -174,11 +174,15 @@ export class AssetService {
             if (key.includes("has")) {
               let obj = {
                 type: "Relationship",
+                class: key["class"],
                 object: data.properties[key]
               }
               result[resultKey] = obj;
             } else {
-              result[resultKey] = data.properties[key];
+              result[resultKey] = {
+                type: "Property",
+                value: data.properties[key]
+              };
               statusCount++;
               totalCount++;
             }
@@ -187,19 +191,25 @@ export class AssetService {
             if (key.includes("has")) {
               let obj = {
                 type: "Relationship",
+                class: templateData[0].properties[key]["class"],
                 object: ""
               }
               result[resultKey] = obj;
             } else {
+              let emptyValue;
               if(templateData[0].properties[key].type == 'number'){
-                result[resultKey] = 0;
+                emptyValue = 0;
               } else if (templateData[0].properties[key].type == 'object'){
-                result[resultKey] = 'NULL';
+                emptyValue = 'NULL';
               } else if (templateData[0].properties[key].type == 'array'){
-                result[resultKey] = ['NULL'];
+                emptyValue = ['NULL'];
               } else {
-                result[resultKey] = 'NULL';
+                emptyValue = 'NULL';
               }
+              result[resultKey] = {
+                type: "Property",
+                value: emptyValue
+              };
               
               totalCount++;
             }
@@ -207,11 +217,17 @@ export class AssetService {
         }
         console.log('totalCount ',totalCount);
         console.log('statusCount ',statusCount);
+        let statusValue;
         if(statusCount === totalCount) {
-          result["http://www.industry-fusion.org/schema#asset_status"] = "complete"
+          statusValue = "complete"
         } else {
-          result["http://www.industry-fusion.org/schema#asset_status"] = "incomplete"
+          statusValue = "incomplete"
         }
+        result["http://www.industry-fusion.org/schema#asset_status"]= {
+          type: "Property",
+          value: statusValue
+        }
+
         console.log('result ',result);
 
         const lastURNVar = { 
