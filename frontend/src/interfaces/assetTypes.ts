@@ -12,6 +12,7 @@ export interface Asset {
     asset_manufacturer_name: string;
     asset_serial_number: string;
     asset_status?: string;
+    asset_category: string;
     height: number;
     width: number;
     length: number;
