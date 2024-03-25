@@ -18,7 +18,7 @@ import { Messages } from 'primereact/messages';
 import Cookies from "js-cookie";
 import { Toast, ToastMessage } from "primereact/toast";
 import { Calendar } from "primereact/calendar";
-
+import moment from "moment";
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const AssetEdit = () => {
@@ -152,10 +152,15 @@ const AssetEdit = () => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     console.log(updatedData, "what's the edited data");
+   
+    const { product_name, asset_manufacturer_name, asset_serial_number,current_date } = updatedData;
+    
+    console.log(product_name, asset_manufacturer_name,current_date, "its updatedData");
+     
+   
 
-    const { product_name, asset_manufacturer_name, asset_serial_number } = updatedData;
+   
 
-    console.log(product_name, asset_manufacturer_name, "its updatedData");
 
     const assetKeys = Object.keys(validateAsset);
     for (let assetKey of assetKeys) {
@@ -177,6 +182,10 @@ const AssetEdit = () => {
           };
           return acc;
         }, {});
+        payload[`http://www.industry-fusion.org/schema#creation_date`] = {
+          type: "Property",
+          value: moment().format('DD.MM.YYYY HH:mm:ss')
+        };
         console.log("payload ", payload);
         try {
           const response = await axios.patch(
@@ -329,22 +338,20 @@ const AssetEdit = () => {
                   {property.title}
                 </label>
                 <br />
-                <Calendar
-                  value={value ? new Date(value) : null}
-                  className="p-inputtext-lg mt-2"
-                  style={{ width: "60%", borderRadius: "5px" }}
-                  dateFormat="dd/mm/yy"
-                  onChange={(e) => {
-                    const selectedDate = String(e.value);
-                    const date = new Date(selectedDate);
-                    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-                    const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.');
-                    handleChange(key, formattedDate)
-                  }}
-
-                />
+                   <InputText
+                    
+                      id={key}
+                      className="p-inputtext-lg mt-2"
+                      style={{ width: "90%", borderRadius: "5px" }}
+                      value={moment().format('DD.MM.YYYY HH:mm:ss')}
+                      onChange={(e) => handleChange(key, e.target.value)}
+                      onFocus={() => handleFocus(key)}
+                      onBlur={() => handleBlur(key)}
+                      readOnly={property.readOnly}
+                    
+                     />
               </div>)}
-            {property.title === "Year of manufacturing" && (
+             {property.title === "Year of manufacturing" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
                   {property.title}

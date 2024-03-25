@@ -16,7 +16,7 @@ import { BlockUI } from 'primereact/blockui';
 import Cookies from "js-cookie";
 import { Calendar } from "primereact/calendar";
 import AssetDetailsCard from "@/components/asset-view";
-
+import moment from "moment";
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 // Initialize the state with a more specific type
 
@@ -230,7 +230,9 @@ const createAssetForm: React.FC = () => {
     event.preventDefault();
     // Extract type, title, and description
     const { type, title, description, ...properties } = formData;
+    const currentDate = moment().format('DD.MM.YYYY HH:mm:ss'); 
     properties['asset_category'] = assetCategory;
+    properties['creation_date'] =  currentDate;
     // Structure the data for submission
     const submissionData = {
       type,
@@ -353,21 +355,21 @@ const createAssetForm: React.FC = () => {
                   {property.title}
                 </label>
                 <br />
-                <Calendar
-                  value={value ? new Date(value) : null}
-                  className="p-inputtext-lg mt-2"
-                  style={{ width: "60%", borderRadius: "5px" }}
-                  dateFormat="dd/mm/yy"
-                  onChange={(e) => {
-                    const selectedDate = String(e.value);
-                    const date = new Date(selectedDate);
-                    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-                    const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.');
-                    handleChange(key, formattedDate)
-                  }}
+                     <InputText
+                    
+                      id={key}
+                      className="p-inputtext-lg mt-2"
+                      style={{ width: "90%", borderRadius: "5px" }}
+                      value={moment().format('DD.MM.YYYY HH:mm:ss')}
+                      onChange={(e) => handleChange(key, e.target.value)}
+                      onFocus={() => handleFocus(key)}
+                      onBlur={() => handleBlur(key)}
+                      readOnly={property.readOnly}
+                    
+                     />
 
-                />
               </div>)}
+
             {property.title === "Year of manufacturing" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>

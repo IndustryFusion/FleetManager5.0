@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TemplateDescriptionDto } from '../templates/dto/templateDescription.dto';
 import { TemplatesService } from '../templates/templates.service';
 import axios from 'axios';
+import moment from "moment";
 
 @Injectable()
 export class AssetService {
@@ -37,10 +38,10 @@ export class AssetService {
           });
         }
       }
-      
+
       templateData.sort((a, b) => {
-        const idA = a.id;
-        const idB = b.id;
+        const idA = a['http://www.industry-fusion.org/schema#creation_date']?.value;
+        const idB = b['http://www.industry-fusion.org/schema#creation_date']?.value;
       
         if (idA > idB) {
           return -1; 
@@ -50,7 +51,7 @@ export class AssetService {
           return 0; 
         }
       });
-      
+      console.log("templatae data ", templateData)
       return templateData;
     } catch (err) {
       throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
