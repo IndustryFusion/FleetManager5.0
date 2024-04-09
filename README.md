@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FIndustryFusion%2FFleetManager5.0.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FIndustryFusion%2FFleetManager5.0?ref=badge_shield&issueType=license)
+
 ## Fleet Manager 5.0 (For Asset Producers)
 
 The Fleet Manager 5.0 IFF stack is responsible for creation of assets using standardized templates. The Fleet Manager created assets can then be shared to IFF Factory Manager using 'export as a file' in demo version or using dataspace manager in upcoming commercial version.
