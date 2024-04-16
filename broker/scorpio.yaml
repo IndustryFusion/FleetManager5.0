@@ -16,7 +16,7 @@ spec:
         component: scorpio
     spec:
       containers:
-      - image: scorpiobroker/scorpio:scorpio-aaio_1.0.0
+      - image: scorpiobroker/all-in-one-runner:java-kafka-latest
         imagePullPolicy: ""
         name: scorpio
         ports:
