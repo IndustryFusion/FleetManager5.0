@@ -2,12 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TemplateDescriptionDto } from '../templates/dto/templateDescription.dto';
 import { TemplatesService } from '../templates/templates.service';
 import axios from 'axios';
-import moment from "moment";
 
 @Injectable()
 export class AssetService {
   constructor(private readonly templatesService: TemplatesService) { }
   private readonly scorpioUrl = process.env.SCORPIO_URL;
+  private readonly icidUrl = process.env.ICID_ORIGIN;
 
   /**
   * Retrieves all assets from scorpio.
@@ -51,7 +51,7 @@ export class AssetService {
           return 0; 
         }
       });
-      console.log("templatae data ", templateData)
+      
       return templateData;
     } catch (err) {
       throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
@@ -139,120 +139,106 @@ export class AssetService {
 
       let checkUrl = `${this.scorpioUrl}?type=${data.type}&q=http://www.industry-fusion.org/schema%23product_name==%22${data.properties['product_name']}%22`;
       let assetData = await axios.get(checkUrl, { headers });
-
       if(!assetData.data.length) {
-        // fetch the last urn from scorpio and create a new urn
-        const fetchLastUrnUrl = `${this.scorpioUrl}/urn:ngsi-ld:id-store`;
-        let getLastUrn = await axios.get(fetchLastUrnUrl, {
-          headers
-        });
-        const lastUrn = getLastUrn.data;
-        let newUrn = '';
-        
-        try {
-          for (let key in lastUrn) {
-            if (key.includes('last-urn')) {
-              newUrn = lastUrn[key]['value'].split(':')[4];
-              newUrn = (parseInt(newUrn, 10) + 1).toString().padStart(newUrn.length, "0");
-            }
+        // fetch the urn id from iffric
+        let iffricResponse = await axios.post(`${this.icidUrl}/asset`,{
+          type: "asset",
+          machine_serial_number: data.properties["asset_serial_number"]
+        },{
+          headers: {
+            'Content-Type': 'application/json'
           }
-        }
-        catch (e) {
-          console.log(e);
-        }
-
-        const result = {
-          "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
-          "id": `urn:ngsi-ld:asset:2:${newUrn}`,
-          "type": data.type
-        }
-        let templateData = await this.templatesService.getTemplateById(id);
-        console.log('data ',data.properties);
-        let statusCount = -1, totalCount = -2;
-        const templateProperties = templateData[0].properties;
-        for(let key in templateProperties) {
-          if(data.properties[key]) {
-            let resultKey = "http://www.industry-fusion.org/schema#" + key;
-            if (key.includes("has")) {
-              let obj = {
-                type: "Relationship",
-                class: templateProperties[key]["class"],
-                object: data.properties[key]
-              }
-              result[resultKey] = obj;
-            } else {
-              result[resultKey] = {
-                type: "Property",
-                value: data.properties[key]
-              };
-              statusCount++;
-              totalCount++;
-            }
-          } else {
-            let resultKey = "http://www.industry-fusion.org/schema#" + key;
-            if (key.includes("has")) {
-              let obj = {
-                type: "Relationship",
-                class: templateProperties[key]["class"],
-                object: ""
-              }
-              result[resultKey] = obj;
-            } else {
-              let emptyValue;
-              if(templateProperties[key].type == 'number'){
-                emptyValue = 0;
-              } else if (templateProperties[key].type == 'object'){
-                emptyValue = 'NULL';
-              } else if (templateProperties[key].type == 'array'){
-                emptyValue = ['NULL'];
+        })
+        console.log('iffricResponse ',iffricResponse.data);
+        if(iffricResponse.data.status == '201'){
+          const result = {
+            "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+            "id": iffricResponse.data.urn_id,
+            "type": data.type
+          }
+          let templateData = await this.templatesService.getTemplateById(id);
+          console.log('data ',data.properties);
+          let statusCount = -1, totalCount = -2;
+          const templateProperties = templateData[0].properties;
+          for(let key in templateProperties) {
+            if(data.properties[key]) {
+              let resultKey = "http://www.industry-fusion.org/schema#" + key;
+              if (key.includes("has")) {
+                // let obj = {
+                //   type: "Relationship",
+                //   class: templateProperties[key]["class"],
+                //   object: data.properties[key]
+                // }
+                // result[resultKey] = obj;
+                continue;
               } else {
-                emptyValue = 'NULL';
+                result[resultKey] = {
+                  type: "Property",
+                  value: data.properties[key]
+                };
+                statusCount++;
+                totalCount++;
               }
-              result[resultKey] = {
-                type: "Property",
-                value: emptyValue
-              };
-              
-              totalCount++;
+            } else {
+              let resultKey = "http://www.industry-fusion.org/schema#" + key;
+              if (key.includes("has")) {
+                // let obj = {
+                //   type: "Relationship",
+                //   class: templateProperties[key]["class"],
+                //   object: ""
+                // }
+                // result[resultKey] = obj;
+                continue;
+              } else {
+                let emptyValue;
+                if(templateProperties[key].type == 'number'){
+                  emptyValue = 0;
+                } else if (templateProperties[key].type == 'object'){
+                  emptyValue = 'NULL';
+                } else if (templateProperties[key].type == 'array'){
+                  emptyValue = ['NULL'];
+                } else {
+                  emptyValue = 'NULL';
+                }
+                result[resultKey] = {
+                  type: "Property",
+                  value: emptyValue
+                };
+                
+                totalCount++;
+              }
             }
           }
-        }
-        console.log('totalCount ',totalCount);
-        console.log('statusCount ',statusCount);
-        let statusValue;
-        if(statusCount === totalCount) {
-          statusValue = "complete"
-        } else {
-          statusValue = "incomplete"
-        }
-        result["http://www.industry-fusion.org/schema#asset_status"]= {
-          type: "Property",
-          value: statusValue
-        }
-
-        console.log('result ',result);
-
-        const lastURNVar = { 
-          "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
-          "last-urn": { "type": "Property", "value": `urn:ngsi-ld:asset:2:${newUrn}`}
-        };
-
-        const updateLastUrnUrl = `${this.scorpioUrl}/urn:ngsi-ld:id-store/attrs`;
-        try{
-          await axios.patch(updateLastUrnUrl, lastURNVar, { headers });
-        }
-        catch(e){
-          console.log(e)
-        }
-
-        //store the template data to scorpio
-        const response = await axios.post(this.scorpioUrl, result, { headers });
-        console.log('response ', response.statusText);
-        return {
-          id: result.id,
-          status: response.status,
-          statusText: response.statusText,
-          data: response.data
+          console.log('totalCount ',totalCount);
+          console.log('statusCount ',statusCount);
+          let statusValue: string;
+          if(statusCount === totalCount) {
+            statusValue = "complete"
+          } else {
+            statusValue = "incomplete"
+          }
+          result["http://www.industry-fusion.org/schema#asset_status"]= {
+            type: "Property",
+            value: statusValue
+          }
+  
+          console.log('result ',result);
+  
+          //store the template data to scorpio
+          const response = await axios.post(this.scorpioUrl, result, { headers });
+          console.log('response ', response.statusText);
+          return {
+            id: result.id,
+            status: response.status,
+            statusText: response.statusText,
+            data: response.data
+          }
+        }else{
+          return {
+            "success": false,
+            "status": iffricResponse.data.status,
+            "message": iffricResponse.data.message
+          }
         }
       } else{
         return {
@@ -282,10 +268,6 @@ export class AssetService {
         'Content-Type': 'application/ld+json',
         Accept: 'application/ld+json',
       };
-       /*each property field should have this structure  {
-                type: "Property",
-                value: "585"
-              };*/
       let flag = true;
       if(data["http://www.industry-fusion.org/schema#product_name"]) {
         let productName = data["http://www.industry-fusion.org/schema#product_name"];
