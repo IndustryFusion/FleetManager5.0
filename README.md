@@ -6,13 +6,13 @@ The Fleet Manager 5.0 IFF stack is responsible for creation of assets using stan
 
 For the demo setup, the Fleet uses GitHub API to fetch these templates. The GitHub token and url must be defined for this in .env of backend folder. For commercial version, this demo templates will be replaced by IFRIC standard templates with ECLASS classification. The demo templates for this application is present in this GitHub (repo) [https://github.com/IndustryFusion/templates]. The Fleet Manager is also responsible for tagging the assets to a unique ID (For demo it is a hardcoded series, for commercial this ID will be gven by IFRIC service.)
 
-Fleet Manager uses FIWARE Scorpio Broker for storing objects. The scorio broker must be seperately deployed and the API must be connected to Fleet Manager using .env file. For scorpio broker, Kubernetes deployment and configuration files for development is in the folder 'broker'. This must be deployed on a Kubernetes node and expose the url to the Fleet Manager.
+Fleet Manager uses FIWARE Scorpio Broker for storing objects. The scorpio broker must be seperately deployed and the API must be connected to Fleet Manager using .env file. For scorpio broker, Kubernetes deployment and configuration files for development is in the folder 'broker'. This must be deployed on a Kubernetes node and expose the url to the Fleet Manager.
 
 After deploying Scorpio broker (scorpio, kafka, postgres), create the below asset for demo ID series. Note: In value, urn:ngsi-ld:asset:2:XXX, the XXX range is your choice. The IDs will then start from XXX+1.
 
 ```bash
 
-curl --location 'http://85.215.171.58:9090/ngsi-ld/v1/entities/' \
+curl --location 'http://<scorpio-url>/ngsi-ld/v1/entities/' \
 --header 'Content-Type: application/ld+json' \
 --header 'Accept: application/ld+json' \
 --data-raw '{
@@ -21,7 +21,7 @@ curl --location 'http://85.215.171.58:9090/ngsi-ld/v1/entities/' \
     "type": "urn-holder",
     "last-urn": {
         "type": "Property",
-        "value": "urn:ngsi-ld:asset:2:300"
+        "value": "urn:ngsi-ld:asset:2:000"
     }
 }'
 
