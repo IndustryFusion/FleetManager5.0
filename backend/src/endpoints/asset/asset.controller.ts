@@ -31,7 +31,6 @@ export class AssetController {
   @Get(':id')
   async getTemplateDataById(@Param('id') id: string, @Req() req: Request) {
     try {
-      console.log('inside asset data func');
       return await this.assetService.getTemplateDataById(id);
     } catch (err) {
       throw new NotFoundException();

@@ -103,7 +103,6 @@ export class TemplatesService {
           });
         }
 
-        console.log('templateDescriptions ', templateDescriptions);
         return templateDescriptions;
       } else {
         throw new NotFoundException('Path is undefined');
@@ -156,7 +155,6 @@ export class TemplatesService {
         });
       }
 
-      console.log('templateDescriptions ', templateDescriptions);
       return templateDescriptions;
     } catch (err) {
       throw new NotFoundException(
