@@ -8,6 +8,7 @@ export class AssetService {
   constructor(private readonly templatesService: TemplatesService) { }
   private readonly scorpioUrl = process.env.SCORPIO_URL;
   private readonly icidUrl = process.env.ICID_ORIGIN;
+  private readonly assetCode = process.env.ASSETS_DEFAULT_CODE;
 
   /**
   * Retrieves all assets from scorpio.
@@ -141,19 +142,23 @@ export class AssetService {
       let assetData = await axios.get(checkUrl, { headers });
       if(!assetData.data.length) {
         // fetch the urn id from iffric
-        let iffricResponse = await axios.post(`${this.icidUrl}/asset`,{
-          type: "asset",
+        let assetCodeArr = this.assetCode.split('-');
+        let ifricResponse = await axios.post(`${this.icidUrl}/asset`,{
+          dataspace_code: assetCodeArr[0],
+          region_code: assetCodeArr[1],
+          object_type_code: assetCodeArr[2],
+          object_sub_type_code: assetCodeArr[3],
           machine_serial_number: data.properties["asset_serial_number"]
         },{
           headers: {
             'Content-Type': 'application/json'
           }
         })
-        console.log('iffricResponse ',iffricResponse.data);
-        if(iffricResponse.data.status == '201'){
+        console.log('ifricResponse ',ifricResponse.data);
+        if(ifricResponse.data.status == '201'){
           const result = {
             "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
-            "id": iffricResponse.data.urn_id,
+            "id": ifricResponse.data.urn_id,
             "type": data.type
           }
           let templateData = await this.templatesService.getTemplateById(id);
@@ -236,8 +241,8 @@ export class AssetService {
         }else{
           return {
             "success": false,
-            "status": iffricResponse.data.status,
-            "message": iffricResponse.data.message
+            "status": ifricResponse.data.status,
+            "message": ifricResponse.data.message
           }
         }
       } else{
