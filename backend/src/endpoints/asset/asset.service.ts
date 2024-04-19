@@ -169,12 +169,11 @@ export class AssetService {
             if(data.properties[key]) {
               let resultKey = "http://www.industry-fusion.org/schema#" + key;
               if (key.includes("has")) {
-                // let obj = {
-                //   type: "Relationship",
-                //   class: templateProperties[key]["class"],
-                //   object: data.properties[key]
-                // }
-                // result[resultKey] = obj;
+                let obj = {
+                  type: "Relationship",
+                  object: data.properties[key]
+                }
+                result[resultKey] = obj;
                 continue;
               } else {
                 result[resultKey] = {
@@ -187,12 +186,11 @@ export class AssetService {
             } else {
               let resultKey = "http://www.industry-fusion.org/schema#" + key;
               if (key.includes("has")) {
-                // let obj = {
-                //   type: "Relationship",
-                //   class: templateProperties[key]["class"],
-                //   object: ""
-                // }
-                // result[resultKey] = obj;
+                let obj = {
+                  type: "Relationship",
+                  object: ""
+                }
+                result[resultKey] = obj;
                 continue;
               } else {
                 let emptyValue;
