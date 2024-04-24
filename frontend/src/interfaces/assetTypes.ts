@@ -50,6 +50,7 @@ export interface Asset {
     contentMediaType?: string;
     unit?: string;
     relationship: any;
+    default?: string;
   }
   
   export interface Schema {
