@@ -417,17 +417,36 @@ const createAssetForm: React.FC = () => {
                   {property.title}
                 </label>
                 <br />
-                <InputText
-                  id={key}
-                  value={value || ""}
-                  onChange={(e) => handleChange(key, e.target.value)}
-                  onFocus={() => handleFocus(key)}
-                  onBlur={() => handleBlur(key)}
-                  readOnly={property.readOnly}
-                  className="p-inputtext-lg mt-2"
-                  style={{ width: "90%" }}
-                  placeholder={""}
-                />
+                {
+                  property.title === 'IFRIC Template ID' ?
+                  (
+                    <InputText
+                      id={key}
+                      value={property.default || ""}
+                      onChange={(e) => handleChange(key, e.target.value)}
+                      onFocus={() => handleFocus(key)}
+                      onBlur={() => handleBlur(key)}
+                      readOnly={true}
+                      className="p-inputtext-lg mt-2"
+                      style={{ width: "90%" }}
+                      placeholder={""}
+                    />
+                  )
+                  : (
+                    <InputText
+                      id={key}
+                      value={value || ""}
+                      onChange={(e) => handleChange(key, e.target.value)}
+                      onFocus={() => handleFocus(key)}
+                      onBlur={() => handleBlur(key)}
+                      readOnly={property.readOnly}
+                      className="p-inputtext-lg mt-2"
+                      style={{ width: "90%" }}
+                      placeholder={""}
+                    />
+                  )
+                }
+                
                 {property.title === "Product Name" && validateAsset.product_name && 
                 <p className="input-invalid-text">Product Name is required</p>}
                 {property.title === "Asset Manufacturer Name" && validateAsset.asset_manufacturer_name 

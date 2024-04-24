@@ -48,6 +48,7 @@ export class TemplatesService {
               id: Buffer.from(parsedContent.$id).toString('base64'),
               title: parsedContent.title,
               description: parsedContent.description,
+              templateId: parsedContent.properties['ifric_template_id'].default
             });
           }
         }

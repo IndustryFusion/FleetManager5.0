@@ -17,6 +17,7 @@ type Template = {
   id: string;
   title: string;
   description: string;
+  templateId: string;
 };
 const initialTemplates: Template[] = [];
 
@@ -92,7 +93,12 @@ const GetListTemplate: React.FC = () => {
           <div key={template.id} className={`${columnClass}`}>
             <Card
               title={<span style={cardTitleStyle}>{template.title}</span>}
-              subTitle={<span style={{ color: "#7d7d79", marginTop: "10px" }}>{template.description}</span>}
+              subTitle={
+                <div>
+                  <div style={{ color: "#7d7d79", marginTop: "10px" }}>{template.templateId}</div>
+                  <div style={{ color: "#7d7d79", marginTop: "10px" }}>{template.description}</div>
+                </div>
+              }
               className="ml-3 pl-3 border-1 border-round-lg"
             >
               <Button
@@ -132,7 +138,7 @@ const GetListTemplate: React.FC = () => {
       const filtered = value.length > 0 ?
         templates?.filter((template) => {
           return (
-            template?.title.toLowerCase().includes(value.toLowerCase())
+            template?.title.toLowerCase().includes(value.toLowerCase()) || template?.templateId.toLowerCase().includes(value.toLowerCase())
           )
         }) : templates;
       setFilteredTemplates(filtered)
@@ -155,7 +161,7 @@ const GetListTemplate: React.FC = () => {
                     <InputText
                         value={searchTemplate}
                         onChange={onFilter}
-                        placeholder="Search by templates"
+                        placeholder="Search by templates & ids"
                         style={{ borderRadius: "10px", width:"30rem", height:"3.5rem", marginLeft:"2rem"}} 
                         type="search"
                       />    
