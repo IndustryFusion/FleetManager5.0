@@ -326,12 +326,12 @@ const AssetEdit = () => {
     }
 
     return (
-      <>
+      <div
+        key={key}
+        className={`p-field  ${fieldClass}  flex flex-column `}
+      >
         {property.title === "Asset Status" ? null : (
-          <div
-            className={`p-field  ${fieldClass}  flex flex-column `}
-            key={key}
-          >
+          <>
             {property.title === "Creation Date" && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
@@ -467,9 +467,9 @@ const AssetEdit = () => {
                 )}
               </>
             )}
-          </div>
+          </>
         )}
-      </>
+      </div>
     );
   };
 
