@@ -47,11 +47,7 @@ const Asset: React.FC = () => {
     const handleResize = () => {
         setIsMobile(window.innerWidth <= 768);
     };
-    const handleRowDoubleClick = (rowData: Asset) => {
-        localStorage.setItem("currentAssetId", rowData.id);
-        // router.push("/asset/asset-specific");
-        setCurrentPage(Math.floor(e.first / Number(selectedRowsPerPage)));
-    };
+
     const onRowSelect = (rowData: Asset) => {
         console.log(rowData, "what's in this");
 
@@ -203,15 +199,16 @@ const Asset: React.FC = () => {
     ]
 
     const productIconTemplate = (rowData: Asset) => {
-        return rowData?.product_icon ? (
-            <img
-                src={rowData?.product_icon}
-                alt={rowData?.product_name}
-                className="w-4rem shadow-2 border-round"
-            />
-        ) : (
-            <span>No Image</span>
-        );
+        if (rowData && rowData.product_icon && rowData.product_icon !== 'NULL') {
+            return (
+                <img
+                  src={rowData.product_icon}
+                  style={{ width: "70px", height: "auto" }}
+                />
+            );
+        } else {
+            return <span>No Image</span>;
+        }
     };
 
     const actionItemsTemplate = (rowData: Asset): React.ReactNode => {
@@ -241,7 +238,9 @@ const Asset: React.FC = () => {
     const manufacturerDataTemplate = (rowData: Asset): React.ReactNode => {
         return (
             <div className="flex flex-column">
-                <img src={rowData?.logo_manufacturer} alt="maufacturer_logo" className="w-4rem shadow-2 border-round" />
+                { rowData?.logo_manufacturer && rowData.logo_manufacturer !== 'NULL' &&
+                    <img src={rowData?.logo_manufacturer} alt="maufacturer_logo" className="w-4rem shadow-2 border-round" />
+                }
                 <p className="m-0 mt-1">{rowData?.asset_manufacturer_name}</p>
             </div>
         )
@@ -375,18 +374,13 @@ const Asset: React.FC = () => {
                             style={{ marginBottom: "-20px", marginTop: "-15px", backgroundColor: "#a7e3f985", borderColor: "white" }}></Toolbar>
                         <DataTable
                             value={assets} // Use the fetched assets as the data source
-                            currentPage={currentPage}
+                            currentpage={currentPage}
                             first={currentPage * Number(selectedRowsPerPage)}
                             paginator
                             selectionMode="multiple"
                             rows={Number(selectedRowsPerPage)}
                             paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                             currentPageReportTemplate="{first} to {last} of {totalRecords}"
-                            onRowDoubleClick={(e) => {
-                                
-                                handleRowDoubleClick(e.data as Asset)
-                            }
-                            }
                             className="custom-row-padding"
                             tableStyle={{ width: '100%', overflow: 'auto', maxHeight: 'calc(100vh - 300px)' }}
                             scrollable
@@ -395,7 +389,7 @@ const Asset: React.FC = () => {
                             onRowClick={(e) => {
                                 setProductDetails(true)
                                 onRowSelect(e.data as Asset)
-                                setCurrentPage(Math.floor(e.first / Number(selectedRowsPerPage)));
+                                //setCurrentPage(Math.floor(e.first / Number(selectedRowsPerPage)));
                             }
                             }
                             selection={selectedAssets}
