@@ -53,11 +53,15 @@ const HorizontalNavbar: React.FC = () => {
   }
 
   const logoStyle: CSSProperties = {
-    height: "53px",
-    width: "9rem",
-    marginRight: "1rem",
-    paddingBottom: "1rem" // Spacing after the logo
-  };
+    width: "45px",
+    padding: "0.5rem 0"
+  }
+  const logoText: CSSProperties = {
+    fontWeight: "500",
+    color: "#615E5E",
+    fontFamily: "Segoe UI",
+    fontSize: "19px"
+  }
 
   const navigateToFleet = () => {
     router.push("/asset-overview");
@@ -76,19 +80,19 @@ const HorizontalNavbar: React.FC = () => {
     router.push("/login");
   };
 
-  
-
   return (
     <div style={navbarStyle}>
       <div className="flex align-items-center logo-container cursor-pointer"
         onClick={() => router.push("/asset-overview")}
       >
         <img src="/industryFusion_icon-removebg-preview.png" alt="Logo" style={logoStyle} />
+        <p style={logoText}>Fleet Manager</p>
       </div>
       <div className="flex  justify-content-between align-items-center" >
           <Button label="About Us" link onClick={navigateToIndustryFusion}
           className="mr-2"  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} />
-          <Button label="Contact Us" link
+
+          <Button label="Contact Us" link  onClick={navigateToIndustryFusion}
           className="mr-2"  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} />
 
           <Button  icon= "pi pi-user" link 
