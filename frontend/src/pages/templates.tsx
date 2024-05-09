@@ -11,6 +11,7 @@ import "../../public/styles/templates.css";
 import Cookies from "js-cookie";
 import { Toast, ToastMessage } from "primereact/toast";
 import { InputText } from "primereact/inputtext";
+import Footer from "@/components/footer";
 
 // Template data type
 type Template = {
@@ -186,6 +187,7 @@ const GetListTemplate: React.FC = () => {
             </Card>
           </div>
         </div>
+        <Footer />
       </div>
     </BlockUI>
   );

@@ -19,6 +19,7 @@ import Cookies from "js-cookie";
 import { Toast, ToastMessage } from "primereact/toast";
 import { Calendar } from "primereact/calendar";
 import moment from "moment";
+import Footer from "@/components/footer";
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const AssetEdit = () => {
@@ -488,11 +489,7 @@ const AssetEdit = () => {
 
         <div>
           <Card className="border-gray-500 border-1 border-round-lg">
-
-            <form
-             
-              onSubmit={handleSubmit}
-            >
+            <form  onSubmit={handleSubmit} >
               <div className=" flex p-fluid grid  shadow-lg">
                 {schema && schema.properties &&
                   Object.keys(schema.properties).map((key) =>
@@ -535,6 +532,7 @@ const AssetEdit = () => {
             </form>
           </Card>
         </div>
+        <Footer />
       </div>
     </BlockUI>
   );
