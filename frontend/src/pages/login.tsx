@@ -23,10 +23,17 @@ const Login: React.FC = () => {
     const router = useRouter();
     const submitButtonRef = useRef<HTMLButtonElement>(null);
 
-    useEffect(() => {
-        // Always do navigations after the first render
-        isLoggedIn && router.push('/asset-overview');
-    }, [])
+
+        useEffect(() => {
+            // Always do navigations after the first render
+          
+            if (Cookies.get("login_flag") === "true") {
+              router.push("/asset-overview");
+            } else {    
+                router.push("/login");    
+            }
+          }, []);
+ 
 
     // validate username, it should be  Alpha Numeric includes underscore _
     const validateUsername = (value: string): boolean => {
