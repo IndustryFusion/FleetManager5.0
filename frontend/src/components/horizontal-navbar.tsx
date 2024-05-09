@@ -13,6 +13,10 @@ import { useRouter } from "next/router";
 // import NavLink from "../components/nav-links";
 import { Tooltip } from 'primereact/tooltip';
 import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { resetTimer, logout } from "@/redux/auth/authSlice";
+import ProfileDialog from "./profile-dialog";
+
 interface Alerts {
   text: string;
   resource: string;
@@ -28,6 +32,10 @@ interface HorizontalNavbarProps {
 const HorizontalNavbar: React.FC = () => {
   const router = useRouter();
   const isAssetOverviewRoute = router.pathname === '/asset-overview';
+  const [profileDetail, setProfileDetail] = useState(false);
+   const dispatch = useDispatch();
+
+
   const navbarStyle: CSSProperties = {
     position: "fixed",
     top: 0,
@@ -75,9 +83,11 @@ const HorizontalNavbar: React.FC = () => {
     router.push("https://industry-fusion.org/de");
   };
 
-  const logout = () => {
+  const handleLogout = () => {
     Cookies.set("login_flag", "false");
     router.push("/login");
+    dispatch(resetTimer());
+    dispatch(logout());
   };
 
   return (
@@ -96,10 +106,19 @@ const HorizontalNavbar: React.FC = () => {
           className="mr-2"  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} />
 
           <Button  icon= "pi pi-user" link 
-          className="mr-2 "  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} tooltip="Profile Details" tooltipOptions={{ position: 'bottom'}}/>
+          className="mr-2 "  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} tooltip="Profile Details" tooltipOptions={{ position: 'bottom'}}
+          onClick={()=>setProfileDetail(true)}
+          />
 
-          <Button onClick={logout} icon= "pi pi-sign-out" link 
+          <Button onClick={handleLogout}  icon= "pi pi-sign-out" link 
           className="mr-2"  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} tooltip="logout" tooltipOptions={{ position: 'bottom'}}  />
+
+          { profileDetail && 
+          <ProfileDialog
+          profileDetailProp={profileDetail}
+          setProfileDetailProp={setProfileDetail}
+          />
+          }
 
       </div>
     </div>
