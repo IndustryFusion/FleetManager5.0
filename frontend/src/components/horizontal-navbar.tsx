@@ -33,7 +33,7 @@ const HorizontalNavbar: React.FC = () => {
   const router = useRouter();
   const isAssetOverviewRoute = router.pathname === '/asset-overview';
   const [profileDetail, setProfileDetail] = useState(false);
-   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
 
   const navbarStyle: CSSProperties = {
@@ -71,17 +71,15 @@ const HorizontalNavbar: React.FC = () => {
     fontSize: "19px"
   }
 
-  const navigateToFleet = () => {
-    router.push("/asset-overview");
-  };
+  const navListItem: CSSProperties = {
+    fontFamily: "Segoe UI",
+    fontSize: "14px",
+    fontWeight: "bold",
+    color: "#615e5e"
 
-  const navigateToFactoryManager = () => {
-    router.push("/factory-manager");
-  };
+  }
 
-  const navigateToIndustryFusion = () => {
-    router.push("https://industry-fusion.org/de");
-  };
+  const navigateToIndustryFusion = "https://industry-fusion.org/de"
 
   const handleLogout = () => {
     Cookies.set("login_flag", "false");
@@ -99,26 +97,26 @@ const HorizontalNavbar: React.FC = () => {
         <p style={logoText}>Fleet Manager</p>
       </div>
       <div className="flex  justify-content-between align-items-center" >
-          <Button label="About Us" link onClick={navigateToIndustryFusion}
-          className="mr-2"  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} />
-
-          <Button label="Contact Us" link  onClick={navigateToIndustryFusion}
-          className="mr-2"  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} />
-
-          <Button  icon= "pi pi-user" link 
-          className="mr-2 "  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} tooltip="Profile Details" tooltipOptions={{ position: 'bottom'}}
-          onClick={()=>setProfileDetail(true)}
-          />
-
-          <Button onClick={handleLogout}  icon= "pi pi-sign-out" link 
-          className="mr-2"  style={{fontFamily: "Segoe UI", fontSize:"14px", fontWeight:"bold", color:"#615e5e"}} tooltip="logout" tooltipOptions={{ position: 'bottom'}}  />
-
-          { profileDetail && 
+        <Button label="About Us" link
+          rel="noopener noreferrer"
+          onClick={() => window.open(navigateToIndustryFusion, '_blank')}
+          className="mr-2 " style={navListItem} />
+        <Button label="Contact Us" link
+          rel="noopener noreferrer"
+          onClick={() => window.open(navigateToIndustryFusion, '_blank')}
+          className="mr-2 " style={navListItem} />
+        <Button icon="pi pi-user" link
+          className="mr-2 " style={navListItem} tooltip="Profile Details" tooltipOptions={{ position: 'bottom' }}
+          onClick={() => setProfileDetail(true)}
+        />
+        <Button onClick={handleLogout} icon="pi pi-sign-out" link
+          className="mr-2" style={navListItem} tooltip="logout" tooltipOptions={{ position: 'bottom' }} />
+        {profileDetail &&
           <ProfileDialog
-          profileDetailProp={profileDetail}
-          setProfileDetailProp={setProfileDetail}
+            profileDetailProp={profileDetail}
+            setProfileDetailProp={setProfileDetail}
           />
-          }
+        }
 
       </div>
     </div>
