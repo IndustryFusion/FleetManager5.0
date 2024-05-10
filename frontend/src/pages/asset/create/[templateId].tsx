@@ -17,6 +17,7 @@ import Cookies from "js-cookie";
 import { Calendar } from "primereact/calendar";
 import AssetDetailsCard from "@/components/asset-view";
 import moment from "moment";
+import Footer from "@/components/footer";
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 // Initialize the state with a more specific type
 
@@ -648,7 +649,7 @@ const createAssetForm: React.FC = () => {
           </Card>
         </div>
       </div> 
-
+      <Footer />
     </BlockUI>
   );
 };

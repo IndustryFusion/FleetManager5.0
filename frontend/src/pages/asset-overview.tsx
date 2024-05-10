@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef, Component, ErrorInfo, ReactNode } from "react";
+import React, { useState, useEffect, useRef, Component, ErrorInfo, ReactNode, MouseEvent } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Dialog } from "primereact/dialog";
 import AssetDetailsCard from "../components/asset-view";
 import HorizontalNavbar from "../components/horizontal-navbar";
 import Footer from "../components/footer";
 import { Toast, ToastMessage } from "primereact/toast";
-import { CiClock2 } from "react-icons/ci";
 import { GrView } from "react-icons/gr";
 import { ContextMenu } from 'primereact/contextmenu';
 import { InputText } from "primereact/inputtext";
@@ -18,8 +16,8 @@ import { Asset } from "@/interfaces/assetTypes";
 import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
 import Cookies from "js-cookie";
-import AssetTable from "@/components/asset-table";
 import { fetchAssets } from "@/utility/asset";
+
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -31,12 +29,9 @@ const Asset: React.FC = () => {
     const [showExtraCard, setShowExtraCard] = useState<boolean>(false);
     const [isMobile, setIsMobile] = useState<boolean>(false);
     const [dataTablePanelSize, setDataTablePanelSize] = useState<number>(100);
-    const [isEditDialogVisible, setIsEditDialogVisible] = useState<boolean>(false);
-    const [productDetails, setProductDetails] = useState<boolean>(false);
     const [globalFilterValue, setGlobalFilter] = useState<string>('');
     const [searchedAssets, setSearchedAssets] = useState<Asset[]>([]);
     const [selectedAssets, setSelectedAssets] = useState<Asset | null>(null);
-    const [selectedAssetDetails, setSelectedAssetDetails] = useState<Asset | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
     const toast = useRef<Toast>(null);
     const cm = useRef(null);
@@ -48,31 +43,24 @@ const Asset: React.FC = () => {
         setIsMobile(window.innerWidth <= 768);
     };
 
-    const onRowSelect = (rowData: Asset) => {
-        console.log(rowData, "what's in this");
 
+    const handleSelect = (rowData: Asset) => {
         setShowExtraCard(true);
         setSelectedProduct(rowData);
-        setSelectedAssets(rowData);
         if (!isMobile) {
             setDataTablePanelSize(40);
         }
-        console.log("Opening side panel, DataTablePanelSize set to 30");
-    };
+    }
+
+
     const handleRowsPerPageChange = (event: any) => {
         setSelectedRowsPerPage(event.target.value);
-       
-
     };
-  
-
-       console.log(currentPage , "the page number values");
-       
-
 
     const handleCreateAssetClick = () => {
         router.push("/templates"); // This will navigate to the /templates
     };
+
     const handleDeleteAsset = async (assetId: string) => {
         try {
             const response = await axios.delete(
@@ -103,6 +91,7 @@ const Asset: React.FC = () => {
             }
         }
     };
+
     const fetchAsset = async () => {
         try {
             const response = await fetchAssets();
@@ -121,12 +110,13 @@ const Asset: React.FC = () => {
         }
     }
 
-    console.log(showExtraCard, "what's the boolean val");
 
 
     //Adding resize event listener
     useEffect(() => {
-        if (Cookies.get("login_flag") === "false") { router.push("/login"); }
+        if (Cookies.get("login_flag") === "false") {
+            router.push("/login");
+        }
         else {
             const storedValue = localStorage.getItem('selectedRowsPerPage');
 
@@ -202,8 +192,8 @@ const Asset: React.FC = () => {
         if (rowData && rowData.product_icon && rowData.product_icon !== 'NULL') {
             return (
                 <img
-                  src={rowData.product_icon}
-                  style={{ width: "70px", height: "auto" }}
+                    src={rowData.product_icon}
+                    style={{ width: "70px", height: "auto" }}
                 />
             );
         } else {
@@ -238,7 +228,7 @@ const Asset: React.FC = () => {
     const manufacturerDataTemplate = (rowData: Asset): React.ReactNode => {
         return (
             <div className="flex flex-column">
-                { rowData?.logo_manufacturer && rowData.logo_manufacturer !== 'NULL' &&
+                {rowData?.logo_manufacturer && rowData.logo_manufacturer !== 'NULL' &&
                     <img src={rowData?.logo_manufacturer} alt="maufacturer_logo" className="w-4rem shadow-2 border-round" />
                 }
                 <p className="m-0 mt-1">{rowData?.asset_manufacturer_name}</p>
@@ -269,6 +259,7 @@ const Asset: React.FC = () => {
     const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
         toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
     };
+
     const exportJsonData = async () => {
         let newExportdata = []
         console.log(searchedAssets);
@@ -385,18 +376,18 @@ const Asset: React.FC = () => {
                             tableStyle={{ width: '100%', overflow: 'auto', maxHeight: 'calc(100vh - 300px)' }}
                             scrollable
                             scrollHeight='calc(100vh - 350px)'
-                            onContextMenuSelectionChange={(e) => setSelectedProduct(e.value)}
-                            onRowClick={(e) => {
-                                setProductDetails(true)
-                                onRowSelect(e.data as Asset)
-                                //setCurrentPage(Math.floor(e.first / Number(selectedRowsPerPage)));
-                            }
-                            }
+                            onRowClick={(e) => setSelectedAssets(e.data as Asset)}
+                            onRowDoubleClick={(e) => handleSelect(e.data as Asset)}
                             selection={selectedAssets}
                             onSelectionChange={(e) => {
-                                if (Array.isArray(e.value)) { setSelectedAssets(e.value); }
+                                if (Array.isArray(e.value)) {
+                                    console.log("selected value", e.value)
+                                    setSelectedAssets(e.value);
+                                }
+                                else {
+                                    console.error('Expected e.value to be an array, but got:', e.value);
+                                }
                             }}
-                            
                         >
                             <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
                             <Column

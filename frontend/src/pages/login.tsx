@@ -11,6 +11,8 @@ import { Password } from 'primereact/password';
 import "../../public/styles/login.css";
 import 'primeicons/primeicons.css';
 import { redirect, useRouter } from 'next/navigation';
+import { useDispatch } from "react-redux";
+import { login, startTimer } from "@/redux/auth/authSlice";
 
 const Login: React.FC = () => {
     // states
@@ -22,11 +24,19 @@ const Login: React.FC = () => {
     const toast = useRef<Toast>(null);
     const router = useRouter();
     const submitButtonRef = useRef<HTMLButtonElement>(null);
+    const dispatch = useDispatch();
+
 
     useEffect(() => {
         // Always do navigations after the first render
-        isLoggedIn && router.push('/asset-overview');
-    }, [])
+
+        if (Cookies.get("login_flag") === "true") {
+            router.push("/asset-overview");
+        } else {
+            router.push("/login");
+        }
+    }, []);
+
 
     // validate username, it should be  Alpha Numeric includes underscore _
     const validateUsername = (value: string): boolean => {
@@ -74,6 +84,8 @@ const Login: React.FC = () => {
                 const login_flag: Boolean = await authService.login(username, password);
 
                 if (login_flag == true) {
+                    dispatch(login(username));
+                    dispatch(startTimer());
                     Cookies.set("login_flag", "true", { expires: 7 });
                     toast.current?.show({
                         severity: "success",
@@ -109,10 +121,10 @@ const Login: React.FC = () => {
 
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter' && submitButtonRef.current) {
-          event.preventDefault(); // Prevent default form submission behavior
-          submitButtonRef.current.click(); // Programmatically click the button
+            event.preventDefault(); // Prevent default form submission behavior
+            submitButtonRef.current.click(); // Programmatically click the button
         }
-      };
+    };
 
     //Function to get tooltip error message for username
     const getUsernameTooltip = (): string | undefined => {
@@ -168,8 +180,8 @@ const Login: React.FC = () => {
                             <Password value={password} className={`${!passwordValid ? "p-invalid" : ""}`}
                                 toggleMask
                                 onChange={(handlePasswordChange)}
-                                inputStyle={{ width: "20rem" }} 
-                                onKeyDown={handleKeyPress}/>
+                                inputStyle={{ width: "20rem" }}
+                                onKeyDown={handleKeyPress} />
                             <small id="password-help">
                                 {getPasswordTooltip()}
                             </small>
@@ -189,7 +201,7 @@ const Login: React.FC = () => {
                                 raised
                                 ref={(submitButtonRef) => {
                                     submitButtonRef = submitButtonRef;
-                                  }}
+                                }}
                                 disabled={!usernameValid || !passwordValid || !username || !password}
                                 style={{ marginLeft: "2rem", width: "6rem" }}
                             />
