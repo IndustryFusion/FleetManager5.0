@@ -176,10 +176,17 @@ export class AssetService {
                 result[resultKey] = obj;
                 continue;
               } else {
-                result[resultKey] = {
-                  type: "Property",
-                  value: data.properties[key]
-                };
+                if(key.includes('template')){
+                  result[resultKey] = {
+                    type: "Property",
+                    value: templateProperties[key]['default']
+                  };
+                } else {
+                  result[resultKey] = {
+                    type: "Property",
+                    value: data.properties[key]
+                  };
+                }
                 statusCount++;
                 totalCount++;
               }

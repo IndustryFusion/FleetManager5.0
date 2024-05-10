@@ -24,4 +24,5 @@ export interface IcsField {
     id?: string;
     $id?: string;
     placeholder?: string;
+    ifric_template_id?: string;
 }
