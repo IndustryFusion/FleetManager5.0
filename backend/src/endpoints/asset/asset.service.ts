@@ -210,11 +210,17 @@ export class AssetService {
                 } else {
                   emptyValue = 'NULL';
                 }
-                result[resultKey] = {
-                  type: "Property",
-                  value: emptyValue
-                };
-                
+                if(key.includes('template')){
+                  result[resultKey] = {
+                    type: "Property",
+                    value: templateProperties[key]['default']
+                  };
+                } else {
+                  result[resultKey] = {
+                    type: "Property",
+                    value: emptyValue
+                  };
+                }
                 totalCount++;
               }
             }
