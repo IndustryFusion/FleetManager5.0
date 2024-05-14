@@ -29,6 +29,8 @@ import 'primeicons/primeicons.css';
 import { redirect, useRouter } from 'next/navigation';
 import { useDispatch } from "react-redux";
 import { login, startTimer } from "@/redux/auth/authSlice";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Login: React.FC = () => {
     // states
@@ -41,7 +43,7 @@ const Login: React.FC = () => {
     const router = useRouter();
     const submitButtonRef = useRef<HTMLButtonElement>(null);
     const dispatch = useDispatch();
-
+    const { t } = useTranslation('button');
 
     useEffect(() => {
         // Always do navigations after the first render
@@ -205,14 +207,14 @@ const Login: React.FC = () => {
 
                         <div className="flex" style={{ marginTop: "3rem", marginLeft: "9rem" }}>
                             <Button
-                                label="Cancel"
+                                label={t('cancel')}
                                 onClick={handleReset}
                                 text raised
                                 severity="secondary"
                                 style={{ width: "6rem" }}
                             />
                             <Button
-                                label="Submit"
+                                label={t('submit')}
                                 onClick={handleLogin}
                                 raised
                                 ref={(submitButtonRef) => {
@@ -229,5 +231,17 @@ const Login: React.FC = () => {
         </div>
     );
 };
+
+export async function getStaticProps({ locale }: { locale: string }) {
+    return {
+      props: {
+        ...(await serverSideTranslations(locale, [
+          'header',
+          'button',
+          'placeholder'
+        ])),
+      },
+    }
+}
 
 export default Login;

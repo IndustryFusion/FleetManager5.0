@@ -1,0 +1,20 @@
+{
+    "reset": "Reset",
+    "save": "Save",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "new": "New",
+    "edit": "Edit",
+    "delete": "Delete",
+    "undo": "Undo",
+    "load": "Load",
+    "ok": "OK",
+    "saveAndUpdate": "Save / Update",
+    "refresh": "Refresh",
+    "exportJPEG": "Export as JPEG",
+    "acknowledge": "Acknowledge",
+    "show": "Show",
+    "dashboard": "Dashboard",
+    "assets": "Assets",
+    "select": "Select"
+}

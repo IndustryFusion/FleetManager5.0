@@ -28,6 +28,8 @@ import Cookies from "js-cookie";
 import { Toast, ToastMessage } from "primereact/toast";
 import { InputText } from "primereact/inputtext";
 import Footer from "@/components/footer";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 // Template data type
 type Template = {
@@ -48,7 +50,8 @@ const GetListTemplate: React.FC = () => {
   const [searchTemplate, setSearchTemplate] = useState("");
   const router = useRouter();
   const toast = useRef<Toast>(null);
-
+  const { t } = useTranslation(['button', 'placeholder']);
+  
   // Inside GetListTemplate component
   const navigateToTemplate = (id: string, title: string) => {
     localStorage.setItem("selectedTemplateId", id);
@@ -119,7 +122,7 @@ const GetListTemplate: React.FC = () => {
               className="ml-3 pl-3 border-1 border-round-lg"
             >
               <Button
-                label="Select"
+                label={t('button:select')}
                 className="p-button-text  bg-blue-100 hover:bg-blue-200 .buttonStyle "
                 style={{ color: "#4f4f4d", fontWeight: "medium", marginLeft: "2px" }}
                 onClick={() => navigateToTemplate(template.id, template.title)} // Add onClick event
@@ -178,7 +181,7 @@ const GetListTemplate: React.FC = () => {
                     <InputText
                         value={searchTemplate}
                         onChange={onFilter}
-                        placeholder="Search by templates & ids"
+                        placeholder={t('placeholder:searchByTemplate')}
                         style={{ borderRadius: "10px", width:"30rem", height:"3.5rem", marginLeft:"2rem"}} 
                         type="search"
                       />    
@@ -209,5 +212,17 @@ const GetListTemplate: React.FC = () => {
   );
 
 };
+
+export async function getStaticProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, [
+        'header',
+        'button',
+        'placeholder'
+      ])),
+    },
+  }
+}
 
 export default GetListTemplate;

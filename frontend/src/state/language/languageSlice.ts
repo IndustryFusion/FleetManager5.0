@@ -1,4 +1,3 @@
-
 // 
 // Copyright (c) 2024 IB Systems GmbH 
 // 
@@ -13,12 +12,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 // See the License for the specific language governing permissions and 
 // limitations under the License. 
-// 
+//
 
-/** @type {import('next').NextConfig} */
-const { i18n } = require('./next-i18next.config');
-const nextConfig = {
-    i18n,
-}
+import { createSlice } from '@reduxjs/toolkit';
 
-module.exports = nextConfig
+const initialState  = {
+    name: '',
+    code: ''
+};
+
+const languageSlice = createSlice({
+    name: "entityId",
+    initialState,
+    reducers: {
+        create: (state, action) => {
+            state.name = action.payload.name;
+            state.code = action.payload.code;
+        },
+        reset: () => initialState,
+    }
+})
+
+export const { create, reset } = languageSlice.actions;
+export default languageSlice.reducer;

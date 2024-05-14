@@ -26,7 +26,8 @@ import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { resetTimer, logout } from "@/redux/auth/authSlice";
 import ProfileDialog from "./profile-dialog";
-
+import Language from "./language";
+import { useTranslation } from "next-i18next";
 interface Alerts {
   text: string;
   resource: string;
@@ -41,6 +42,7 @@ interface HorizontalNavbarProps {
 
 const HorizontalNavbar: React.FC = () => {
   const router = useRouter();
+  const { t } = useTranslation('header');
   const isAssetOverviewRoute = router.pathname === '/asset-overview';
   const [profileDetail, setProfileDetail] = useState(false);
   const dispatch = useDispatch();
@@ -107,11 +109,14 @@ const HorizontalNavbar: React.FC = () => {
         <p style={logoText}>Fleet Manager</p>
       </div>
       <div className="flex  justify-content-between align-items-center" >
-        <Button label="About Us" link
+        <div className="mr-3">
+          <Language />
+        </div>
+        <Button label={t('aboutUs')} link
           rel="noopener noreferrer"
           onClick={() => window.open(navigateToIndustryFusion, '_blank')}
           className="mr-2 " style={navListItem} />
-        <Button label="Contact Us" link
+        <Button label={t('contactUs')} link
           rel="noopener noreferrer"
           onClick={() => window.open(navigateToIndustryFusion, '_blank')}
           className="mr-2 " style={navListItem} />
