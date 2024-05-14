@@ -33,7 +33,8 @@ import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
 import Cookies from "js-cookie";
 import { fetchAssets } from "@/utility/asset";
-
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -53,7 +54,7 @@ const Asset: React.FC = () => {
     const cm = useRef(null);
     const router = useRouter();
     const dataTableCardWidth = showExtraCard ? "50%" : "100%";
-
+    const { t } = useTranslation(['overview', 'placeholder']);
     //Resize handler for responsiveness
     const handleResize = () => {
         setIsMobile(window.innerWidth <= 768);
@@ -330,7 +331,7 @@ const Asset: React.FC = () => {
     const leftToolbarTemplate = () => {
         return (
             <div className="flex flex-wrap gap-2">
-                <Button label="New Asset" icon="pi pi-plus" className="bg-green-305 border-transparent" severity="success" onClick={handleCreateAssetClick} />
+                <Button label={t('overview:newAsset')} icon="pi pi-plus" className="bg-green-305 border-transparent" severity="success" onClick={handleCreateAssetClick} />
             </div>
         );
     };
@@ -343,7 +344,7 @@ const Asset: React.FC = () => {
                     <InputText
                         value={globalFilterValue}
                         onChange={onFilter}
-                        placeholder="Search..."
+                        placeholder={t('placeholder:search')}
                         className="searchbar-input" style={{ borderRadius: "10px" }} />
                 </span>
             </div>
@@ -353,7 +354,7 @@ const Asset: React.FC = () => {
     const rightToolbarTemplate = () => {
         return (
             <>
-                <Button label="Export" icon="pi pi-upload" className="p-button-help bg-purple-305  border-transparent" onClick={exportJsonData} />
+                <Button label={t('overview:export')} icon="pi pi-upload" className="p-button-help bg-purple-305  border-transparent" onClick={exportJsonData} />
             </>
         )
     };
@@ -371,7 +372,7 @@ const Asset: React.FC = () => {
                     <div className="flex align-center justify-content-between mt-6  p-2" >
                         <div>
                             <p className="hover" style={{ fontWeight: "bold", fontSize: "1.4rem", marginTop: "20px", marginLeft: "20px" }}>
-                                Asset Overview
+                                {t('overview:assetOverview')}
                             </p>
                         </div>
                     </div>
@@ -482,6 +483,18 @@ const Asset: React.FC = () => {
             <Footer />
         </div>
     );
+}
+
+export async function getStaticProps({ locale }: { locale: string }) {
+    return {
+      props: {
+        ...(await serverSideTranslations(locale, [
+          'header',
+          'overview',
+          'placeholder'
+        ])),
+      },
+    }
 }
 
 export default Asset;

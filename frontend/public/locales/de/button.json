@@ -1,0 +1,20 @@
+{
+    "reset": "Zurücksetzen",
+    "save": "Speichern",
+    "submit": "Einreichen",
+    "cancel": "Stornieren",
+    "new": "Neu",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "undo": "Rückgängig machen",
+    "load": "Belastung",
+    "ok": "OK",
+    "saveAndUpdate": "Speichern / Aktualisieren",
+    "refresh": "Aktualisierung",
+    "exportJPEG": "Als JPEG exportieren",
+    "acknowledge": "Anerkennen",
+    "show": "Zeigen",
+    "dashboard": "Armaturenbrett",
+    "assets": "Vermögenswerte",
+    "select": "Wählen"
+}

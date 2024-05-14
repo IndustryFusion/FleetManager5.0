@@ -1,4 +1,3 @@
-
 // 
 // Copyright (c) 2024 IB Systems GmbH 
 // 
@@ -13,12 +12,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 // See the License for the specific language governing permissions and 
 // limitations under the License. 
-// 
+//
 
-/** @type {import('next').NextConfig} */
-const { i18n } = require('./next-i18next.config');
-const nextConfig = {
-    i18n,
-}
+import { configureStore } from "@reduxjs/toolkit";
+import languageReducer from "./language/languageSlice";
 
-module.exports = nextConfig
+export const store = configureStore({
+    reducer: {
+        language: languageReducer
+    },
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

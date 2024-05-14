@@ -36,6 +36,8 @@ import { Toast, ToastMessage } from "primereact/toast";
 import { Calendar } from "primereact/calendar";
 import moment from "moment";
 import Footer from "@/components/footer";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const AssetEdit = () => {
@@ -64,6 +66,7 @@ const AssetEdit = () => {
   })
   const msgs = useRef<Messages>(null);
   const toast = useRef<Toast>(null);
+  const { t } = useTranslation('button');
 
   useEffect(() => {
     if (Cookies.get("login_flag") === "false") { router.push("/login"); }
@@ -520,7 +523,7 @@ const AssetEdit = () => {
               </div>
               <div className="form-btn-container mb-6  flex justify-content-end align-items-center">
                 <Button
-                  label="Cancel"
+                  label={t('cancel')}
                   severity="danger"
                   outlined
                   className="mr-2"
@@ -531,13 +534,13 @@ const AssetEdit = () => {
                   severity="secondary"
                   text
                   raised
-                  label="Reset"
+                  label={t('reset')}
                   className="mr-2"
                   type="button"
                   onClick={handleReset}
                 />
                 <Button
-                  label="Submit"
+                  label={t('submit')}
                   type="submit"
                   onSubmit={handleSubmit}
                   className="border-none    ml-2 mr-2"
@@ -552,6 +555,18 @@ const AssetEdit = () => {
       </div>
     </BlockUI>
   );
+}
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, [
+        'header',
+        'button',
+        'placeholder'
+      ])),
+    },
+  }
 }
 
 export default AssetEdit;

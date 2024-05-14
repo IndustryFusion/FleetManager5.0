@@ -34,6 +34,8 @@ import { Calendar } from "primereact/calendar";
 import moment from "moment";
 import Footer from "@/components/footer";
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 // Initialize the state with a more specific type
 
 const createAssetForm: React.FC = () => {
@@ -69,7 +71,7 @@ const createAssetForm: React.FC = () => {
     asset_manufacturer_name: false,
     asset_serial_number: false
   })
-
+  const { t } = useTranslation('button');
 
   useEffect(() => {
     const updatedList = selectedRelations.map((relation) => {
@@ -637,7 +639,7 @@ const createAssetForm: React.FC = () => {
               </div>
               <div className="form-btn-container mb-6  flex justify-content-end align-items-center">
                 <Button
-                  label="Cancel"
+                  label={t('cancel')}
                   severity="danger"
                   outlined
                   className="mr-2"
@@ -648,13 +650,13 @@ const createAssetForm: React.FC = () => {
                   severity="secondary"
                   text
                   raised
-                  label="Reset"
+                  label={t('reset')}
                   className="mr-2"
                   type="button"
                   onClick={handleReset}
                 />
                 <Button
-                  label="Submit"
+                  label={t('submit')}
                   type="submit"
                   onSubmit={handleSubmit}
                   className="border-none    ml-2 mr-2"
@@ -668,5 +670,17 @@ const createAssetForm: React.FC = () => {
     </BlockUI>
   );
 };
+
+export async function getServerSideProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, [
+        'header',
+        'button',
+        'placeholder'
+      ])),
+    },
+  }
+}
 
 export default createAssetForm;
