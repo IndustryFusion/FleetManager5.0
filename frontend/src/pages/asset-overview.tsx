@@ -234,10 +234,7 @@ const Asset: React.FC = () => {
                     }
                 >
                     <i className="pi pi-trash"></i>
-                </button>
-                <button className="action-items-btn">
-                    <GrView />
-                </button>
+                </button>           
             </div>
         )
     }

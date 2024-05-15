@@ -500,14 +500,14 @@ const AssetEdit = () => {
       <Toast ref={toast} />
       <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "80%" }}>
         <div>
-          <p className="hover" style={{ fontWeight: "bold", fontSize: "1.8rem", marginTop: "80px" }}>
+          <p className="hover " style={{ fontWeight: "bold", fontSize: "1.8rem", marginTop: "100px" }}>
             Edit Asset
           </p>
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form --  {asset.id}</h5>
         </div>
 
         <div>
-          <Card className="border-gray-500 border-1 border-round-lg">
+          <Card className="border-gray-500 border-1 border-round-lg mb-4">
             <form  onSubmit={handleSubmit} >
               <div className=" flex p-fluid grid  shadow-lg">
                 {schema && schema.properties &&
@@ -535,7 +535,7 @@ const AssetEdit = () => {
                   text
                   raised
                   label={t('reset')}
-                  className="mr-2"
+                  className="mr-2 reset-btn"
                   type="button"
                   onClick={handleReset}
                 />

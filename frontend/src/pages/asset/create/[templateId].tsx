@@ -47,12 +47,7 @@ const createAssetForm: React.FC = () => {
     [key: string]: boolean;
   }>({});
   const [filterOptions, setFilterOptions] = useState<any[]>([]);
-
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [dialogFormData, setDialogFormData] = useState<Record<string, any>>({});
-  const [dynamicFormSchema, setDynamicFormSchema] =
-    useState<DynamicFormSchema | null>(null);
-
   const [selectedRelationsList, setSelectedRelationsList] = useState<
     RelationItem[]
   >([]);
@@ -610,13 +605,13 @@ const createAssetForm: React.FC = () => {
       <Toast ref={toast} />
       <div className="" style={{ padding: "1rem 1rem 2rem 4rem", zoom: "80%" }}>
         <div>
-          <p className="hover" style={{ fontWeight: "bold", fontSize: "1.8rem", marginTop: "80px" }}>
+          <p className="hover" style={{ fontWeight: "bold", fontSize: "1.8rem", marginTop: "100px" }}>
             Create Asset
           </p>
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form </h5>
         </div>
         <div style={{}}>
-          <Card className="border-gray-500 border-1 border-round-lg">
+          <Card className="border-gray-500 border-1 border-round-lg mb-4">
             <form onSubmit={handleSubmit}>
               <div className=" flex p-fluid grid  shadow-lg">
                 {schema.properties &&
@@ -651,7 +646,7 @@ const createAssetForm: React.FC = () => {
                   text
                   raised
                   label={t('reset')}
-                  className="mr-2"
+                  className="mr-2 reset-btn"
                   type="button"
                   onClick={handleReset}
                 />
