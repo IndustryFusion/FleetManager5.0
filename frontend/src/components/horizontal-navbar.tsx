@@ -77,10 +77,10 @@ const HorizontalNavbar: React.FC = () => {
     padding: "0.5rem 0"
   }
   const logoText: CSSProperties = {
-    fontWeight: "500",
+    fontWeight: "600",
     color: "#615E5E",
-    fontFamily: "Segoe UI",
-    fontSize: "19px"
+    fontFamily: "Inter",
+    fontSize: "21px"
   }
 
   const navListItem: CSSProperties = {
@@ -102,7 +102,7 @@ const HorizontalNavbar: React.FC = () => {
 
   return (
     <div style={navbarStyle}>
-      <div className="flex align-items-center logo-container cursor-pointer"
+      <div className="flex align-items-center gap-1 logo-container cursor-pointer"
         onClick={() => router.push("/asset-overview")}
       >
         <img src="/industryFusion_icon-removebg-preview.png" alt="Logo" style={logoStyle} />

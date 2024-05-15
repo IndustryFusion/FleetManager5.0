@@ -36,8 +36,11 @@
     left: 0;
     right: 0;
     width: 100%;
-    bottom: 0.2rem;
+    bottom: 2.7rem;
     padding-right: 5rem;
     z-index: 100;
     background-color: transparent;
+  }
+  .reset-btn{
+    border: 1px solid #ccc;
   }
