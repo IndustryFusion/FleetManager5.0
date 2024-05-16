@@ -40,7 +40,7 @@ type Template = {
 };
 const initialTemplates: Template[] = [];
 
-const cardTitleStyle = { fontSize: "17px", color: "rgb(0, 51, 0)", padding: "1rem, 2rem, 1rem, 2rem" };
+const cardTitleStyle = { fontSize: "19px", color: "#000", padding: "1rem, 2rem, 1rem, 2rem" };
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const GetListTemplate: React.FC = () => {

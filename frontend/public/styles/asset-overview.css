@@ -154,7 +154,7 @@ body {
   margin-top: 16px;
 }
 
-.pi.pi-search {
+.search-container .pi.pi-search {
   position: absolute;
   left: 3rem;
 }
