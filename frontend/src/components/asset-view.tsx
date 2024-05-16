@@ -164,21 +164,23 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
   return (
     <div className="mt-1 ml-1">
-       <Toast ref={toast} />
-      <h1 style={{ fontSize: "22px", fontWeight: "bold", marginTop: "1px" }}>
-        Asset Details
-      </h1>
+      <Toast ref={toast} />
       <div className=" mt-2" style={{ width: "100%" }}>
         <div style={{ overflow: 'auto', maxHeight: 'calc(100vh - 80px)' }}>
           <Card className="border-gray-800 border-1 border-round-lg">
-            <div className="card">
+            <div className="flex justify-content-between mb-4">
+              <h1 style={{ fontSize: "22px", fontWeight: "bold", marginTop: "2.2rem" }}>
+                Asset Details
+              </h1>
               <Button
                 icon="pi pi-times"
                 text
                 className="p-button-rounded p-button-secondary p-button-sm"
                 onClick={() => setShowExtraCard(false)}
-                style={{ marginLeft: '90%', marginTop: "-50px", fontSize: "2rem" }}
+                style={{ marginTop: "2rem", fontSize: "2rem" }}
               />
+            </div>
+            <div className="card">
               <TabView scrollable className="general-tab">
                 <TabPanel header="General" leftIcon="pi pi-list mr-2" > {renderGeneralContent()} </TabPanel>
                 <TabPanel header="Relation" leftIcon="pi pi-link mr-2" > {renderRelationsContent()} </TabPanel>
@@ -190,4 +192,5 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
       </div>
     </div>
   );
+
 }
