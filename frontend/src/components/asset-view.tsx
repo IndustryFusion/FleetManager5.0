@@ -24,6 +24,7 @@ import { Asset } from "@/interfaces/assetTypes";
 import { Button } from "primereact/button";
 import axios from "axios";
 import { Toast, ToastMessage } from "primereact/toast";
+import "../../public/styles/asset-view.css";
 interface AssetDetailsCardProps {
   asset: Asset | null;
   setShowExtraCard: any;
@@ -75,31 +76,38 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
 
 
-  const renderGeneralContent = () => {
+ const renderGeneralContent = (): JSX.Element => {
+    let visibleRowIndex = 0; // Initialize a counter for visible rows
     return (
       <div key={asset?.id}>
         {asset && Object.entries(asset).map(([key, value]) => {
-          if (!key.includes("has") && typeof value !== "number") {
-            return (
-              <ul key={key} style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
-                <li className=" py-2 px-2 border-top-1 border-300 ">
-                  <div className="flex justify-content-start flex-wrap">
-                    <label className="text-900  font-medium">{key.split("_").length == 1 ? key.charAt(0).toUpperCase() + key.slice(1).toLowerCase() : key.split("_")[0].charAt(0).toUpperCase() + key.split("_")[0].slice(1).toLowerCase() + " " + key.split("_")[1].charAt(0).toUpperCase() + key.split("_")[1].slice(1).toLowerCase()}</label>
-                  </div>
-                  <div className="flex justify-content-end flex-wrap">
-                    <label className="text-900">{value}</label>
-                  </div>
-                </li>
-              </ul>
-            )
-          }
-          else {
-            return null;
-          }
-        })}
+        if (!key.includes("has") && typeof value !== "number") {
+           // Determine row class based on the count of visible rows
+          const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
+          visibleRowIndex++; // Increment the visible row index
+          return (
+            <ul key={key} style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
+              <li className={`py-2 px-2 ${rowClass}`} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div className="flex justify-content-between align-items-center" style={{ width: '100%', padding: '1vh 2vw' }}>
+                    <div className="flex align-items-center">
+                      <label className="text-900 font-medium ">
+                        {key.split("_").map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(" ")}
+                      </label>
+                    </div>
+                    <span className="text-900" style={{ marginLeft: value.length > 10 ? '5%' : '40%' }}>{value}</span>
+                </div>
+              </li>
+            </ul>
+          )
+        }
+        else {
+          return null;
+        }
+      })}
       </div>
     );
   };
+
 
   const renderRelationsContent = () => {
     return (
@@ -116,7 +124,8 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
   };
 
   const renderParametersContent = () => {
-    let newTemplate: any = {}
+    let newTemplate: any = {};
+    let visibleRowIndex = 0;  // Initialize a counter for visible rows
     for (let key of templateKeys) {
       if (asset?.hasOwnProperty(key) && templateObject[key].type === "number" && key !== "manufacturing_year") {
         newTemplate[key] = {
@@ -127,27 +136,29 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
         continue;
       }
     }
-    console.log(newTemplate, "whta's the parameters");
-
     return (
-      <div key={`${asset?.id}-${asset?.type}`}>
-        {Object.keys(newTemplate).map((template, index) => (
-          <ul key={newTemplate[template].title} style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
-            <li className=" py-2 px-2 border-top-1 border-300 ">
-              <div className="flex justify-content-start flex-wrap">
-                <label className="text-900  font-medium" >{newTemplate[template].title}
-                </label>
-                <span className="ml-1 text-gray-500">{newTemplate[template].unit}</span>
-              </div>
-              <div className="flex justify-content-end flex-wrap">
-                <label className="text-900 ">{asset[template]}</label>
-              </div>
-            </li>
-          </ul>
-        ))}
-      </div>
-    )
+        <div key={`${asset?.id}-${asset?.type}`}>
+          {Object.keys(newTemplate).map((template) => {
+            const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
+            visibleRowIndex++; // Increment the visible row index for each rendered row
 
+            return (
+              <ul key={newTemplate[template].title} style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
+                <li className={`py-2 px-2 ${rowClass}`} style={{ minHeight: '3vh', display: 'flex', alignItems: 'center' }}>
+                    <div className="flex justify-content-between align-items-center" style={{ width: '100%', padding: '1vh 2vw' }}>
+                      <div className="flex align-items-center">
+                        <label className="text-900 font-medium mr-2">{newTemplate[template].title}</label>
+                        <span className="text-gray-500">{newTemplate[template].unit}</span>
+                      </div>
+                      <label className="text-900">{asset[template]}</label>
+                    </div>
+                </li>
+              </ul>
+            );
+          })}
+        </div>
+    );
+    
   }
 
 
@@ -170,7 +181,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
               />
             </div>
             <div className="card">
-              <TabView scrollable>
+              <TabView scrollable className="general-tab">
                 <TabPanel header="General" leftIcon="pi pi-list mr-2" > {renderGeneralContent()} </TabPanel>
                 <TabPanel header="Relation" leftIcon="pi pi-link mr-2" > {renderRelationsContent()} </TabPanel>
                 <TabPanel header="Parameters" leftIcon="pi pi-link mr-2" > {renderParametersContent()} </TabPanel>
@@ -181,4 +192,5 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
       </div>
     </div>
   );
+
 }
