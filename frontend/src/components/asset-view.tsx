@@ -44,8 +44,8 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
   const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
     toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
-};
- 
+  };
+
 
   useEffect(() => {
     const fetchSchema = async () => {
@@ -72,31 +72,31 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
   }, []);
 
 
- 
+
 
 
   const renderGeneralContent = () => {
     return (
       <div key={asset?.id}>
         {asset && Object.entries(asset).map(([key, value]) => {
-        if (!key.includes("has") && typeof value !== "number") {
-          return (
-            <ul key={key} style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
-              <li className=" py-2 px-2 border-top-1 border-300 ">
-                <div className="flex justify-content-start flex-wrap">
-                  <label className="text-900  font-medium">{key.split("_").length == 1 ? key.charAt(0).toUpperCase() + key.slice(1).toLowerCase() : key.split("_")[0].charAt(0).toUpperCase() + key.split("_")[0].slice(1).toLowerCase() + " " + key.split("_")[1].charAt(0).toUpperCase() + key.split("_")[1].slice(1).toLowerCase()}</label>
-                </div>
-                <div className="flex justify-content-end flex-wrap">
-                  <label className="text-900">{value}</label>
-                </div>
-              </li>
-            </ul>
-          )
-        }
-        else {
-          return null;
-        }
-      })}
+          if (!key.includes("has") && typeof value !== "number") {
+            return (
+              <ul key={key} style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
+                <li className=" py-2 px-2 border-top-1 border-300 ">
+                  <div className="flex justify-content-start flex-wrap">
+                    <label className="text-900  font-medium">{key.split("_").length == 1 ? key.charAt(0).toUpperCase() + key.slice(1).toLowerCase() : key.split("_")[0].charAt(0).toUpperCase() + key.split("_")[0].slice(1).toLowerCase() + " " + key.split("_")[1].charAt(0).toUpperCase() + key.split("_")[1].slice(1).toLowerCase()}</label>
+                  </div>
+                  <div className="flex justify-content-end flex-wrap">
+                    <label className="text-900">{value}</label>
+                  </div>
+                </li>
+              </ul>
+            )
+          }
+          else {
+            return null;
+          }
+        })}
       </div>
     );
   };
@@ -129,37 +129,38 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
     }
     console.log(newTemplate, "whta's the parameters");
 
-      return (
-        <div key={`${asset?.id}-${asset?.type}`}>
-          {Object.keys(newTemplate).map((template, index) => (
-            <ul key={newTemplate[template].title} style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
-              <li className=" py-2 px-2 border-top-1 border-300 ">
-                <div className="flex justify-content-start flex-wrap">
-                  <label className="text-900  font-medium" >{newTemplate[template].title}
-                  </label>
-                  <span className="ml-1 text-gray-500">{newTemplate[template].unit}</span>
-                </div>
-                <div className="flex justify-content-end flex-wrap">
-                  <label className="text-900 ">{asset[template]}</label>
-                </div>
-              </li>
-            </ul>
-          ))}
-        </div>
-      )
-    
+    return (
+      <div key={`${asset?.id}-${asset?.type}`}>
+        {Object.keys(newTemplate).map((template, index) => (
+          <ul key={newTemplate[template].title} style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
+            <li className=" py-2 px-2 border-top-1 border-300 ">
+              <div className="flex justify-content-start flex-wrap">
+                <label className="text-900  font-medium" >{newTemplate[template].title}
+                </label>
+                <span className="ml-1 text-gray-500">{newTemplate[template].unit}</span>
+              </div>
+              <div className="flex justify-content-end flex-wrap">
+                <label className="text-900 ">{asset[template]}</label>
+              </div>
+            </li>
+          </ul>
+        ))}
+      </div>
+    )
+
   }
 
 
   return (
     <div className="mt-1 ml-1">
-       <Toast ref={toast} />
-      <h1 style={{ fontSize: "22px", fontWeight: "bold", marginTop: "1px" }}>
-        Asset Details
-      </h1>
+      <Toast ref={toast} />
+
       <div className=" mt-2" style={{ width: "100%" }}>
         <div style={{ overflow: 'auto', maxHeight: 'calc(100vh - 80px)' }}>
           <Card className="border-gray-800 border-1 border-round-lg">
+            <h1 style={{ fontSize: "22px", fontWeight: "bold", marginTop: "2.2rem" }}>
+              Asset Details
+            </h1>
             <div className="card">
               <Button
                 icon="pi pi-times"

@@ -166,7 +166,7 @@ const Login: React.FC = () => {
                 <h1>Welcome</h1>
             ) : (
                 <>
-                    <Card className="flex card" style={{ marginTop: "50px", width: "500px", height: "600px" }}>
+                    <Card className="flex login-card" style={{ marginTop: "50px", width: "500px", height: "600px" }}>
                         <h1 style={{ color: "white", marginTop: "5px" }}> Fleet Manager 5.0 </h1>
                     </Card>
                     <Card className="flex"
