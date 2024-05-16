@@ -25,6 +25,7 @@ import { Button } from "primereact/button";
 import axios from "axios";
 import { Toast, ToastMessage } from "primereact/toast";
 import "../../public/styles/asset-view.css";
+import { useTranslation } from "next-i18next";
 interface AssetDetailsCardProps {
   asset: Asset | null;
   setShowExtraCard: any;
@@ -42,7 +43,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
   const [templateKeys, setTemplateKeys] = useState<string[]>([]);
   const [templateObject, setTemplateObject] = useState<any>({});
   const toast = useRef<any>(null);
-
+  const { t } = useTranslation('overview');
   const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
     toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
   };
@@ -115,7 +116,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
         {asset && (
           <div>
             <p>
-              <h5>Use Factory Manager to manage relationships.</h5>
+              <h5>{t('relationCommand')}</h5>
             </p>
           </div>
         )}

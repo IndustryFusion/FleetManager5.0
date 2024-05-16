@@ -219,6 +219,7 @@ const Asset: React.FC = () => {
     };
 
     const actionItemsTemplate = (rowData: Asset): React.ReactNode => {
+        let deleteWarning = t('overview:deleteWarning');
         return (
             <div className="flex">
                 <button
@@ -229,7 +230,7 @@ const Asset: React.FC = () => {
                 </button>
                 <button
                     className="action-items-btn"
-                    onClick={() => rowData && window.confirm("Are you sure you want to delete this asset?")
+                    onClick={() => rowData && window.confirm(deleteWarning)
                         ? handleDeleteAsset(rowData?.id) : null // Call the delete function with the selected product's ID
                     }
                 >
@@ -406,7 +407,7 @@ const Asset: React.FC = () => {
                             <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
                             <Column
                                 field="product_name"
-                                header="Product Name"
+                                header={t('overview:productName')}
                                 body={productNameBodyTemplate}
                                 style={{ width: "160px" }}
                                 sortable
@@ -414,53 +415,53 @@ const Asset: React.FC = () => {
                             ></Column>
                             <Column
                                 field="product_icon"
-                                header="Product Image"
+                                header={t('overview:productImage')}
                                 body={productIconTemplate}
                                 style={{ width: "160px" }}
                             ></Column>
                             <Column
                                 field="asset_type"
-                                header="Asset Type"
+                                header={t('overview:assetType')}
                                 body={assetTypeBodyTemplate}
                                 style={{ width: "150px" }}
                             >
                             </Column>
                             <Column
                                 field="asset_manufacturer_name"
-                                header="Manufacturer"
+                                header={t('overview:manufacturer')}
                                 body={manufacturerDataTemplate}
                                 style={{ width: "120px" }}
                             ></Column>
                             <Column
                                 field="manufacturing_year"
-                                header="Manufacturing Year"
+                                header={t('overview:manufacturingYear')}
                                 sortable
                                 style={{ width: "100px" }}
                             ></Column>
                             <Column
                                 field="asset_serial_number"
-                                header="Serial Number"
+                                header={t('overview:serialNumber')}
                             ></Column>
                             <Column
                                 field="creation_date"
-                                header="Creation Date"
+                                header={t('overview:creationDate')}
                                 sortable
                             >
                             </Column>
                             <Column field="voltage_type"
-                                header="Voltage Type"
+                                header={t('overview:voltageType')}
                             ></Column>
                             <Column
                                 field="asset_category"
-                                header="Category"
+                                header={t('overview:catagory')}
                                 sortable></Column>
                             <Column
                                 field="asset_communication_protocol"
-                                header="Protocol"
+                                header={t('overview:protocol')}
                                 style={{ width: "100px" }}
                             ></Column>
                             <Column field="asset_status"
-                                header="Asset Status"
+                                header={t('overview:assetStatus')}
                                 body={statusBodyTemplate}
 
                             ></Column>

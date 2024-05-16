@@ -66,7 +66,7 @@ const createAssetForm: React.FC = () => {
     asset_manufacturer_name: false,
     asset_serial_number: false
   })
-  const { t } = useTranslation('button');
+  const { t } = useTranslation(['button', 'asset']);
 
   useEffect(() => {
     const updatedList = selectedRelations.map((relation) => {
@@ -530,7 +530,7 @@ const createAssetForm: React.FC = () => {
                         width: "90% !important",
                         marginTop: "1%",
                       }}
-                      chooseLabel="Upload File"
+                      chooseLabel={t('asset:uploadFile')}
                     />
                     {fileLoading[key] && <p>Loading...</p>}
                   </div>
@@ -606,7 +606,7 @@ const createAssetForm: React.FC = () => {
       <div className="" style={{ padding: "1rem 1rem 2rem 4rem", zoom: "80%" }}>
         <div>
           <p className="hover" style={{ fontWeight: "bold", fontSize: "1.8rem", marginTop: "100px" }}>
-            Create Asset
+            {t('asset:createAsset')}
           </p>
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form </h5>
         </div>
@@ -621,10 +621,10 @@ const createAssetForm: React.FC = () => {
               </div>
               <div className="flex">
                 <div className="p-field col-8 mt-3 flex flex-column">
-                  <label className="relations-label">Relations</label>
+                  <label className="relations-label">{t('asset:relations')}</label>
                   {filterOptions.length === 0 ?
-                    (<label style={{ fontSize: "15px", marginTop: "10px" }}>No Relations Exists for this Template.</label>) :
-                    (<label style={{ fontSize: "15px", marginTop: "10px" }}>Below Relations can be added in Factory Manager.</label>)}
+                    (<label style={{ fontSize: "15px", marginTop: "10px" }}>{t('asset:noRelation')}</label>) :
+                    (<label style={{ fontSize: "15px", marginTop: "10px" }}>{t('asset:addRelation')}</label>)}
                   <ListBox
                     options={filterOptions}
                     optionLabel="label"
@@ -634,7 +634,7 @@ const createAssetForm: React.FC = () => {
               </div>
               <div className="form-btn-container mb-6  flex justify-content-end align-items-center">
                 <Button
-                  label={t('cancel')}
+                  label={t('button:cancel')}
                   severity="danger"
                   outlined
                   className="mr-2"
@@ -645,13 +645,13 @@ const createAssetForm: React.FC = () => {
                   severity="secondary"
                   text
                   raised
-                  label={t('reset')}
+                  label={t('button:reset')}
                   className="mr-2 reset-btn"
                   type="button"
                   onClick={handleReset}
                 />
                 <Button
-                  label={t('submit')}
+                  label={t('button:submit')}
                   type="submit"
                   onSubmit={handleSubmit}
                   className="border-none    ml-2 mr-2"
@@ -672,7 +672,8 @@ export async function getServerSideProps({ locale }: { locale: string }) {
       ...(await serverSideTranslations(locale, [
         'header',
         'button',
-        'placeholder'
+        'placeholder',
+        'asset'
       ])),
     },
   }

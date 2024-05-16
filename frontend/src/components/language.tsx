@@ -18,37 +18,32 @@ import "../app/flag.css";
 import React, { useEffect, useState } from "react";
 import { Dropdown } from 'primereact/dropdown';
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/state/store";
-import { create, reset } from "@/state/language/languageSlice";
 interface localeObject {
     name: string;
     code: string;
 }
 const Language: React.FC = () => {
     const router = useRouter();
-    const dispatch = useDispatch();
-    const languageRedux = useSelector((state: RootState) => state.language);
-    console.log('languageRedux ',languageRedux);
+    const { locale } = useRouter();
     const [selectedLanguage, setSelectedLanguage] = useState<{ name: string; code: string } | null>({ name: 'EN', code: 'US' });
     const countries = [
         { name: 'EN', code: 'US' },
         { name: 'DE', code: 'DE' }
     ];
     useEffect(()=> {
-        if(languageRedux.name.length > 0){
-            setSelectedLanguage(languageRedux);
+        if(locale){
+            countries.forEach(data => {
+                if(data.name == locale.toLocaleUpperCase()){
+                    setSelectedLanguage(data);
+                }
+            });
         }
-    },[languageRedux])
+    },[])
     
     const changeLocale = (newLocale: any) => {
         setSelectedLanguage(newLocale);
         const { pathname, asPath, query } = router;
         router.push({ pathname, query }, asPath, { locale: newLocale.code == 'US' ? 'en' : newLocale.code.toLowerCase() });
-        dispatch(create({
-            name: newLocale.name,
-            code: newLocale.code
-        }));
     }
 
     const selectedLanguageTemplate = (option: localeObject, props: any) => {
