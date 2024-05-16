@@ -2,11 +2,10 @@
 .list-row-even {
      background-color: #e2e5e685; /* Light grey for odd rows */
 }
-
 .list-row-odd {
    background-color: #FFFFFF; /* White for even rows */
 }
 
-
-
-
+.general-tab .p-tabview-panel {
+    margin-left: -4%;
+}
