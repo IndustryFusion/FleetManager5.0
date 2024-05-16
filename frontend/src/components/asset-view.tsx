@@ -94,7 +94,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
                         {key.split("_").map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(" ")}
                       </label>
                     </div>
-                    <span className="text-900" style={{ marginLeft: value.length > 20 ? '5%' : '40%' }}>{value}</span>
+                    <span className="text-900" style={{ marginLeft: value.length > 10 ? '5%' : '40%' }}>{value}</span>
                 </div>
               </li>
             </ul>
