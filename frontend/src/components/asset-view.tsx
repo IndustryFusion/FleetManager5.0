@@ -90,11 +90,11 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
               <li className={`py-2 px-2 ${rowClass}`} style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div className="flex justify-content-between align-items-center" style={{ width: '100%', padding: '1vh 2vw' }}>
                     <div className="flex align-items-center">
-                      <label className="text-900 font-medium ">
+                      <label className="text-900 font-medium -ml-4 ">
                         {key.split("_").map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(" ")}
                       </label>
                     </div>
-                    <span className="text-900" style={{ marginLeft: value.length > 10 ? '5%' : '40%' }}>{value}</span>
+                    <span className="text-900 ml-4" >{value}</span>
                 </div>
               </li>
             </ul>
@@ -182,9 +182,9 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
             </div>
             <div className="card">
               <TabView scrollable className="general-tab">
+                <TabPanel header="Parameters" leftIcon="pi pi-link mr-2" > {renderParametersContent()} </TabPanel>
                 <TabPanel header="General" leftIcon="pi pi-list mr-2" > {renderGeneralContent()} </TabPanel>
                 <TabPanel header="Relation" leftIcon="pi pi-link mr-2" > {renderRelationsContent()} </TabPanel>
-                <TabPanel header="Parameters" leftIcon="pi pi-link mr-2" > {renderParametersContent()} </TabPanel>
               </TabView>
             </div>
           </Card>
