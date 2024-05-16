@@ -40,7 +40,7 @@ type Template = {
 };
 const initialTemplates: Template[] = [];
 
-const cardTitleStyle = { fontSize: "17px", color: "rgb(0, 51, 0)", padding: "1rem, 2rem, 1rem, 2rem" };
+const cardTitleStyle = { fontSize: "19px", color: "#000", padding: "1rem, 2rem, 1rem, 2rem" };
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const GetListTemplate: React.FC = () => {
@@ -170,9 +170,9 @@ const GetListTemplate: React.FC = () => {
     <BlockUI blocked={loading}>
       <HorizontalNavbar />
       <Toast ref={toast} />
-      <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "85%" }}>
-        <div className="flex gap-5">
-          <p className="hover" style={{ fontWeight: "bold", fontSize: "2rem", marginTop: "80px" }}>
+      <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "85%",margin:"2rem 0" }}>
+        <div className="flex gap-5 mb-5">
+          <p className="hover" style={{ fontWeight: "bold", fontSize: "1.5rem", marginTop: "80px", marginLeft:"4px" }}>
             Asset Templates
           </p>
           <div style={{ marginTop: "5rem", marginLeft: "30rem"}}>
@@ -182,7 +182,7 @@ const GetListTemplate: React.FC = () => {
                         value={searchTemplate}
                         onChange={onFilter}
                         placeholder={t('placeholder:searchByTemplate')}
-                        style={{ borderRadius: "10px", width:"30rem", height:"3.5rem", marginLeft:"2rem"}} 
+                        style={{ borderRadius: "10px", width:"30rem", height:"3.5rem"}} 
                         type="search"
                       />    
             </span>

@@ -45,8 +45,8 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
   const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
     toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
-};
- 
+  };
+
 
   useEffect(() => {
     const fetchSchema = async () => {
@@ -73,7 +73,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
   }, []);
 
 
- 
+
 
 
  const renderGeneralContent = (): JSX.Element => {
