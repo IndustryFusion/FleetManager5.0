@@ -472,7 +472,7 @@ const Asset: React.FC = () => {
                     </div>
                 </div>
                 {showExtraCard &&
-                    <div style={{ width: "30%" }}>
+                    <div style={{ width: "45%" }}>
                         <AssetDetailsCard asset={selectedProduct} setShowExtraCard={setShowExtraCard} />
                     </div>
                 }
