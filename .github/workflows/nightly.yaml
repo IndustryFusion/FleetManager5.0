@@ -45,6 +45,9 @@ jobs:
       DOCKER_TAG: ${{ needs.build.outputs.DOCKER_TAG }}
     secrets:
       PRIVATE_GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_TOKEN }}
-      S3_URL: ${{ secrets.S3_URL }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
+      USERNAME: ${{ secrets.S3_ACCESS_KEY }}
+      PASSWORD: ${{ secrets.S3_SECRET_KEY }}
+      
