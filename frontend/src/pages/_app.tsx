@@ -22,7 +22,7 @@ import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import "primeicons/primeicons.css";
 import '../static/jank-empty.css';
 import { Provider } from "react-redux";
-import { store } from "@/state/store";
+import { store } from "@/redux/store";
 import { appWithTranslation } from "next-i18next";
 
 // Import your custom components or layout components

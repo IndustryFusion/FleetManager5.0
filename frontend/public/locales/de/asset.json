@@ -1,0 +1,9 @@
+{
+    "createAsset": "Asset erstellen",
+    "editAsset": "Asset bearbeiten",
+    "uploadFile": "Datei hochladen",
+    "choose": "Wählen",
+    "relations": "Beziehungen",
+    "addRelation": "Beziehungen können im Factory Manager hinzugefügt werden.",
+    "noRelation": "Für diese Vorlage sind keine Beziehungen vorhanden."
+}

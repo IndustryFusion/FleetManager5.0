@@ -95,7 +95,7 @@ const HorizontalNavbar: React.FC = () => {
 
   const handleLogout = () => {
     Cookies.set("login_flag", "false");
-    router.push("/login");
+    router.push("/login", undefined, {locale: 'en'});
     dispatch(resetTimer());
     dispatch(logout());
   };

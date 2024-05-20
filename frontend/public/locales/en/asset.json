@@ -1,0 +1,9 @@
+{
+    "createAsset": "Create Asset",
+    "editAsset": "Edit Asset",
+    "uploadFile": "Upload File",
+    "choose": "Choose",
+    "relations": "Relations",
+    "addRelation": "Relations can be added in Factory Manager.",
+    "noRelation": "No Relations Exists for this Template."
+}

@@ -1,5 +1,20 @@
 {
     "assetOverview": "Vermögensübersicht",
     "newAsset": "Neues Asset",
-    "export": "Asset erstellen"
+    "export": "Asset erstellen",
+    "productName": "Produktname",
+    "productImage": "Produktbild",
+    "assetType": "Asset-Typ",
+    "manufacturer": "Hersteller",
+    "manufacturingYear": "Herstellungsjahr",
+    "serialNumber": "Seriennummer",
+    "creationDate": "Erstellungsdatum",
+    "voltageType": "Spannungstyp",
+    "catagory": "Kategorie",
+    "protocol": "Protokoll",
+    "assetStatus": "Vermögensstatus",
+    "deleteWarning": "Sind Sie sicher, dass Sie dieses Asset löschen möchten?",
+    "ok": "OK",
+    "cancel": "Stornieren",
+    "relationCommand": "Verwenden Sie Factory, um Beziehungen zu verwalten."
 }

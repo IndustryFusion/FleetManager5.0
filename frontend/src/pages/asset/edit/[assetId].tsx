@@ -66,7 +66,7 @@ const AssetEdit = () => {
   })
   const msgs = useRef<Messages>(null);
   const toast = useRef<Toast>(null);
-  const { t } = useTranslation('button');
+  const { t } = useTranslation(['button','asset']);
 
   useEffect(() => {
     if (Cookies.get("login_flag") === "false") { router.push("/login"); }
@@ -328,13 +328,15 @@ const AssetEdit = () => {
   };
 
   const handleFileLabel = (value: any) => {
-    if (value !== null) {
+    if (value !== null && value !== 'NULL') {
       if (value && (typeof value == 'string') && (value.includes('png') || value.includes('jpg') || value.includes('jpeg') || value.includes('.pdf'))) {
 
         console.log("updatedData ", value.split('/').pop());
         return value.split('/').pop();
       }
-    } else return "Upload File";
+    } else {
+      return t('asset:uploadFile');
+    }
   };
 
   const renderField = (id: string, key: string, property: Property) => {
@@ -501,7 +503,7 @@ const AssetEdit = () => {
       <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "80%" }}>
         <div>
           <p className="hover " style={{ fontWeight: "bold", fontSize: "1.8rem", marginTop: "100px" }}>
-            Edit Asset
+            {t('asset:editAsset')}
           </p>
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form --  {asset.id}</h5>
         </div>
@@ -517,13 +519,13 @@ const AssetEdit = () => {
               </div>
               <div className="flex">
                 <div className="p-field col-13 mt-3 flex flex-column">
-                  <label className="relations-label">Relations</label>
-                  <label style={{ fontSize: "15px", marginTop: "10px" }}> Relations can be added in Factory Manager.</label>
+                  <label className="relations-label">{t('button:relations')}</label>
+                  <label style={{ fontSize: "15px", marginTop: "10px" }}>{t('button:addRelation')}</label>
                 </div>
               </div>
               <div className="form-btn-container mb-6  flex justify-content-end align-items-center">
                 <Button
-                  label={t('cancel')}
+                  label={t('button:cancel')}
                   severity="danger"
                   outlined
                   className="mr-2"
@@ -534,13 +536,13 @@ const AssetEdit = () => {
                   severity="secondary"
                   text
                   raised
-                  label={t('reset')}
+                  label={t('button:reset')}
                   className="mr-2 reset-btn"
                   type="button"
                   onClick={handleReset}
                 />
                 <Button
-                  label={t('submit')}
+                  label={t('button:submit')}
                   type="submit"
                   onSubmit={handleSubmit}
                   className="border-none    ml-2 mr-2"
@@ -563,7 +565,8 @@ export async function getServerSideProps({ locale }: { locale: string }) {
       ...(await serverSideTranslations(locale, [
         'header',
         'button',
-        'placeholder'
+        'placeholder',
+        'asset'
       ])),
     },
   }
