@@ -39,7 +39,6 @@ export class AssetService {
     try {
       const templateData = [];
       const templates = await this.templatesService.getTemplates();
-      console.log('templates while fetching all assets', templates);
       const headers = {
         'Content-Type': 'application/ld+json',
         'Accept': 'application/ld+json'
@@ -170,7 +169,7 @@ export class AssetService {
             'Content-Type': 'application/json'
           }
         })
-        console.log('ifricResponse ',ifricResponse.data);
+    
         if(ifricResponse.data.status == '201'){
           const result = {
             "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
@@ -178,7 +177,7 @@ export class AssetService {
             "type": data.type
           }
           let templateData = await this.templatesService.getTemplateById(id);
-          console.log('data ',data.properties);
+       
           let statusCount = -1, totalCount = -2;
           const templateProperties = templateData[0].properties;
           for(let key in templateProperties) {
@@ -241,8 +240,7 @@ export class AssetService {
               }
             }
           }
-          console.log('totalCount ',totalCount);
-          console.log('statusCount ',statusCount);
+        
           let statusValue: string;
           if(statusCount === totalCount) {
             statusValue = "complete"
@@ -254,11 +252,10 @@ export class AssetService {
             value: statusValue
           }
   
-          console.log('result ',result);
-  
+     
           //store the template data to scorpio
           const response = await axios.post(this.scorpioUrl, result, { headers });
-          console.log('response ', response.statusText);
+      
           return {
             id: result.id,
             status: response.status,

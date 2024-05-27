@@ -37,7 +37,6 @@ const login = async (username: string, password: string): Promise<Boolean> => {
    
     try {
         const response: AxiosResponse<Boolean> = await axios.post(loginUrl as string, data, { headers });
-        console.log('response ',response);
         if (response.data) {
           return response.data;
         }

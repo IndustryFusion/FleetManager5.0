@@ -49,7 +49,7 @@ export class FileController {
 
     async fileUpload(@UploadedFile() file) {
       try {
-        console.log('file ',file);
+       
         return await this.fileService.fileUpload({
           ...file
         }, 'image');

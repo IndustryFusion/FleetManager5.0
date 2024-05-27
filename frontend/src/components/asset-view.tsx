@@ -62,7 +62,6 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
           }
         })
 
-        // console.log(response.data?.[0]?.properties, "what's tenplate response");
         setTemplateKeys(Object.keys(response.data?.[0]?.properties));
         setTemplateObject(response.data?.[0]?.properties)
       } catch (error: any) {

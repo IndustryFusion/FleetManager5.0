@@ -94,7 +94,6 @@ const Asset: React.FC = () => {
                 const updatedAssets = assets.filter(asset => asset.id !== assetId)
                 setAssets(updatedAssets)
                 showToast('success', 'Deleted success', 'Asset deleted successfully')
-                console.log("Asset deleted successfully");
             } else {
                 console.error("Failed to delete asset");
             }
@@ -112,8 +111,6 @@ const Asset: React.FC = () => {
     const fetchAsset = async () => {
         try {
             const response = await fetchAssets();
-            console.log(response, "assets data");
-
             setAssets(response || []);
 
         } catch (error: any) {
@@ -224,7 +221,7 @@ const Asset: React.FC = () => {
             <div className="flex">
                 <button
                     className="action-items-btn"
-                    onClick={() => { router.push(`/asset/edit/${rowData?.id}`); console.log("rowData", rowData) }}
+                    onClick={() => { router.push(`/asset/edit/${rowData?.id}`) }}
                 >
                     <i className="pi pi-pencil"></i>
                 </button>
@@ -252,7 +249,6 @@ const Asset: React.FC = () => {
     }
 
     const statusBodyTemplate = (rowData: Asset): React.ReactNode => {
-        console.log("rowValue", rowData);
         return (
             <div>
                 {rowData?.asset_status === 'complete' ?
@@ -277,7 +273,6 @@ const Asset: React.FC = () => {
 
     const exportJsonData = async () => {
         let newExportdata = []
-        console.log(searchedAssets);
         for (let i = 0; i < selectedAssets?.length; i++) {
             try {
                 const response = await axios.get(
@@ -306,10 +301,6 @@ const Asset: React.FC = () => {
         link.download = "data.json";
         link.click();
     };
-
-    console.log(searchedAssets, "what's the array");
-
-
 
     const onFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -396,7 +387,6 @@ const Asset: React.FC = () => {
                             selection={selectedAssets}
                             onSelectionChange={(e) => {
                                 if (Array.isArray(e.value)) {
-                                    console.log("selected value", e.value)
                                     setSelectedAssets(e.value);
                                 }
                                 else {

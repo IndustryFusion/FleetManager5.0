@@ -133,9 +133,9 @@ export class TemplatesService {
 
   async getTemplateByName(name: string): Promise<TemplateDescriptionDto[]> {
     try {
-      console.log('name ',name);
+  
       let splitArr = name.split(/[\s!-,]+/);
-      console.log('splitArr ',splitArr);
+ 
       splitArr[0] = splitArr[0].toLowerCase();
       for (let i = 1; i < splitArr.length; i++) {
         splitArr[i] = splitArr[i].charAt(0).toUpperCase() + splitArr[i].slice(1);
@@ -144,11 +144,8 @@ export class TemplatesService {
       // Join the modified words back together
       let finalName = splitArr.join('');
       finalName = `${finalName}_schema.json`;
-      console.log('finalName ',finalName);
       const url = `${this.baseUrl}/${finalName}`;
-      console.log('url ',url);
       const templateDescriptions: TemplateDescriptionDto[] = [];
-
       const headers = {
         Authorization: 'Bearer ' + this.token,
         'Content-Type': 'application/json',

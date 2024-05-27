@@ -46,7 +46,7 @@ export class FileService {
     };
     try {
       const response = await s3.upload(s3UploadParams).promise();
-      console.log('response ',response);
+  
       return response.Location;
     } catch (err) {
       throw new Error(`Error uploading file to IONOS S3: ${err}`);

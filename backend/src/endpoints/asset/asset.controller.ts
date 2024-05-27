@@ -57,7 +57,6 @@ export class AssetController {
   @Get(':id/keyvalues')
   async getkeyValuesById(@Param('id') id: string, @Req() req: Request) {
     try {
-      console.log('inside keyvalues func');
       return await this.assetService.getkeyValuesById(id);
     } catch (err) {
       throw new NotFoundException();

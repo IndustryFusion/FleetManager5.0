@@ -112,7 +112,6 @@ const AssetEdit = () => {
         } else {
           acc[key] = assetData[key];
         }
-        console.log("fetchedData", acc);
         return acc;
 
       }, {} as Asset);
@@ -138,9 +137,7 @@ const AssetEdit = () => {
           const templateId = btoa(asset.type);
           const templateName = (asset.type.replace("https://industry-fusion.org/types/v0.1/", "")).toLowerCase();
           setAssetType(templateName);
-          console.log("templateId", templateName);
           const response = await fetch(API_URL + `/templates/${templateId}`);
-          console.log("response ", response);
           const data = await response.json();
           if (data && Array.isArray(data)) {
             const template = data[0];
@@ -171,17 +168,7 @@ const AssetEdit = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    console.log(updatedData, "what's the edited data");
-   
     const { product_name, asset_manufacturer_name, asset_serial_number,current_date } = updatedData;
-    
-    console.log(product_name, asset_manufacturer_name,current_date, "its updatedData");
-     
-   
-
-   
-
-
     const assetKeys = Object.keys(validateAsset);
     for (let assetKey of assetKeys) {
       if (updatedData[assetKey] === "") {
@@ -191,7 +178,6 @@ const AssetEdit = () => {
 
     if (product_name === "" ||
       asset_manufacturer_name === "" || asset_serial_number === "") {
-      console.log("is coming here");
       showToast('error', "Error", "Please fill all required fields")
     } else {
       if (Object.keys(updatedData).length > 0) {
@@ -206,7 +192,6 @@ const AssetEdit = () => {
           type: "Property",
           value: moment().format('DD.MM.YYYY HH:mm:ss')
         };
-        console.log("payload ", payload);
         try {
           const response = await axios.patch(
             API_URL + `/asset/${formData.id}`,
@@ -219,7 +204,6 @@ const AssetEdit = () => {
               withCredentials: true,
             }
           );
-          console.log("response ", response);
           if (response.data.success) {
             showToast('success', 'Edited Successfully', 'data updated succesfully');
             router.back();
@@ -324,14 +308,11 @@ const AssetEdit = () => {
       setFormData({ ...formData, [key]: value });
       setUpdatedData({ ...updatedData, [key]: value });
     }
-    console.log("updatedData ", updatedData);
   };
 
   const handleFileLabel = (value: any) => {
     if (value !== null && value !== 'NULL') {
       if (value && (typeof value == 'string') && (value.includes('png') || value.includes('jpg') || value.includes('jpeg') || value.includes('.pdf'))) {
-
-        console.log("updatedData ", value.split('/').pop());
         return value.split('/').pop();
       }
     } else {
