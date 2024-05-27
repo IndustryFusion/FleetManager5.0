@@ -80,7 +80,7 @@ const createAssetForm: React.FC = () => {
     });
 
     setSelectedRelationsList(updatedList);
-    console.log("updatedlist", updatedList);
+
   }, [selectedRelations]);
 
   const showToast = (severity: ToastMessage['severity'], summary: string, message: string) => {
@@ -90,14 +90,11 @@ const createAssetForm: React.FC = () => {
   useEffect(() => {
     const fetchData = async (templateId: string | any) => {
       if (templateId) {
-
-        console.log("template", templateId);
         try {
           const response = await fetch(
             API_URL + `/templates/${templateId}`
           );
           const data = await response.json();
-          console.log("TempData", data[0].title);
           setAssetType(data[0].title);
           const assetCategoryType = data[0].title;
           const assetCategoryTypeXX = assetCategoryType.replace(" template", "");
@@ -133,8 +130,6 @@ const createAssetForm: React.FC = () => {
             }));
 
             setFilterOptions(filterOptions);
-
-            console.log("FilterOptions: ", filterOptions);
           } else {
             showToast('error','Error', 'Fetched data is not in the expected format');
             console.error("Fetched data is not in the expected format");
@@ -161,9 +156,6 @@ const createAssetForm: React.FC = () => {
       }
     }
   }, [router.isReady]);
-
-  console.log(schema?.properties, "what's the schema here");
-  
 
   const validateInput = (key: string) => {
     const assetKeys = Object.keys(validateAsset);
@@ -218,15 +210,12 @@ const createAssetForm: React.FC = () => {
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
         const result = await response.json();
-        console.log("File uploaded, URL:", result.url);
-
         // Store the URL in the formData state
         setFormData({ ...formData, [key]: result.url });
         // track uploaded file key
         setUploadedFileKeys((prevKeys) => [...prevKeys, key]);
       } else {
         const text = await response.text();
-        console.log("Response received:", text);
         setFormData({ ...formData, [key]: text });
         // Track uploaded file key
         setUploadedFileKeys((prevKeys) => [...prevKeys, key]);
@@ -253,7 +242,6 @@ const createAssetForm: React.FC = () => {
       description,
       properties: { ...properties }
     };
-    console.log("submissionData", submissionData);
    
     const {product_name,asset_manufacturer_name, asset_serial_number } = submissionData?.properties;
     
@@ -268,7 +256,6 @@ const createAssetForm: React.FC = () => {
     if (product_name === undefined || product_name === "" || 
     asset_manufacturer_name === undefined || asset_manufacturer_name === "" 
     || asset_serial_number === undefined || asset_serial_number === "") {
-      console.log("is coming here");    
       showToast('error', "Error", "Please fill all required fields")
     }
 
@@ -287,8 +274,6 @@ const createAssetForm: React.FC = () => {
         );
   
         setIsFormSubmitted(true); // Set the flag to true on successful submission
-        console.log("Submitted data:", submissionData);
-        console.log("Response from server:", response.data);
         if (response.data.success) {
           showToast('success', 'Added Successfully', 'new asset added successfully')
       router.push("/asset-overview");
@@ -551,7 +536,6 @@ const createAssetForm: React.FC = () => {
       return null;
     }
 
-    console.log("relationType:", relationType);
 
     const fetchTemplates = async () => {
       try {
@@ -561,7 +545,6 @@ const createAssetForm: React.FC = () => {
           },
         });
 
-        console.log("Fetched data:", response.data);
         return response.data;
       } catch (error) {
         console.error("Error fetching templates:", error);
@@ -570,13 +553,10 @@ const createAssetForm: React.FC = () => {
     };
 
     const templates = await fetchTemplates();
-    console.log("Templates data:", templates);
 
     const formattedRelationType = relationType
       .replace("https://industry-fusion.org/types/v0.1/", "")
       .toLowerCase();
-
-    console.log("Formatted Relation Type:", formattedRelationType);
 
     const matchingTemplate = templates.find((template: any) => {
       const formattedTitle = template.title
@@ -585,19 +565,13 @@ const createAssetForm: React.FC = () => {
         .join("")
         .toLowerCase();
 
-      console.log("Formatted Title:", formattedTitle);
-
       return formattedTitle === formattedRelationType;
     });
 
-    console.log("Matching Template:", matchingTemplate);
 
     return matchingTemplate ? matchingTemplate.id : null;
   };
 
-
-
-  console.log(schema.properties , "what's all property");
 
   return (
     <BlockUI blocked={loading}>

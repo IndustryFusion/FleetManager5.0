@@ -23,7 +23,6 @@ const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
     // Function to map the backend data to the Asset structure
     const mapBackendDataToAsset = (backendData: any[]): Asset[] => {
-        console.log("Before Formatting", backendData);
 
         return backendData.map((item: any) => {
             const newItem: any = {};
@@ -63,11 +62,10 @@ export  const fetchAssets = async () => {
         });
 
         const responseData = response.data;
-        console.log(responseData , "what's the response from assets");
-        
+
         const mappedData = mapBackendDataToAsset(responseData);
         return mappedData;
-        console.log("Formatted data:: ", mappedData);       
+
     } catch (error:any) {
           console.error("Error:", error);  
       }

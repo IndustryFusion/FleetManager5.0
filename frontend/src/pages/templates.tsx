@@ -72,7 +72,6 @@ const GetListTemplate: React.FC = () => {
           },
         });
 
-        console.log("Fetched data:", response.data);
         setTemplates(response.data);
 
         // Storing data in localStorage
