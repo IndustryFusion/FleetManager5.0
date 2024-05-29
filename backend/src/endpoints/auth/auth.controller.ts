@@ -28,7 +28,6 @@ export class AuthController {
     try {
       return this.authService.login(req.body.username, req.body.password)
     } catch (err) {
-      console.log('Login Error ',err);
       throw new err;
     }
   }

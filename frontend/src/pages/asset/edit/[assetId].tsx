@@ -57,6 +57,7 @@ const AssetEdit = () => {
   >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [assetType, setAssetType] = useState<string>();
+  const [dynamicUrl, setDynamicUrl] = useState<string>('');
   const [fileLoading, setFileLoading] = useState<FileLoadingState>({});
   const [fileUploadKey, setFileUploadKey] = useState(0);
   const [validateAsset, setValidateAsset] = useState({
@@ -98,16 +99,13 @@ const AssetEdit = () => {
 
       // Flatten and format the data structure for the form
       const flattenedData = Object.keys(assetData).reduce((acc: any, key) => {
-        if (key.includes("http://www.industry-fusion.org/schema#")) {
-          const newKey = key.replace(
-            "http://www.industry-fusion.org/schema#",
-            ""
-          );
+        if (key.includes("/")) {
+          const newKey = key.split('/').pop() || '';
+          setDynamicUrl(key.split(newKey)[0]);
           if (newKey.includes("has")) {
             acc[newKey] = assetData[key].object;
           } else {
             acc[newKey] = assetData[key].value;
-
           }
         } else {
           acc[key] = assetData[key];
@@ -135,7 +133,7 @@ const AssetEdit = () => {
           setFormData(asset);
           setAsset(asset);
           const templateId = btoa(asset.type);
-          const templateName = (asset.type.replace("https://industry-fusion.org/types/v0.1/", "")).toLowerCase();
+          const templateName = (asset.type.split("/").pop()).toLowerCase();
           setAssetType(templateName);
           const response = await fetch(API_URL + `/templates/${templateId}`);
           const data = await response.json();
@@ -168,34 +166,22 @@ const AssetEdit = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    const { product_name, asset_manufacturer_name, asset_serial_number,current_date } = updatedData;
     const assetKeys = Object.keys(validateAsset);
+    let checkFlag = false;
     for (let assetKey of assetKeys) {
-      if (updatedData[assetKey] === "") {
+      if (formData[assetKey] === "") {
         setValidateAsset(validateAsset => ({ ...validateAsset, [assetKey]: true }));
+        checkFlag = true;
       }
     }
-
-    if (product_name === "" ||
-      asset_manufacturer_name === "" || asset_serial_number === "") {
+    if (checkFlag) {
       showToast('error', "Error", "Please fill all required fields")
     } else {
       if (Object.keys(updatedData).length > 0) {
-        const payload = Object.keys(updatedData).reduce((acc: any, key: any) => {
-          acc[`http://www.industry-fusion.org/schema#${key}`] = {
-            type: "Property",
-            value: updatedData[key],
-          };
-          return acc;
-        }, {});
-        payload[`http://www.industry-fusion.org/schema#creation_date`] = {
-          type: "Property",
-          value: moment().format('DD.MM.YYYY HH:mm:ss')
-        };
         try {
           const response = await axios.patch(
             API_URL + `/asset/${formData.id}`,
-            payload,
+            updatedData,
             {
               headers: {
                 "Content-Type": "application/json",
@@ -215,13 +201,9 @@ const AssetEdit = () => {
           showToast('error', 'Error', error);
         }
       } else {
-
         showToast('info', 'Info', "you have not edited any field");
       }
     }
-
-
-
   };
 
   const handleCancel = (event: any) => {
@@ -233,10 +215,6 @@ const AssetEdit = () => {
     event.preventDefault();
     setFormData(asset);
     const newFormData = JSON.parse(JSON.stringify(formData));
-    newFormData.logo_manufacturer = formData.logo_manufacturer;
-    newFormData.product_icon = formData.product_icon;
-    newFormData.ce_marking = formData.ce_marking;
-    newFormData.documentation = formData.documentation;
 
     const assetKeys = Object.keys(validateAsset);
     for (let assetKey of assetKeys) {
@@ -272,10 +250,10 @@ const AssetEdit = () => {
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
         const result = await response.json();
-        setUpdatedData({ ...updatedData, [key]: result.url });
+        setUpdatedData({ ...updatedData, [`${dynamicUrl}${key.split(':').pop()}`]: result.url });
       } else {
         const text = await response.text();
-        setUpdatedData({ ...updatedData, [key]: text });
+        setUpdatedData({ ...updatedData, [`${dynamicUrl}${key.split(':').pop()}`]: text });
       }
     } catch (error: any) {
       console.error("Error uploading file:", error);
@@ -290,23 +268,13 @@ const AssetEdit = () => {
     setFocusedFields({ ...focusedFields, [key]: true });
   };
 
-  const validateInput = (key: string) => {
-    const assetKeys = Object.keys(validateAsset);
-    for (let assetKey of assetKeys) {
-      if (assetKey === key) {
-        setValidateAsset(validateAsset => ({ ...validateAsset, [key]: false }));
-      }
-    }
-  }
-
   const handleChange = (key: string, value: any) => {
     if (key === "file") {
       const file = value as File;
       setFile(file);
     } else {
-      validateInput(key)
-      setFormData({ ...formData, [key]: value });
-      setUpdatedData({ ...updatedData, [key]: value });
+      setFormData({ ...formData, [`${key.split(':').pop()}`]: value });
+      setUpdatedData({ ...updatedData, [`${dynamicUrl}${key.split(':').pop()}`]: value });
     }
   };
 
@@ -322,7 +290,8 @@ const AssetEdit = () => {
 
   const renderField = (id: string, key: string, property: Property) => {
     const fieldClass = "col-4";
-    const value = formData[key];
+    const checkKey = key.includes(':') ? key.split(':').pop() : key;
+    const value = checkKey ? formData[checkKey] : '';
 
     if (key.includes("has")) {
       return;
@@ -409,7 +378,7 @@ const AssetEdit = () => {
                 </label>
                 <InputNumber
                   id={key}
-                  value={value || ""}
+                  value={(value && value != 222) ? value : ""}
                   onChange={(e) => handleChange(key, e.value)}
                   className="p-inputtext-lg mt-2"
                   style={{ width: "90%" }}

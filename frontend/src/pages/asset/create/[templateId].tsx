@@ -157,15 +157,6 @@ const createAssetForm: React.FC = () => {
     }
   }, [router.isReady]);
 
-  const validateInput = (key: string) => {
-    const assetKeys = Object.keys(validateAsset);
-    for(let assetKey of assetKeys){   
-      if(assetKey === key){
-        setValidateAsset(validateAsset => ({ ...validateAsset, [key]: false }));    
-      }
-    }
-  }
-
   const handleFocus = (key: string) => {
     setFocusedFields({ ...focusedFields, [key]: true });
   };
@@ -176,8 +167,6 @@ const createAssetForm: React.FC = () => {
 
   const handleChange = (key: string, value: any) => {
     const fieldType = schema?.properties[key]?.type;
-    validateInput(key)
-
 
     // Update formData with both value and type
     setFormData({ ...formData, [key]: { value, type: fieldType } });
@@ -229,12 +218,12 @@ const createAssetForm: React.FC = () => {
   };
 
   const handleSubmit = async (event: any) => {
-    event.preventDefault();
+    event.preventDefault();    
     // Extract type, title, and description
     const { type, title, description, ...properties } = formData;
     const currentDate = moment().format('DD.MM.YYYY HH:mm:ss'); 
-    properties['asset_category'] = assetCategory;
-    properties['creation_date'] =  currentDate;
+    properties['iffs:asset_category'] = assetCategory;
+    properties['iffs:creation_date'] =  currentDate;
     // Structure the data for submission
     const submissionData = {
       type,
@@ -242,20 +231,17 @@ const createAssetForm: React.FC = () => {
       description,
       properties: { ...properties }
     };
-   
-    const {product_name,asset_manufacturer_name, asset_serial_number } = submissionData?.properties;
     
     const assetKeys = Object.keys(validateAsset);
-    for(let assetKey of assetKeys){   
-      if (submissionData?.properties[assetKey] === undefined || submissionData?.properties[assetKey] === "") {
-             
+    let checkFlag = false;
+    for(let assetKey of assetKeys){  
+      if (submissionData?.properties[`iffs:${assetKey}`] === undefined || submissionData?.properties[`iffs:${assetKey}`] === "") {
         setValidateAsset(validateAsset => ({ ...validateAsset, [assetKey]: true }));    
+        checkFlag = true;
       }
     }
 
-    if (product_name === undefined || product_name === "" || 
-    asset_manufacturer_name === undefined || asset_manufacturer_name === "" 
-    || asset_serial_number === undefined || asset_serial_number === "") {
+    if (checkFlag) {
       showToast('error', "Error", "Please fill all required fields")
     }
 
@@ -301,11 +287,7 @@ const createAssetForm: React.FC = () => {
     event.preventDefault();
 
     const newFormData = JSON.parse(JSON.stringify(formData));
-    newFormData.logo_manufacturer = formData.logo_manufacturer;
-    newFormData.product_icon = formData.product_icon;
-    newFormData.ce_marking = formData.ce_marking;
-    newFormData.documentation = formData.documentation;
-
+    
     setFileUploadKey((prevKey) => prevKey + 1);
 
     // Exclude file-related properties from the newFormData
@@ -338,6 +320,7 @@ const createAssetForm: React.FC = () => {
 
   const renderField = (key: string, property: Property) => {
     const fieldClass = "col-4";
+    console.log('formdata ',formData);
     const value = formData[key];
 
     return (

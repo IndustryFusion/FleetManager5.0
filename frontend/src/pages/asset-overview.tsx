@@ -288,7 +288,7 @@ const Asset: React.FC = () => {
                 if (response) { newExportdata.push(response.data); }
             }
             catch (err) {
-                console.log('Failed to get data for export ' + err);
+                console.error('Failed to get data for export ' + err);
             }
         }
 

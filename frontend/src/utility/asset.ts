@@ -27,11 +27,8 @@ const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
         return backendData.map((item: any) => {
             const newItem: any = {};
             Object.keys(item).forEach((key) => {
-                if (key.includes("http://www.industry-fusion.org/schema#")) {
-                    const newKey = key.replace(
-                        "http://www.industry-fusion.org/schema#",
-                        ""
-                    );
+                if (key.includes("/")) {
+                    const newKey = key.split('/').pop() || '';
 
                     if (item[key].type === "Property") {
                         newItem[newKey] = item[key].value

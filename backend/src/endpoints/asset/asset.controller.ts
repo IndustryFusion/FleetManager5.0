@@ -24,12 +24,12 @@ export class AssetController {
   constructor(private readonly assetService: AssetService) {}
 
   @Get()
-  async getTemplateData(@Req() req: Request, @Query('type') type: string) {
+  async getAssetData(@Req() req: Request, @Query('type') type: string) {
     try {
       if (type) {
         return this.getAssetByType(type);
       } else {
-      return await this.assetService.getTemplateData();
+      return await this.assetService.getAssetData();
       }
     } catch (err) {
       throw new NotFoundException();
@@ -46,9 +46,9 @@ export class AssetController {
   }
 
   @Get(':id')
-  async getTemplateDataById(@Param('id') id: string, @Req() req: Request) {
+  async getAssetDataById(@Param('id') id: string, @Req() req: Request) {
     try {
-      return await this.assetService.getTemplateDataById(id);
+      return await this.assetService.getAssetDataById(id);
     } catch (err) {
       throw new NotFoundException();
     }
@@ -64,9 +64,9 @@ export class AssetController {
   }
 
   @Post(':id')
-  async setTemplateData(@Param('id') id: string, @Body() data, @Req() req: Request) {
+  async setAssetData(@Param('id') id: string, @Body() data, @Req() req: Request) {
     try {
-      const response = await this.assetService.setTemplateData(id, data);
+      const response = await this.assetService.setAssetData(id, data);
       if(response['status'] == 200 || response['status'] == 201) {
         return {
           success: true,
