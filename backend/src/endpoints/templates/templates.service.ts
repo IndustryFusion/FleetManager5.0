@@ -43,7 +43,6 @@ export class TemplatesService {
       const response = await axios.get(this.baseUrl, {
         headers,
       });
-
       const template: TemplateDto[] = [];
 
       if (response.data.length) {
@@ -64,7 +63,7 @@ export class TemplatesService {
               id: Buffer.from(parsedContent.$id).toString('base64'),
               title: parsedContent.title,
               description: parsedContent.description,
-              templateId: parsedContent.properties['ifric_template_id'].default
+              templateId: parsedContent.properties['iffs:ifric_template_id'].default
             });
           }
         }
@@ -90,7 +89,7 @@ export class TemplatesService {
   async getTemplateById(id: string): Promise<TemplateDescriptionDto[]> {
     try {
       const decodedId = Buffer.from(id, 'base64').toString('ascii');
-      let path = decodedId.split('/')[5];
+      let path = decodedId.split('/').pop();
       
       if (path) {
         path = `${path.replace(/-/g, '_')}_schema.json`;
@@ -133,9 +132,7 @@ export class TemplatesService {
 
   async getTemplateByName(name: string): Promise<TemplateDescriptionDto[]> {
     try {
-  
       let splitArr = name.split(/[\s!-,]+/);
- 
       splitArr[0] = splitArr[0].toLowerCase();
       for (let i = 1; i < splitArr.length; i++) {
         splitArr[i] = splitArr[i].charAt(0).toUpperCase() + splitArr[i].slice(1);

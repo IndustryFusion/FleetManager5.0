@@ -127,7 +127,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
     let newTemplate: any = {};
     let visibleRowIndex = 0;  // Initialize a counter for visible rows
     for (let key of templateKeys) {
-      if (asset?.hasOwnProperty(key) && templateObject[key].type === "number" && key !== "manufacturing_year") {
+      if (asset?.hasOwnProperty(key) && templateObject[key].type === "number" && key !== "iffs:manufacturing_year") {
         newTemplate[key] = {
           title: templateObject[key].title,
           unit: templateObject[key].unit

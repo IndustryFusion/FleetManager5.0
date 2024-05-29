@@ -25,6 +25,7 @@ export class AssetService {
   private readonly scorpioUrl = process.env.SCORPIO_URL;
   private readonly icidUrl = process.env.ICID_ORIGIN;
   private readonly assetCode = process.env.ASSETS_DEFAULT_CODE;
+  private readonly context = process.env.CONTEXT;
 
   /**
   * Retrieves all assets from scorpio.
@@ -35,9 +36,9 @@ export class AssetService {
   * - Negative Test Case: NotFoundException thrown when assets not found with HTTP status code 404.
   * - Error Handling: Throws a NotFoundException in case of failure.
   */
-  async getTemplateData() {
+  async getAssetData() {
     try {
-      const templateData = [];
+      const assetData = [];
       const templates = await this.templatesService.getTemplates();
       const headers = {
         'Content-Type': 'application/ld+json',
@@ -49,26 +50,30 @@ export class AssetService {
         const url = this.scorpioUrl + '?type=' + id;
         const response = await axios.get(url, { headers });
         if (response.data.length > 0) {
-          response.data.forEach(data => {
-            templateData.push(data);
-          });
+          assetData.push(...response.data);
         }
       }
 
-      templateData.sort((a, b) => {
-        const idA = a['http://www.industry-fusion.org/schema#creation_date']?.value;
-        const idB = b['http://www.industry-fusion.org/schema#creation_date']?.value;
+      if(assetData.length > 0) {
+        
+        assetData.sort((a, b) => {
+          const aKey = Object.keys(a).find(key => key.includes("creation_date"));
+          const bKey = Object.keys(b).find(key => key.includes("creation_date"));
+
+          const idA = a[aKey]?.value;
+          const idB = b[bKey]?.value;
+        
+          if (idA > idB) {
+            return -1; 
+          } else if (idA < idB) {
+            return 1; 
+          } else {
+            return 0; 
+          }
+        });
+      }
       
-        if (idA > idB) {
-          return -1; 
-        } else if (idA < idB) {
-          return 1; 
-        } else {
-          return 0; 
-        }
-      });
-      
-      return templateData;
+      return assetData;
     } catch (err) {
       throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
     }
@@ -83,7 +88,7 @@ export class AssetService {
    * - Negative Test Case: NotFoundException thrown when asset not found, incorrect id with HTTP status code 404.
    * - Error Handling: Throws a NotFoundException in case of failure.
    */
-  async getTemplateDataById(id: string) {
+  async getAssetDataById(id: string) {
     try {
       const headers = {
         'Content-Type': 'application/ld+json',
@@ -146,7 +151,7 @@ export class AssetService {
   * - Negative Test Case: scorpio error thrown when format error or id already present with HTTP status code 404.
   * - Error Handling: Throws a scorpio error in case of failure.
   */
-  async setTemplateData(id: string, data: TemplateDescriptionDto) {
+  async setAssetData(id: string, data: TemplateDescriptionDto) {
     try {
       const headers = {
         'Content-Type': 'application/ld+json',
@@ -163,41 +168,39 @@ export class AssetService {
           region_code: assetCodeArr[1],
           object_type_code: assetCodeArr[2],
           object_sub_type_code: assetCodeArr[3],
-          machine_serial_number: data.properties["asset_serial_number"]
+          machine_serial_number: data.properties["iffs:asset_serial_number"]
         },{
           headers: {
             'Content-Type': 'application/json'
           }
         })
-    
         if(ifricResponse.data.status == '201'){
           const result = {
-            "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+            "@context": this.context,
             "id": ifricResponse.data.urn_id,
             "type": data.type
           }
           let templateData = await this.templatesService.getTemplateById(id);
        
-          let statusCount = -1, totalCount = -2;
+          let statusCount = -1, totalCount = -2, statusKey = '';
           const templateProperties = templateData[0].properties;
           for(let key in templateProperties) {
             if(data.properties[key]) {
-              let resultKey = "http://www.industry-fusion.org/schema#" + key;
               if (key.includes("has")) {
                 let obj = {
                   type: "Relationship",
                   object: data.properties[key]
                 }
-                result[resultKey] = obj;
+                result[key] = obj;
                 continue;
               } else {
                 if(key.includes('template')){
-                  result[resultKey] = {
+                  result[key] = {
                     type: "Property",
                     value: templateProperties[key]['default']
                   };
                 } else {
-                  result[resultKey] = {
+                  result[key] = {
                     type: "Property",
                     value: data.properties[key]
                   };
@@ -206,13 +209,12 @@ export class AssetService {
                 totalCount++;
               }
             } else {
-              let resultKey = "http://www.industry-fusion.org/schema#" + key;
               if (key.includes("has")) {
                 let obj = {
                   type: "Relationship",
                   object: ""
                 }
-                result[resultKey] = obj;
+                result[key] = obj;
                 continue;
               } else {
                 let emptyValue;
@@ -226,12 +228,19 @@ export class AssetService {
                   emptyValue = 'NULL';
                 }
                 if(key.includes('template')){
-                  result[resultKey] = {
+                  result[key] = {
                     type: "Property",
                     value: templateProperties[key]['default']
                   };
+                } else if (key.includes('iffr')) {
+                  result[key] = {
+                    type: "Property",
+                    value: 222
+                  };
+                } else if(key.includes('asset_status')) {
+                  statusKey = key;
                 } else {
-                  result[resultKey] = {
+                  result[key] = {
                     type: "Property",
                     value: emptyValue
                   };
@@ -247,7 +256,7 @@ export class AssetService {
           } else {
             statusValue = "incomplete"
           }
-          result["http://www.industry-fusion.org/schema#asset_status"]= {
+          result[statusKey]= {
             type: "Property",
             value: statusValue
           }
@@ -298,8 +307,9 @@ export class AssetService {
         Accept: 'application/ld+json',
       };
       let flag = true;
-      if(data["http://www.industry-fusion.org/schema#product_name"]) {
-        let productName = data["http://www.industry-fusion.org/schema#product_name"];
+      const productKey = Object.keys(data).find(key => key.includes("product_name"));
+      if(productKey) {
+        let productName = data[productKey];
         let checkUrl = `${this.scorpioUrl}?type=${data.type}&q=http://www.industry-fusion.org/schema%23product_name==%22${productName}%22`;
         let assetData = await axios.get(checkUrl, { headers });
 
@@ -308,9 +318,17 @@ export class AssetService {
         }
       }
       if(flag) {
-        data['@context'] = "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.3.jsonld";
+        let updatedData = {};
+        let assetData = await this.getAssetDataById(id);
+        Object.keys(data).forEach(key => {
+          const actualKey = Object.keys(assetData).find(assetDataKey => assetDataKey.includes(key));
+          if(actualKey !== undefined) {
+            updatedData[actualKey] = { ...assetData[actualKey], value: data[key] };
+          }
+        });
+        updatedData['@context'] = this.context;
         const url = this.scorpioUrl + '/' + id + '/attrs';
-        const response = await axios.post(url, data, { headers });
+        const response = await axios.post(url, updatedData, { headers });
         return {
           status: response.status,
           data: response.data
