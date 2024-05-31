@@ -157,8 +157,8 @@ export class AssetService {
         'Content-Type': 'application/ld+json',
         'Accept': 'application/ld+json'
       };
-
-      let checkUrl = `${this.scorpioUrl}?type=${data.type}&q=http://www.industry-fusion.org/schema%23product_name==%22${data.properties['product_name']}%22`;
+      let productKey = Object.keys(data).find(key => key.includes('product_name'));
+      let checkUrl = `${this.scorpioUrl}?type=${data.type}&q=${productKey}==%22${data.properties['product_name']}%22`;
       let assetData = await axios.get(checkUrl, { headers });
       if(!assetData.data.length) {
         // fetch the urn id from iffric
@@ -310,7 +310,7 @@ export class AssetService {
       const productKey = Object.keys(data).find(key => key.includes("product_name"));
       if(productKey) {
         let productName = data[productKey];
-        let checkUrl = `${this.scorpioUrl}?type=${data.type}&q=http://www.industry-fusion.org/schema%23product_name==%22${productName}%22`;
+        let checkUrl = `${this.scorpioUrl}?type=${data.type}&q=${productKey}==%22${productName}%22`;
         let assetData = await axios.get(checkUrl, { headers });
 
         if(assetData.data.length) {
