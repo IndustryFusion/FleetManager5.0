@@ -1,9 +1,9 @@
 import React from 'react';
 
-interface OptionsGridProps {
+interface RealtimeParametersProps {
   optionsArray: string[]
 }
-const OptionsGrid: React.FC<OptionsGridProps> = ({ optionsArray }) => {
+const RealtimeParameters: React.FC<RealtimeParametersProps> = ({ optionsArray }) => {
   return (
     <div style={{
       display: 'grid',
@@ -24,4 +24,4 @@ const OptionsGrid: React.FC<OptionsGridProps> = ({ optionsArray }) => {
   );
 };
 
-export default OptionsGrid;
+export default RealtimeParameters;

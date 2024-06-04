@@ -36,7 +36,7 @@ import Footer from "@/components/footer";
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import OptionsGrid from "@/components/options-grid";
+import RealtimeParameters from "@/components/realtime-parameter";
 // Initialize the state with a more specific type
 
 const createAssetForm: React.FC = () => {
@@ -601,7 +601,7 @@ const createAssetForm: React.FC = () => {
               <div className="flex">
                 <div className="p-field col-8 mt-3 flex flex-column ">
                   <label htmlFor="" className="mb-2">Realtime Parameter</label>
-                  <OptionsGrid
+                  <RealtimeParameters
                     optionsArray={iffrProperties}
                   />
                 </div>
