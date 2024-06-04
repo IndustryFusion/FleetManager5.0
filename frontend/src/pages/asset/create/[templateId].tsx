@@ -128,11 +128,10 @@ const createAssetForm: React.FC = () => {
             )
             .flat();
 
-          const filterOptions = hasRelations.map((relation) => ({
-            label: relation.replace(
-              "https://industry-fusion.org/types/v0.1/", ""),
-            value: relation
-          }));
+            const filterOptions = hasRelations.map((relation) => ({
+              label:relation.split('/').pop(),
+              value: relation
+            }));
 
           setFilterOptions(filterOptions);
         } else {

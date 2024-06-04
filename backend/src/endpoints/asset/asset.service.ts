@@ -18,7 +18,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TemplateDescriptionDto } from '../templates/dto/templateDescription.dto';
 import { TemplatesService } from '../templates/templates.service';
 import axios from 'axios';
-
+import * as moment from 'moment';
 @Injectable()
 export class AssetService {
   constructor(private readonly templatesService: TemplatesService) { }
@@ -53,26 +53,24 @@ export class AssetService {
           assetData.push(...response.data);
         }
       }
-
+      
       if(assetData.length > 0) {
         
         assetData.sort((a, b) => {
           const aKey = Object.keys(a).find(key => key.includes("creation_date"));
           const bKey = Object.keys(b).find(key => key.includes("creation_date"));
-
-          const idA = a[aKey]?.value;
-          const idB = b[bKey]?.value;
-        
-          if (idA > idB) {
-            return -1; 
-          } else if (idA < idB) {
+          const format = 'DD.MM.YYYY HH:mm:ss';
+          const dateA = moment(a[aKey]?.value, format);
+          const dateB = moment(b[bKey]?.value, format);
+          if (dateA.isBefore(dateB)) {
             return 1; 
+          } else if (dateA.isAfter(dateB)) {
+            return -1; 
           } else {
             return 0; 
           }
         });
       }
-      
       return assetData;
     } catch (err) {
       throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
