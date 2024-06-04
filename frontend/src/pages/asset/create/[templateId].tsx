@@ -36,6 +36,7 @@ import Footer from "@/components/footer";
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import OptionsGrid from "@/components/options-grid";
 // Initialize the state with a more specific type
 
 const createAssetForm: React.FC = () => {
@@ -62,10 +63,11 @@ const createAssetForm: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [currenTemplateID, setCurrentTemplateID] = useState<string | any>();
   const [validateAsset, setValidateAsset] = useState({
-    product_name: false,
-    asset_manufacturer_name: false,
-    asset_serial_number: false
-  })
+    "iffs:product_name": false,
+    "iffs:asset_manufacturer_name": false,
+    "iffs:asset_serial_number": false
+  });
+  const [iffrProperties, setIffrProperties] = useState<string[]>([]);
   const { t } = useTranslation(['button', 'asset']);
 
   useEffect(() => {
@@ -87,65 +89,69 @@ const createAssetForm: React.FC = () => {
     toast.current?.show({ severity: severity, summary: summary, detail: message, life: 8000 });
   };
 
-  useEffect(() => {
-    const fetchData = async (templateId: string | any) => {
-      if (templateId) {
-        try {
-          const response = await fetch(
-            API_URL + `/templates/${templateId}`
-          );
-          const data = await response.json();
-          setAssetType(data[0].title);
-          const assetCategoryType = data[0].title;
-          const assetCategoryTypeXX = assetCategoryType.replace(" template", "");
-          setAssetCategory(assetCategoryTypeXX);
-          if (data && Array.isArray(data)) {
-            const template = data[0];
-            setSchema(template);
+  const fetchData = async (templateId: string | any) => {
+    if (templateId) {
+      try {
+        const response = await fetch(
+          API_URL + `/templates/${templateId}`
+        );
+        const data = await response.json();
+        setAssetType(data[0].title);
+        const assetCategoryType = data[0].title;
+        const assetCategoryTypeXX = assetCategoryType.replace(" template", "");
+        setAssetCategory(assetCategoryTypeXX);
+        if (data && Array.isArray(data)) {
+          const template = data[0];
+          const allKeys = Object.keys(template?.properties);
+          const iffrKeys = allKeys.filter(key => key.startsWith("iffr:")).map(key => key.slice(5));
 
-            setFormData((currentFormData) => ({
-              ...currentFormData,
-              type: template.type,
-              title: template.title,
-              description: template.description,
-            }));
-            const hasRelations: string[] = Object.values(template.properties)
-              .filter(
-                (property: Property | unknown) =>
-                  typeof property === "object" &&
-                  property !== null &&
-                  property.hasOwnProperty("relationship") &&
-                  typeof (property as Property).relationship === "string"
-              )
-              .map(
-                (property: Property | unknown) =>
-                  (property as Property).relationship
-              )
-              .flat();
+          setIffrProperties(iffrKeys)
+          setSchema(template);
+          setFormData((currentFormData) => ({
+            ...currentFormData,
+            type: template.type,
+            title: template.title,
+            description: template.description,
+          }));
 
-            const filterOptions = hasRelations.map((relation) => ({
-              label: relation.replace(
-                "https://industry-fusion.org/types/v0.1/", ""),
-              value: relation
-            }));
+          const hasRelations: string[] = Object.values(template.properties)
+            .filter(
+              (property: Property | unknown) =>
+                typeof property === "object" &&
+                property !== null &&
+                property.hasOwnProperty("relationship") &&
+                typeof (property as Property).relationship === "string"
+            )
+            .map(
+              (property: Property | unknown) =>
+                (property as Property).relationship
+            )
+            .flat();
 
-            setFilterOptions(filterOptions);
-          } else {
-            showToast('error','Error', 'Fetched data is not in the expected format');
-            console.error("Fetched data is not in the expected format");
-          }
-        }catch (error:any) {
-          if (axios.isAxiosError(error)) {
-            console.error("Error response:", error.response?.data.message);
-            showToast('error','Error', 'Error fetching template');
-          } else {
-            console.error("Error:", error);
-            showToast('error', 'Error', error);
-          }
+          const filterOptions = hasRelations.map((relation) => ({
+            label: relation.replace(
+              "https://industry-fusion.org/types/v0.1/", ""),
+            value: relation
+          }));
+
+          setFilterOptions(filterOptions);
+        } else {
+          showToast('error', 'Error', 'Fetched data is not in the expected format');
+          console.error("Fetched data is not in the expected format");
+        }
+      } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+          console.error("Error response:", error.response?.data.message);
+          showToast('error', 'Error', 'Error fetching template');
+        } else {
+          console.error("Error:", error);
+          showToast('error', 'Error', error);
         }
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     if (Cookies.get("login_flag") === "false") { router.push("/login"); }
     else {
       if (router.isReady) {
@@ -157,17 +163,32 @@ const createAssetForm: React.FC = () => {
     }
   }, [router.isReady]);
 
+  //onChange removing error text
+  const validateInput = (key: string) => {
+    console.log("is coming here");
+
+    console.log("key here", key);
+
+
+    const assetKeys = Object.keys(validateAsset);
+    for (let assetKey of assetKeys) {
+      if (assetKey === key) {
+        setValidateAsset(validateAsset => ({ ...validateAsset, [key]: false }));
+      }
+    }
+  }
+
+
+
   const handleFocus = (key: string) => {
     setFocusedFields({ ...focusedFields, [key]: true });
   };
-
   const handleBlur = (key: string) => {
     setFocusedFields({ ...focusedFields, [key]: false });
   };
-
   const handleChange = (key: string, value: any) => {
+    validateInput(key)
     const fieldType = schema?.properties[key]?.type;
-
     // Update formData with both value and type
     setFormData({ ...formData, [key]: { value, type: fieldType } });
     if (key === "file") {
@@ -176,13 +197,11 @@ const createAssetForm: React.FC = () => {
     } else {
       setFormData({ ...formData, [key]: value });
     }
-  };
 
+  };
   const handleUpload = async (file: any, key: any) => {
     if (!file) return;
-
     setFileLoading((prevLoading: any) => ({ ...prevLoading, [key]: true }));
-
     const formFileData = new FormData();
     formFileData.append("file", file);
 
@@ -209,7 +228,7 @@ const createAssetForm: React.FC = () => {
         // Track uploaded file key
         setUploadedFileKeys((prevKeys) => [...prevKeys, key]);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error uploading file:", error);
       showToast('error', 'Error uploading file', error);
     } finally {
@@ -218,12 +237,12 @@ const createAssetForm: React.FC = () => {
   };
 
   const handleSubmit = async (event: any) => {
-    event.preventDefault();    
+    event.preventDefault();
     // Extract type, title, and description
     const { type, title, description, ...properties } = formData;
-    const currentDate = moment().format('DD.MM.YYYY HH:mm:ss'); 
+    const currentDate = moment().format('DD.MM.YYYY HH:mm:ss');
     properties['iffs:asset_category'] = assetCategory;
-    properties['iffs:creation_date'] =  currentDate;
+    properties['iffs:creation_date'] = currentDate;
     // Structure the data for submission
     const submissionData = {
       type,
@@ -231,21 +250,20 @@ const createAssetForm: React.FC = () => {
       description,
       properties: { ...properties }
     };
-    
+
     const assetKeys = Object.keys(validateAsset);
     let checkFlag = false;
-    for(let assetKey of assetKeys){  
+    for (let assetKey of assetKeys) {
       if (submissionData?.properties[`iffs:${assetKey}`] === undefined || submissionData?.properties[`iffs:${assetKey}`] === "") {
-        setValidateAsset(validateAsset => ({ ...validateAsset, [assetKey]: true }));    
+        setValidateAsset(validateAsset => ({ ...validateAsset, [assetKey]: true }));
         checkFlag = true;
       }
     }
-
     if (checkFlag) {
       showToast('error', "Error", "Please fill all required fields")
     }
 
-    else{
+    else {
       try {
         const response = await axios.post(
           API_URL + `/asset/${currenTemplateID}`,
@@ -258,11 +276,10 @@ const createAssetForm: React.FC = () => {
             withCredentials: true,
           }
         );
-  
         setIsFormSubmitted(true); // Set the flag to true on successful submission
         if (response.data.success) {
           showToast('success', 'Added Successfully', 'new asset added successfully')
-      router.push("/asset-overview");
+          router.push("/asset-overview");
         } else {
           showToast('warn', 'Warning', response.data.message);
         }
@@ -285,11 +302,8 @@ const createAssetForm: React.FC = () => {
 
   const handleReset = (event: any) => {
     event.preventDefault();
-
     const newFormData = JSON.parse(JSON.stringify(formData));
-    
     setFileUploadKey((prevKey) => prevKey + 1);
-
     // Exclude file-related properties from the newFormData
     Object.keys(schema?.properties || {}).forEach((key) => {
       const property = schema?.properties[key];
@@ -318,13 +332,19 @@ const createAssetForm: React.FC = () => {
     showToast('success', 'Reset Success', 'Form resetted successfully')
   };
 
+
+
   const renderField = (key: string, property: Property) => {
     const fieldClass = "col-4";
-    console.log('formdata ',formData);
     const value = formData[key];
-
+    if (key.startsWith("iffr:")) {
+      return;
+    }
+    if (key.startsWith("eclass:")) {
+      return;
+    }
     return (
-      <div 
+      <div
         key={key}
         className={`p-field  ${fieldClass}  flex flex-column `}
       >
@@ -336,18 +356,17 @@ const createAssetForm: React.FC = () => {
                   {property.title}
                 </label>
                 <br />
-                     <InputText
-                    
-                      id={key}
-                      className="p-inputtext-lg mt-2"
-                      style={{ width: "90%", borderRadius: "5px" }}
-                      value={moment().format('DD.MM.YYYY HH:mm:ss')}
-                      onChange={(e) => handleChange(key, e.target.value)}
-                      onFocus={() => handleFocus(key)}
-                      onBlur={() => handleBlur(key)}
-                      readOnly={property.readOnly}
-                    
-                     />
+                <InputText
+                  id={key}
+                  className="p-inputtext-lg mt-2"
+                  style={{ width: "90%", borderRadius: "5px" }}
+                  value={moment().format('DD.MM.YYYY HH:mm:ss')}
+                  onChange={(e) => handleChange(key, e.target.value)}
+                  onFocus={() => handleFocus(key)}
+                  onBlur={() => handleBlur(key)}
+                  readOnly={property.readOnly}
+
+                />
 
               </div>)}
 
@@ -400,46 +419,46 @@ const createAssetForm: React.FC = () => {
                 <br />
                 {
                   property.title === 'IFRIC Template ID' ?
-                  (
-                    <InputText
-                      id={key}
-                      value={property.default || ""}
-                      onChange={(e) => handleChange(key, e.target.value)}
-                      onFocus={() => handleFocus(key)}
-                      onBlur={() => handleBlur(key)}
-                      readOnly={true}
-                      className="p-inputtext-lg mt-2"
-                      style={{ width: "90%" }}
-                      placeholder={""}
-                    />
-                  )
-                  : (
-                    <InputText
-                      id={key}
-                      value={value || ""}
-                      onChange={(e) => handleChange(key, e.target.value)}
-                      onFocus={() => handleFocus(key)}
-                      onBlur={() => handleBlur(key)}
-                      readOnly={property.readOnly}
-                      className="p-inputtext-lg mt-2"
-                      style={{ width: "90%" }}
-                      placeholder={""}
-                    />
-                  )
+                    (
+                      <InputText
+                        id={key}
+                        value={property.default || ""}
+                        onChange={(e) => handleChange(key, e.target.value)}
+                        onFocus={() => handleFocus(key)}
+                        onBlur={() => handleBlur(key)}
+                        readOnly={true}
+                        className="p-inputtext-lg mt-2"
+                        style={{ width: "90%" }}
+                        placeholder={""}
+                      />
+                    )
+                    : (
+                      <InputText
+                        id={key}
+                        value={value || ""}
+                        onChange={(e) => handleChange(key, e.target.value)}
+                        onFocus={() => handleFocus(key)}
+                        onBlur={() => handleBlur(key)}
+                        readOnly={property.readOnly}
+                        className="p-inputtext-lg mt-2"
+                        style={{ width: "90%" }}
+                        placeholder={""}
+                      />
+                    )
                 }
-                
-                {property.title === "Product Name" && validateAsset.product_name && 
-                <p className="input-invalid-text">Product Name is required</p>}
-                {property.title === "Asset Manufacturer Name" && validateAsset.asset_manufacturer_name 
-                && <p className="input-invalid-text">Asset Manufacturer Name is required</p>}
-                {property.title === "Serial Number" && validateAsset.asset_serial_number && 
-                 <p className="input-invalid-text">Serial Number is required</p>}
+                {property.title === "Product Name" && validateAsset["iffs:product_name"] &&
+                  <p className="input-invalid-text">Product Name is required</p> }
+                {property.title === "Asset Manufacturer Name" && validateAsset["iffs:asset_manufacturer_name"] &&
+                  <p className="input-invalid-text">Asset Manufacturer Name is required</p>}
+                {property.title === "Serial Number" && validateAsset["iffs:asset_serial_number"] &&
+                  <p className="input-invalid-text">Serial Number is required</p>}
               </div>
             )}
+
             {property.type === "number" && property.title !== "Year of manufacturing" && (
               <div key={key} className="p-field flex flex-column">
                 <label htmlFor={key}>{property.title}
-                <span className="ml-1 text-gray-500">({property.unit})</span>              
+                  <span className="ml-1 text-gray-500">({property.unit})</span>
                 </label>
                 <InputNumber
                   id={key}
@@ -511,8 +530,11 @@ const createAssetForm: React.FC = () => {
     );
   };
 
+  console.log("validateAsset.product_name", validateAsset);
+
+
   if (!schema) return <div>Loading...</div>;
- 
+
   const findTemplateId = async (relationType: any) => {
     if (!relationType) {
       console.error("relationType is undefined");
@@ -536,10 +558,7 @@ const createAssetForm: React.FC = () => {
     };
 
     const templates = await fetchTemplates();
-
-    const formattedRelationType = relationType
-      .replace("https://industry-fusion.org/types/v0.1/", "")
-      .toLowerCase();
+    const formattedRelationType = relationType.replace("https://industry-fusion.org/types/v0.1/", "").toLowerCase();
 
     const matchingTemplate = templates.find((template: any) => {
       const formattedTitle = template.title
@@ -550,8 +569,6 @@ const createAssetForm: React.FC = () => {
 
       return formattedTitle === formattedRelationType;
     });
-
-
     return matchingTemplate ? matchingTemplate.id : null;
   };
 
@@ -571,6 +588,7 @@ const createAssetForm: React.FC = () => {
           <Card className="border-gray-500 border-1 border-round-lg mb-4">
             <form onSubmit={handleSubmit}>
               <div className=" flex p-fluid grid  shadow-lg">
+
                 {schema.properties &&
                   Object.keys(schema.properties).map((key) =>
                     renderField(key, schema.properties[key])
@@ -585,10 +603,19 @@ const createAssetForm: React.FC = () => {
                   <ListBox
                     options={filterOptions}
                     optionLabel="label"
-                    className="mt-2 p-inputtext-lg"
+                    className="mt-2 p-inputtext-lg list-box-item"
                   />
                 </div>
               </div>
+              <div className="flex">
+                <div className="p-field col-8 mt-3 flex flex-column ">
+                  <label htmlFor="" className="mb-2">Realtime Parameter</label>
+                  <OptionsGrid
+                    optionsArray={iffrProperties}
+                  />
+                </div>
+              </div>
+
               <div className="form-btn-container mb-6  flex justify-content-end align-items-center">
                 <Button
                   label={t('button:cancel')}
@@ -617,7 +644,7 @@ const createAssetForm: React.FC = () => {
             </form>
           </Card>
         </div>
-      </div> 
+      </div>
       <Footer />
     </BlockUI>
   );
