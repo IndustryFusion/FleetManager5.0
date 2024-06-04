@@ -44,3 +44,6 @@
   .reset-btn{
     border: 1px solid #ccc;
   }
+  .asset-dropdown .p-dropdown-panel{
+    left: 0 !important;
+  }
