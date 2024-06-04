@@ -28,6 +28,7 @@ import { resetTimer, logout } from "@/redux/auth/authSlice";
 import ProfileDialog from "./profile-dialog";
 import Language from "./language";
 import { useTranslation } from "next-i18next";
+import "../../public/styles/navbar.css"
 interface Alerts {
   text: string;
   resource: string;
@@ -66,11 +67,6 @@ const HorizontalNavbar: React.FC = () => {
 
   };
 
-  const navList: CSSProperties = {
-    listStyle: "none",
-    color: "#000000",
-    fontWeight: "bold"
-  }
 
   const logoStyle: CSSProperties = {
     width: "45px",
@@ -109,7 +105,7 @@ const HorizontalNavbar: React.FC = () => {
         <p style={logoText}>Fleet Manager</p>
       </div>
       <div className="flex  justify-content-between align-items-center" >
-        <div className="mr-3">
+        <div className="mr-3 language-dropdown">
           <Language />
         </div>
         <Button label={t('aboutUs')} link
