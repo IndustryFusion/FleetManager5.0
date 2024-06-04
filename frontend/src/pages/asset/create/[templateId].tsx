@@ -165,11 +165,6 @@ const createAssetForm: React.FC = () => {
 
   //onChange removing error text
   const validateInput = (key: string) => {
-    console.log("is coming here");
-
-    console.log("key here", key);
-
-
     const assetKeys = Object.keys(validateAsset);
     for (let assetKey of assetKeys) {
       if (assetKey === key) {
@@ -177,8 +172,6 @@ const createAssetForm: React.FC = () => {
       }
     }
   }
-
-
 
   const handleFocus = (key: string) => {
     setFocusedFields({ ...focusedFields, [key]: true });
@@ -253,8 +246,8 @@ const createAssetForm: React.FC = () => {
 
     const assetKeys = Object.keys(validateAsset);
     let checkFlag = false;
-    for (let assetKey of assetKeys) {
-      if (submissionData?.properties[`iffs:${assetKey}`] === undefined || submissionData?.properties[`iffs:${assetKey}`] === "") {
+    for (let assetKey of assetKeys) {     
+      if (submissionData?.properties[assetKey] === undefined || submissionData?.properties[assetKey] === "") {
         setValidateAsset(validateAsset => ({ ...validateAsset, [assetKey]: true }));
         checkFlag = true;
       }
@@ -262,7 +255,6 @@ const createAssetForm: React.FC = () => {
     if (checkFlag) {
       showToast('error', "Error", "Please fill all required fields")
     }
-
     else {
       try {
         const response = await axios.post(
@@ -530,7 +522,7 @@ const createAssetForm: React.FC = () => {
     );
   };
 
-  console.log("validateAsset.product_name", validateAsset);
+
 
 
   if (!schema) return <div>Loading...</div>;
