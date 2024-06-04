@@ -5,41 +5,23 @@
 
 body {
   /* font-family: Roboto, sans-serif; */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: Inter; 
+
+}
+*{
+  box-sizing: border-box;
 }
 
 .asset-data-table,
 .asset-details-card {
   margin-top: 0;
-  /* Remove any top margin */
   max-width: 100%;
-  /* Ensure these elements do not exceed 100% width */
-  box-sizing: border-box;
-  /* Include padding and border */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: Inter; 
 }
-
-/* .asset-btn {
-  color: #000;
-  background: #a7e3f985;
-  border: 1px solid #ced4da;
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
-  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
-  border-radius: 6px;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  cursor: pointer;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-weight: 500;
-  margin-right: 2rem;
-} */
-
 .asset-btn:hover {
   background: #b5e1f1;
   transition: background-color 0.15s;
-
 }
-
 .action-items-btn {
   border: none;
   background: transparent;
@@ -48,7 +30,6 @@ body {
 }
 
 .status-complete-tag {
-
   padding: 5px 10px;
   color: rgb(1, 145, 1);
   font-size: 14px;
@@ -63,7 +44,6 @@ body {
 }
 
 .status-incomplete-tag {
-
   padding: 5px 10px;
   color: #363737;
   font-size: 14px;
@@ -185,29 +165,22 @@ body {
   /* Adjust the padding as needed */
 }
 
-/* Scrollable side panel */
+
 .scrollable-side-panel {
   min-height: calc(100vh - 100px);
-  /* Adjust the height as needed */
   overflow-y: auto;
-  /* Enables vertical scrolling */
 }
 
 .asset-data-table {
   margin-top: 0;
-  /* Remove any top margin */
   overflow-x: auto;
-  /* Enable horizontal scrolling if content exceeds the width */
   max-width: 100%;
-  /* Ensure the element does not exceed 100% width */
 }
 
 /* Ensure the DataTable itself does not exceed the width of its container */
 .asset-data-table .p-datatable {
   width: auto;
-  /* Adjust the width of the DataTable to fit its content */
   min-width: 100%;
-  /* Ensure the DataTable takes at least 100% of the container width */
   min-height: calc(100vh-500px);
 }
 
