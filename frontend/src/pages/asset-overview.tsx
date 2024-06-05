@@ -35,6 +35,7 @@ import Cookies from "js-cookie";
 import { fetchAssets } from "@/utility/asset";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import DeleteDialog from "@/components/delete-dialog";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -50,6 +51,9 @@ const Asset: React.FC = () => {
     const [searchedAssets, setSearchedAssets] = useState<Asset[]>([]);
     const [selectedAssets, setSelectedAssets] = useState<Asset | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
+    const [visibleDelete, setVisibleDelete] = useState(false);
+    const [deleteAssetId, setDeleteAssetId] = useState("");
+    const [deleteAssetName, setDeleteAssetName]=useState("");
     const toast = useRef<Toast>(null);
     const cm = useRef(null);
     const router = useRouter();
@@ -78,10 +82,11 @@ const Asset: React.FC = () => {
         router.push("/templates"); // This will navigate to the /templates
     };
 
-    const handleDeleteAsset = async (assetId: string) => {
+    const handleDeleteAsset = async () => {
+        if (!deleteAssetId) return;
         try {
             const response = await axios.delete(
-                BACKEND_API_URL + `/asset/${assetId}`,
+                BACKEND_API_URL + `/asset/${deleteAssetId}`,
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -90,10 +95,12 @@ const Asset: React.FC = () => {
                     withCredentials: true,
                 }
             );
+          
             if (response.status === 200) {
-                const updatedAssets = assets.filter(asset => asset.id !== assetId)
+                const updatedAssets = assets.filter(asset => asset.id !== deleteAssetId);
                 setAssets(updatedAssets)
-                showToast('success', 'Deleted success', 'Asset deleted successfully')
+                showToast('success', 'Deleted success', 'Asset deleted successfully');
+                setVisibleDelete(false);
             } else {
                 console.error("Failed to delete asset");
             }
@@ -177,15 +184,6 @@ const Asset: React.FC = () => {
         }
     }, [selectedRowsPerPage, handleRowsPerPageChange]);
 
-
-
-
-    const containerStyle: CSSProperties = {
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-    };
-
     const mainContentStyle: CSSProperties = {
         display: "flex",
         padding: "1%",
@@ -195,7 +193,6 @@ const Asset: React.FC = () => {
     const dataTableStyle: CSSProperties = {
         flexGrow: 1,
         overflow: "auto",
-
     };
 
     const menuModel = [
@@ -227,12 +224,15 @@ const Asset: React.FC = () => {
                 </button>
                 <button
                     className="action-items-btn"
-                    onClick={() => rowData && window.confirm(deleteWarning)
-                        ? handleDeleteAsset(rowData?.id) : null // Call the delete function with the selected product's ID
+                    onClick={() => {
+                        setVisibleDelete(true);
+                        setDeleteAssetId(rowData?.id);
+                        setDeleteAssetName(rowData?.product_name)
+                    }
                     }
                 >
                     <i className="pi pi-trash"></i>
-                </button>           
+                </button>
             </div>
         )
     }
@@ -360,9 +360,9 @@ const Asset: React.FC = () => {
                     {/* <Card className="" style={{ height: "auto", overflow: "auto" }}> */}
                     <div className="flex align-center justify-content-between mt-6  p-2" >
                         <div>
-                            <p className="hover" style={{ fontWeight: "bold", fontSize: "1.4rem", marginTop: "20px", marginLeft: "20px" }}>
+                            <h2 className="hover mt-6 ml-4 mb-5" >
                                 {t('overview:assetOverview')}
-                            </p>
+                            </h2>
                         </div>
                     </div>
                     <div className="pl-4 pr-4">
@@ -467,6 +467,14 @@ const Asset: React.FC = () => {
                         <AssetDetailsCard asset={selectedProduct} setShowExtraCard={setShowExtraCard} />
                     </div>
                 }
+                {visibleDelete &&
+                    <DeleteDialog
+                        deleteDialog={visibleDelete}
+                        setDeleteDialog={setVisibleDelete}
+                        handleDelete={handleDeleteAsset}
+                        deleteItemName={deleteAssetName}
+                    />
+                }
             </div>
             <Footer />
         </div>
@@ -475,13 +483,13 @@ const Asset: React.FC = () => {
 
 export async function getStaticProps({ locale }: { locale: string }) {
     return {
-      props: {
-        ...(await serverSideTranslations(locale, [
-          'header',
-          'overview',
-          'placeholder'
-        ])),
-      },
+        props: {
+            ...(await serverSideTranslations(locale, [
+                'header',
+                'overview',
+                'placeholder'
+            ])),
+        },
     }
 }
 

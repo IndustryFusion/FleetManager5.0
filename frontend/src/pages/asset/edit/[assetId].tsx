@@ -397,8 +397,9 @@ const AssetEdit = () => {
                   value={value}
                   options={property.enum}
                   onChange={(e) => handleChange(key, e.value)}
-                  className="p-inputtext-lg mt-2"
+                  className="p-inputtext-lg mt-2 asset-dropdown"
                   style={{ width: "90%" }}
+                  appendTo="self"
                   onFocus={() => handleFocus(key)}
                   onBlur={() => handleBlur(key)}
                 />
@@ -452,9 +453,9 @@ const AssetEdit = () => {
       <Toast ref={toast} />
       <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "80%" }}>
         <div>
-          <p className="hover " style={{ fontWeight: "bold", fontSize: "1.8rem", marginTop: "100px" }}>
+          <h2 className="hover " style={{  marginTop: "100px" }}>
             {t('asset:editAsset')}
-          </p>
+          </h2>
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form --  {asset.id}</h5>
         </div>
 

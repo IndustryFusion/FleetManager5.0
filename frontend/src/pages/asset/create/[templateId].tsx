@@ -445,7 +445,6 @@ const createAssetForm: React.FC = () => {
                   <p className="input-invalid-text">Serial Number is required</p>}
               </div>
             )}
-
             {property.type === "number" && property.title !== "Year of manufacturing" && (
               <div key={key} className="p-field flex flex-column">
                 <label htmlFor={key}>{property.title}
@@ -462,9 +461,7 @@ const createAssetForm: React.FC = () => {
                   readOnly={property.readOnly}
                   placeholder={"0"}
                 />
-
               </div>
-
             )}
             {property.type === "array" && (
               <div key={key} className="p-field">
@@ -474,9 +471,10 @@ const createAssetForm: React.FC = () => {
                   value={value}
                   options={property.enum}
                   onChange={(e) => handleChange(key, e.value)}
-                  className="p-inputtext-lg mt-2"
+                  className="p-inputtext-lg mt-2 asset-dropdown"
                   style={{ width: "90%" }}
                   onFocus={() => handleFocus(key)}
+                  appendTo="self"
                   onBlur={() => handleBlur(key)}
                 />
               </div>
@@ -570,9 +568,9 @@ const createAssetForm: React.FC = () => {
       <Toast ref={toast} />
       <div className="" style={{ padding: "1rem 1rem 2rem 4rem", zoom: "80%" }}>
         <div>
-          <p className="hover" style={{ fontWeight: "bold", fontSize: "1.8rem", marginTop: "100px" }}>
+          <h2 className="hover" style={{ marginTop: "100px" }}>
             {t('asset:createAsset')}
-          </p>
+          </h2>
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form </h5>
         </div>
         <div style={{}}>

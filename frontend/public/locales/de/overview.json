@@ -13,8 +13,9 @@
     "category": "Kategorie",
     "protocol": "Protokoll",
     "assetStatus": "Vermögensstatus",
-    "deleteWarning": "Sind Sie sicher, dass Sie dieses Asset löschen möchten?",
-    "ok": "OK",
-    "cancel": "Stornieren",
+    "confirmation": "Löschen bestätigen",
+    "deleteWarning": "Sind Sie sicher, dass Sie löschen möchten",
+    "yes": "Ja",
+    "no": "Nein",
     "relationCommand": "Verwenden Sie Factory, um Beziehungen zu verwalten."
 }
