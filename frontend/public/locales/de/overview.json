@@ -10,7 +10,7 @@
     "serialNumber": "Seriennummer",
     "creationDate": "Erstellungsdatum",
     "voltageType": "Spannungstyp",
-    "catagory": "Kategorie",
+    "category": "Kategorie",
     "protocol": "Protokoll",
     "assetStatus": "Vermögensstatus",
     "deleteWarning": "Sind Sie sicher, dass Sie dieses Asset löschen möchten?",

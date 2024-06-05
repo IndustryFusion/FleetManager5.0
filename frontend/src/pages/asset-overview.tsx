@@ -263,7 +263,7 @@ const Asset: React.FC = () => {
         return <>{rowData?.product_name}</>;
     };
     const assetTypeBodyTemplate = (rowData: any) => {
-        const assetType = rowData?.type?.split('/')[5];
+        const assetType = rowData?.type?.split('/').pop();
         return <>{assetType}</>;
     };
 
@@ -443,7 +443,7 @@ const Asset: React.FC = () => {
                             ></Column>
                             <Column
                                 field="asset_category"
-                                header={t('overview:catagory')}
+                                header={t('overview:category')}
                                 sortable></Column>
                             <Column
                                 field="asset_communication_protocol"
