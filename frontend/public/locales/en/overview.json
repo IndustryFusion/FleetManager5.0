@@ -13,8 +13,9 @@
     "category": "Category",
     "protocol": "Protocol",
     "assetStatus": "Asset Status",
-    "deleteWarning": "Are you sure you want to delete this asset?",
-    "ok": "OK",
-    "cancel": "Cancel",
+    "deleteWarning": "Are you sure you want to delete ",
+    "yes": "Yes",
+    "no": "No",
+    "confirmation": "Confirm Delete",
     "relationCommand": "Use Factory Manager to manage relationships."
 }

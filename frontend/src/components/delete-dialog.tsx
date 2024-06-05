@@ -13,7 +13,7 @@ interface DeleteDialogProps {
 
 const DeleteDialog: React.FC<DeleteDialogProps> = ({ deleteDialog, setDeleteDialog,  handleDelete, deleteItemName}) => {
     const { t } = useTranslation('overview'); 
-    const header = () => <h3 className="m-0">{t('overview:confirmation')}</h3>
+    const header = () => <h4 className="m-0">{t('overview:confirmation')}</h4>
     return (
         <>
             <Dialog
