@@ -78,11 +78,20 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
  const renderGeneralContent = (): JSX.Element => {
     let visibleRowIndex = 0; // Initialize a counter for visible rows
+    let generalObject = {
+      id: asset ? asset.id : '',
+      type: asset ? asset.type : ''
+    }
+    for (let key of templateKeys) {
+      let actualKey = key ? key.split(':').pop() : '';
+      if (asset && actualKey && !key.includes("has") && !key.includes("eclass") && typeof asset[actualKey] !== "number") {
+        generalObject[actualKey] = asset[actualKey];
+      }
+    }
     return (
       <div key={asset?.id}>
-        {asset && Object.entries(asset).map(([key, value]) => {
-        if (!key.includes("has") && typeof value !== "number") {
-           // Determine row class based on the count of visible rows
+        {generalObject && Object.entries(generalObject).map(([key, value]) => {
+          // Determine row class based on the count of visible rows
           const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
           visibleRowIndex++; // Increment the visible row index
           return (
@@ -99,10 +108,6 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
               </li>
             </ul>
           )
-        }
-        else {
-          return null;
-        }
       })}
       </div>
     );
@@ -127,13 +132,12 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
     let newTemplate: any = {};
     let visibleRowIndex = 0;  // Initialize a counter for visible rows
     for (let key of templateKeys) {
-      if (asset?.hasOwnProperty(key) && templateObject[key].type === "number" && key !== "iffs:manufacturing_year") {
-        newTemplate[key] = {
+      let actualKey = key.split(':').pop();
+      if (actualKey && asset?.hasOwnProperty(actualKey) && templateObject[key].type === "number" && key.includes('iffs') && key !== "iffs:manufacturing_year") {
+        newTemplate[actualKey] = {
           title: templateObject[key].title,
           unit: templateObject[key].unit
         }
-      } else {
-        continue;
       }
     }
     return (
@@ -161,6 +165,74 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
     
   }
 
+  const renderRealTimeContent = () => {
+    let visibleRowIndex = 0; 
+    let realtimeObject = {};
+    for (let key of templateKeys) {
+      let actualKey = key ? key.split(':').pop() : '';
+      if (asset && actualKey && key.includes("iffr")) {
+        realtimeObject[actualKey] = asset[actualKey];
+      }
+    }
+    return (
+      <div key={asset?.id}>
+        {realtimeObject && Object.entries(realtimeObject).map(([key, value]) => {
+          // Determine row class based on the count of visible rows
+          const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
+          visibleRowIndex++; // Increment the visible row index
+          return (
+            <ul key={key} style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
+              <li className={`py-2 px-2 ${rowClass}`} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div className="flex justify-content-between align-items-center" style={{ width: '100%', padding: '1vh 2vw' }}>
+                    <div className="flex align-items-center">
+                      <label className="text-900 font-medium -ml-4 ">
+                        {key.split("_").map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(" ")}
+                      </label>
+                    </div>
+                    <span className="text-900 ml-4" >{value}</span>
+                </div>
+              </li>
+            </ul>
+          )
+      })}
+      </div>
+    );
+  };
+
+  const renderEclassContent = () => {
+    let visibleRowIndex = 0; 
+    let realtimeObject = {};
+    for (let key of templateKeys) {
+      let actualKey = key ? key.split(':').pop() : '';
+      if (asset && actualKey && key.includes("eclass")) {
+        realtimeObject[actualKey] = asset[actualKey];
+      }
+    }
+    return (
+      <div key={asset?.id}>
+        {realtimeObject && Object.entries(realtimeObject).map(([key, value]) => {
+          // Determine row class based on the count of visible rows
+          const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
+          visibleRowIndex++; // Increment the visible row index
+          return (
+            <ul key={key} style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
+              <li className={`py-2 px-2 ${rowClass}`} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div className="flex justify-content-between align-items-center" style={{ width: '100%', padding: '1vh 2vw' }}>
+                    <div className="flex align-items-center">
+                      <label className="text-900 font-medium -ml-4 ">
+                        {key.split("_").map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(" ")}
+                      </label>
+                    </div>
+                    <span className="text-900 ml-4" >{value}</span>
+                </div>
+              </li>
+            </ul>
+          )
+      })}
+      </div>
+    );
+  };
+
 
   return (
     <div className="mt-1 ml-1">
@@ -185,6 +257,8 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
                 <TabPanel header="Parameters" leftIcon="pi pi-link mr-2" > {renderParametersContent()} </TabPanel>
                 <TabPanel header="General" leftIcon="pi pi-list mr-2" > {renderGeneralContent()} </TabPanel>
                 <TabPanel header="Relation" leftIcon="pi pi-link mr-2" > {renderRelationsContent()} </TabPanel>
+                <TabPanel header="Realtime" leftIcon="pi pi-link mr-2" > {renderRealTimeContent()} </TabPanel>
+                <TabPanel header="Eclass" leftIcon="pi pi-link mr-2" > {renderEclassContent()} </TabPanel>
               </TabView>
             </div>
           </Card>
