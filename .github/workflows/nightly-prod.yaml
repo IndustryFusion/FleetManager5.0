@@ -1,4 +1,4 @@
-name: Nigthly
+name: Nigthly-Prod
 
 on:
   schedule:
