@@ -41,7 +41,7 @@ jobs:
     needs: build
     uses: IndustryFusion/GitOpsRepo/.github/workflows/deploy-prod.yaml@main
     with:
-      APPS: fleet50
+      APPS: fleet50_prod
       DOCKER_TAG: ${{ needs.build.outputs.DOCKER_TAG }}
     secrets:
       PRIVATE_GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_TOKEN }}
