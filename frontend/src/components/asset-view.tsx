@@ -103,7 +103,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
                         {key.split("_").map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(" ")}
                       </label>
                     </div>
-                    <span className="text-900 ml-4" >{value}</span>
+                    <span className="text-900" style={{marginLeft: "13rem"}} >{value}</span>
                 </div>
               </li>
             </ul>
@@ -115,15 +115,37 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
 
   const renderRelationsContent = () => {
+    let visibleRowIndex = 0; // Initialize a counter for visible rows
+    let relationObject = {}
+    for (let key of templateKeys) {
+      let actualKey = key ? key.split(':').pop() : '';
+      if(key.includes('has')) {
+        relationObject[actualKey] = actualKey;
+      }
+    }
     return (
-      <div>
-        {asset && (
-          <div>
-            <p>
-              <h5>{t('relationCommand')}</h5>
-            </p>
-          </div>
-        )}
+      <div key={asset?.id}>
+        <p>
+          <h5>{t('relationCommand')}</h5>
+        </p>
+        {relationObject && Object.entries(relationObject).map(([key, value]) => {
+          // Determine row class based on the count of visible rows
+          const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
+          visibleRowIndex++; // Increment the visible row index
+          return (
+            <ul key={key} style={{ listStyleType: 'none', padding: 0, margin: 0 }} >
+              <li className={`py-2 px-2 ${rowClass}`} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div className="flex justify-content-between align-items-center" style={{ width: '100%', padding: '1vh 2vw' }}>
+                    <div className="flex align-items-center">
+                      <label className="text-900 font-medium -ml-4 ">
+                        {key.split("_").map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(" ")}
+                      </label>
+                    </div>
+                </div>
+              </li>
+            </ul>
+          )
+      })}
       </div>
     );
   };
@@ -167,11 +189,14 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
   const renderRealTimeContent = () => {
     let visibleRowIndex = 0; 
-    let realtimeObject = {};
+    let realtimeObject: any = {};
     for (let key of templateKeys) {
       let actualKey = key ? key.split(':').pop() : '';
       if (asset && actualKey && key.includes("iffr")) {
-        realtimeObject[actualKey] = asset[actualKey];
+        realtimeObject[actualKey] = {
+          realtimeValue: asset[actualKey],
+          unit: templateObject[key].unit
+        }
       }
     }
     return (
@@ -185,11 +210,12 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
               <li className={`py-2 px-2 ${rowClass}`} style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div className="flex justify-content-between align-items-center" style={{ width: '100%', padding: '1vh 2vw' }}>
                     <div className="flex align-items-center">
-                      <label className="text-900 font-medium -ml-4 ">
+                      <label className="text-900 font-medium -ml-4 mr-2">
                         {key.split("_").map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(" ")}
                       </label>
+                      <span className="text-gray-500">{value.unit}</span>
                     </div>
-                    <span className="text-900 ml-4" >{value}</span>
+                    <span className="text-900 ml-4" >{value.realtimeValue}</span>
                 </div>
               </li>
             </ul>
