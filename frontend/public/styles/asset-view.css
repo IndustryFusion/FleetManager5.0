@@ -9,3 +9,24 @@
 .general-tab .p-tabview-panel {
     margin-left: -2.5%;
 }
+
+.asset-view-card {
+    margin-top: 4rem;
+}
+
+.asset-view-card .p-card-body,
+.asset-view-card .p-card-content
+{
+    padding: 0;
+}
+
+.asset-card{
+    padding: 0 20px;
+}
+
+.tab-content {
+    max-height:490px; 
+    overflow-y: auto;
+    padding: 1rem;
+    box-sizing: border-box;
+}
