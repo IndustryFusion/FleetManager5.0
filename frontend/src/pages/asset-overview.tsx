@@ -186,7 +186,6 @@ const Asset: React.FC = () => {
 
     const mainContentStyle: CSSProperties = {
         display: "flex",
-        padding: "1%",
         zoom: "90%",
     };
 
@@ -381,7 +380,7 @@ const Asset: React.FC = () => {
                             className="custom-row-padding"
                             tableStyle={{ width: '100%', overflow: 'auto', maxHeight: 'calc(100vh - 300px)' }}
                             scrollable
-                            scrollHeight='calc(100vh - 350px)'
+                            scrollHeight='460px'
                             onRowClick={(e) => setSelectedAssets(e.data as Asset)}
                             onRowDoubleClick={(e) => handleSelect(e.data as Asset)}
                             selection={selectedAssets}

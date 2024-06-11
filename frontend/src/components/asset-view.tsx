@@ -89,7 +89,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
       }
     }
     return (
-      <div key={asset?.id}>
+      <div key={asset?.id} className="tab-content">
         {generalObject && Object.entries(generalObject).map(([key, value]) => {
           // Determine row class based on the count of visible rows
           const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
@@ -124,7 +124,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
       }
     }
     return (
-      <div key={asset?.id}>
+      <div key={asset?.id} className="tab-content">
         <p>
           <h5>{t('relationCommand')}</h5>
         </p>
@@ -163,7 +163,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
       }
     }
     return (
-        <div key={`${asset?.id}-${asset?.type}`}>
+        <div key={`${asset?.id}-${asset?.type}`} className="tab-content">
           {Object.keys(newTemplate).map((template) => {
             const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
             visibleRowIndex++; // Increment the visible row index for each rendered row
@@ -200,7 +200,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
       }
     }
     return (
-      <div key={asset?.id}>
+      <div key={asset?.id} className="tab-content">
         {realtimeObject && Object.entries(realtimeObject).map(([key, value]) => {
           // Determine row class based on the count of visible rows
           const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
@@ -235,7 +235,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
       }
     }
     return (
-      <div key={asset?.id}>
+      <div key={asset?.id} className="tab-content">
         {realtimeObject && Object.entries(realtimeObject).map(([key, value]) => {
           // Determine row class based on the count of visible rows
           const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
@@ -261,11 +261,10 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
 
   return (
-    <div className="mt-1 ml-1">
+    <>
       <Toast ref={toast} />
-      <div className=" mt-2" style={{ width: "100%" }}>
-        <div style={{ overflow: 'auto', maxHeight: 'calc(100vh - 80px)' }}>
-          <Card className="border-gray-800 border-1 border-round-lg">
+      <div className=" asset-view-card" style={{ width: "100%" }}>
+          <Card className="border-gray-800 border-1 border-round-lg asset-card">
             <div className="flex justify-content-between mb-4">
               <h1 style={{ fontSize: "22px", fontWeight: "bold", marginTop: "2.2rem" }}>
                 Asset Details
@@ -288,9 +287,8 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
               </TabView>
             </div>
           </Card>
-        </div>
       </div>
-    </div>
+    </>
   );
 
 }
