@@ -16,5 +16,7 @@
     "show": "Show",
     "dashboard": "Dashboard",
     "assets": "Assets",
-    "select": "Select"
+    "select": "Select",
+    "relations":"Relations",
+    "addRelation":"Add Relation"
 }

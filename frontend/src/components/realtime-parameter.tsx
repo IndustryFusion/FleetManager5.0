@@ -12,7 +12,8 @@ const RealtimeParameters: React.FC<RealtimeParametersProps> = ({ optionsArray })
       gap: '10px', 
       border: "1px solid #ced4da",
       padding: "16px 24px",
-      borderRadius: "10px"
+      borderRadius: "10px",
+      background:"white"
     }}>
       {optionsArray.length === 0 ? "No Realtime Parameters" :
         optionsArray.map((option, index) => (

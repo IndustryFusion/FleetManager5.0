@@ -14,7 +14,7 @@
 // limitations under the License. 
 // 
 
-import React, { useState, useEffect, useRef, Component, ErrorInfo, ReactNode, MouseEvent } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { DataTable } from "primereact/datatable";
@@ -39,7 +39,7 @@ import DeleteDialog from "@/components/delete-dialog";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
-const Asset: React.FC = () => {
+const AssetOverView: React.FC = () => {
 
     const [selectedProduct, setSelectedProduct] = useState<Asset | null>(null);
     const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<string>("4");
@@ -49,7 +49,7 @@ const Asset: React.FC = () => {
     const [dataTablePanelSize, setDataTablePanelSize] = useState<number>(100);
     const [globalFilterValue, setGlobalFilter] = useState<string>('');
     const [searchedAssets, setSearchedAssets] = useState<Asset[]>([]);
-    const [selectedAssets, setSelectedAssets] = useState<Asset | null>(null);
+    const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [visibleDelete, setVisibleDelete] = useState(false);
     const [deleteAssetId, setDeleteAssetId] = useState("");
@@ -142,7 +142,7 @@ const Asset: React.FC = () => {
             const storedValue = localStorage.getItem('selectedRowsPerPage');
 
             if (storedValue) {
-                setSelectedRowsPerPage(parseInt(storedValue, 10));
+                setSelectedRowsPerPage(storedValue);
             }
 
             fetchAsset();
@@ -175,7 +175,7 @@ const Asset: React.FC = () => {
                     return option;
                 });
 
-                options.forEach(option => selectElement.appendChild(option));
+                options.forEach(option => selectElement?.appendChild(option));
                 paginator.insertBefore(selectElement, paginator.firstChild);
             } else {
                 // If the select element already exists, just update its value
@@ -271,6 +271,10 @@ const Asset: React.FC = () => {
     };
 
     const exportJsonData = async () => {
+        if (!selectedAssets || selectedAssets.length === 0) {
+        console.error('No selected assets to export.');
+        return;
+        }
         let newExportdata = []
         for (let i = 0; i < selectedAssets?.length; i++) {
             try {
@@ -370,7 +374,6 @@ const Asset: React.FC = () => {
                             style={{ marginBottom: "-20px", marginTop: "-15px", backgroundColor: "#a7e3f985", borderColor: "white" }}></Toolbar>
                         <DataTable
                             value={assets} // Use the fetched assets as the data source
-                            currentpage={currentPage}
                             first={currentPage * Number(selectedRowsPerPage)}
                             paginator
                             selectionMode="multiple"
@@ -381,7 +384,7 @@ const Asset: React.FC = () => {
                             tableStyle={{ width: '100%', overflow: 'auto', maxHeight: 'calc(100vh - 300px)' }}
                             scrollable
                             scrollHeight='460px'
-                            onRowClick={(e) => setSelectedAssets(e.data as Asset)}
+                            onRowClick={(e) => setSelectedAssets(e.data as [])}
                             onRowDoubleClick={(e) => handleSelect(e.data as Asset)}
                             selection={selectedAssets}
                             onSelectionChange={(e) => {
@@ -492,4 +495,4 @@ export async function getStaticProps({ locale }: { locale: string }) {
     }
 }
 
-export default Asset;
+export default AssetOverView;

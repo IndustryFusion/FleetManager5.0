@@ -18,7 +18,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Card } from "primereact/card";
 import "primereact/resources/primereact.min.css";
 import "primeflex/primeflex.css";
-import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import { TabPanel, TabView } from "primereact/tabview";
 import { Asset } from "@/interfaces/assetTypes";
 import { Button } from "primereact/button";
@@ -26,6 +25,7 @@ import axios from "axios";
 import { Toast, ToastMessage } from "primereact/toast";
 import "../../public/styles/asset-view.css";
 import { useTranslation } from "next-i18next";
+import 'primereact/resources/themes/saga-blue/theme.css';  
 interface AssetDetailsCardProps {
   asset: Asset | null;
   setShowExtraCard: any;
@@ -78,14 +78,14 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
  const renderGeneralContent = (): JSX.Element => {
     let visibleRowIndex = 0; // Initialize a counter for visible rows
-    let generalObject = {
+    let generalObject : {[key: string] :string} = {
       id: asset ? asset.id : '',
       type: asset ? asset.type : ''
     }
     for (let key of templateKeys) {
       let actualKey = key ? key.split(':').pop() : '';
-      if (asset && actualKey && !key.includes("has") && !key.includes("eclass") && typeof asset[actualKey] !== "number") {
-        generalObject[actualKey] = asset[actualKey];
+      if (asset && actualKey && !key.includes("has") && !key.includes("eclass") && typeof asset[actualKey as keyof Asset ] !== "number") {
+        generalObject[actualKey] = asset[actualKey as keyof Asset] as string;
       }
     }
     return (
@@ -116,10 +116,10 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
   const renderRelationsContent = () => {
     let visibleRowIndex = 0; // Initialize a counter for visible rows
-    let relationObject = {}
+    let relationObject: { [key: string]: string } = {};
     for (let key of templateKeys) {
       let actualKey = key ? key.split(':').pop() : '';
-      if(key.includes('has')) {
+      if(actualKey && key.includes('has')) {
         relationObject[actualKey] = actualKey;
       }
     }
@@ -151,7 +151,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
   };
 
   const renderParametersContent = () => {
-    let newTemplate: any = {};
+    let newTemplate: { [key: string]: { title: string; unit: string } } = {};
     let visibleRowIndex = 0;  // Initialize a counter for visible rows
     for (let key of templateKeys) {
       let actualKey = key.split(':').pop();
@@ -176,7 +176,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
                         <label className="text-900 font-medium mr-2">{newTemplate[template].title}</label>
                         <span className="text-gray-500">{newTemplate[template].unit}</span>
                       </div>
-                      <label className="text-900">{asset[template]}</label>
+                      <label className="text-900">{asset ? asset[template as keyof Asset] : ''}</label>
                     </div>
                 </li>
               </ul>
@@ -189,12 +189,12 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
   const renderRealTimeContent = () => {
     let visibleRowIndex = 0; 
-    let realtimeObject: any = {};
+    let realtimeObject: { [key: string]: { realtimeValue: any; unit: string } } = {};
     for (let key of templateKeys) {
       let actualKey = key ? key.split(':').pop() : '';
       if (asset && actualKey && key.includes("iffr")) {
         realtimeObject[actualKey] = {
-          realtimeValue: asset[actualKey],
+          realtimeValue: asset[actualKey as keyof Asset],
           unit: templateObject[key].unit
         }
       }
@@ -227,16 +227,16 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
 
   const renderEclassContent = () => {
     let visibleRowIndex = 0; 
-    let realtimeObject = {};
+    let eclassObject: { [key: string]: any } = {};
     for (let key of templateKeys) {
       let actualKey = key ? key.split(':').pop() : '';
       if (asset && actualKey && key.includes("eclass")) {
-        realtimeObject[actualKey] = asset[actualKey];
+        eclassObject[actualKey] = asset[actualKey as keyof Asset];
       }
     }
     return (
       <div key={asset?.id} className="tab-content">
-        {realtimeObject && Object.entries(realtimeObject).map(([key, value]) => {
+        {eclassObject && Object.entries(eclassObject).map(([key, value]) => {
           // Determine row class based on the count of visible rows
           const rowClass = visibleRowIndex % 2 === 0 ? 'list-row-even' : 'list-row-odd';
           visibleRowIndex++; // Increment the visible row index

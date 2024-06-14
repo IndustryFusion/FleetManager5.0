@@ -30,6 +30,7 @@ import { InputText } from "primereact/inputtext";
 import Footer from "@/components/footer";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import 'primereact/resources/themes/saga-blue/theme.css';  
 
 // Template data type
 type Template = {

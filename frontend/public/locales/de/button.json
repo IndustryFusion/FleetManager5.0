@@ -16,5 +16,7 @@
     "show": "Zeigen",
     "dashboard": "Armaturenbrett",
     "assets": "Vermögenswerte",
-    "select": "Wählen"
+    "select": "Wählen",
+    "relations":"Beziehungen",
+    "addRelation":"Beziehung hinzufügen"
 }

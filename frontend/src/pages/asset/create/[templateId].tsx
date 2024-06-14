@@ -39,7 +39,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import RealtimeParameters from "@/components/realtime-parameter";
 // Initialize the state with a more specific type
 
-const createAssetForm: React.FC = () => {
+const CreateAssetForm: React.FC = () => {
   const [schema, setSchema] = useState<Schema | null>(null);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [file, setFile] = useState<File | null>(null);
@@ -331,9 +331,6 @@ const createAssetForm: React.FC = () => {
     if (key.startsWith("iffr:")) {
       return;
     }
-    if (key.startsWith("eclass:")) {
-      return;
-    }
     return (
       <div
         key={key}
@@ -370,7 +367,7 @@ const createAssetForm: React.FC = () => {
                 <Calendar
                   value={value ? new Date(value) : null}
                   className="p-inputtext-lg mt-2"
-                  style={{ width: "60%", borderRadius: "5px" }}
+                  style={{ width: "90%", borderRadius: "5px" }}
                   view="year"
                   dateFormat="yy"
                   onChange={(e) => {
@@ -380,6 +377,7 @@ const createAssetForm: React.FC = () => {
                     const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.');
                     handleChange(key, formattedDate)
                   }}
+                  appendTo="self"
 
                 />
               </div>)}
@@ -402,7 +400,7 @@ const createAssetForm: React.FC = () => {
                 />
               </div>
             )}
-            {property.type === "string" && property.title !== "Creation Date" && property.title !== "Asset Category" && (
+            {property.type === "string" && property.title !== "Creation Date" && property.title !== "Asset Category"  && !property.enum && (
               <div key={key} className="p-field">
                 <label className="mb-2" htmlFor={key}>
                   {property.title}
@@ -463,7 +461,7 @@ const createAssetForm: React.FC = () => {
                 />
               </div>
             )}
-            {property.type === "array" && (
+            {((property.type === "string"  && property.enum ) ||  (property.type =="array" && property.enum) ) && (
               <div key={key} className="p-field">
                 <label htmlFor={key}>{property.title}</label>
                 <Dropdown
@@ -518,70 +516,42 @@ const createAssetForm: React.FC = () => {
       </div>
     );
   };
-
-
-
-
   if (!schema) return <div>Loading...</div>;
 
-  const findTemplateId = async (relationType: any) => {
-    if (!relationType) {
-      console.error("relationType is undefined");
-      return null;
-    }
+ const renderCard = (title: string, keys: string[]) => {
+  return (
+    <Card title={title} className="mb-4">
+      <div className="flex p-fluid grid shadow-lg">
+        {keys.length === 0 ? (
+          <p className="ml-2">No Results Found</p>
+        ) : (
+          keys.map((key) => renderField(key, schema.properties[key]))
+        )}
+      </div>
+    </Card>
+  );
+};
 
 
-    const fetchTemplates = async () => {
-      try {
-        const response = await axios.get(API_URL + `/templates`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        return response.data;
-      } catch (error) {
-        console.error("Error fetching templates:", error);
-        return [];
-      }
-    };
-
-    const templates = await fetchTemplates();
-    const formattedRelationType = relationType.replace("https://industry-fusion.org/types/v0.1/", "").toLowerCase();
-
-    const matchingTemplate = templates.find((template: any) => {
-      const formattedTitle = template.title
-        .split(" ")
-        .slice(0, 2)
-        .join("")
-        .toLowerCase();
-
-      return formattedTitle === formattedRelationType;
-    });
-    return matchingTemplate ? matchingTemplate.id : null;
-  };
-
+  const eclassKeys = Object.keys(schema.properties).filter((key) => key.startsWith('eclass'));
+  const iffsKeys = Object.keys(schema.properties).filter((key) => key.startsWith('iffs'));
 
   return (
     <BlockUI blocked={loading}>
       <HorizontalNavbar />
       <Toast ref={toast} />
-      <div className="" style={{ padding: "1rem 1rem 2rem 4rem", zoom: "80%" }}>
+      <div className="container" style={{ padding: "1rem 1rem 2rem 4rem", zoom: "80%" }}>
         <div>
           <h2 className="hover" style={{ marginTop: "100px" }}>
             {t('asset:createAsset')}
           </h2>
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form </h5>
         </div>
-        <div style={{}}>
-          <Card className="border-gray-500 border-1 border-round-lg mb-4">
+        <div className="mb-5">
             <form onSubmit={handleSubmit}>
-              <div className=" flex p-fluid grid  shadow-lg">
-
-                {schema.properties &&
-                  Object.keys(schema.properties).map((key) =>
-                    renderField(key, schema.properties[key])
-                  )}
+              <div >
+                {renderCard("General Fields", iffsKeys)}
+                {renderCard("EClass Fields", eclassKeys)}
               </div>
               <div className="flex">
                 <div className="p-field col-8 mt-3 flex flex-column">
@@ -598,7 +568,7 @@ const createAssetForm: React.FC = () => {
               </div>
               <div className="flex">
                 <div className="p-field col-8 mt-3 flex flex-column ">
-                  <label htmlFor="" className="mb-2">Realtime Parameter</label>
+                  <label htmlFor="" className="mb-2 realtime-label">Realtime Parameter</label>
                   <RealtimeParameters
                     optionsArray={iffrProperties}
                   />
@@ -631,7 +601,6 @@ const createAssetForm: React.FC = () => {
                 />
               </div>
             </form>
-          </Card>
         </div>
       </div>
       <Footer />
@@ -652,4 +621,4 @@ export async function getServerSideProps({ locale }: { locale: string }) {
   }
 }
 
-export default createAssetForm;
+export default CreateAssetForm;
