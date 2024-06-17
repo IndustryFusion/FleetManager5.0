@@ -24,7 +24,6 @@ import { Property, Schema, RelationItem, FileLoadingState } from "@/interfaces/a
 import { useRouter } from "next/router";
 import { Button } from "primereact/button";
 import { FileUpload } from "primereact/fileupload";
-import { ListBox } from "primereact/listbox";
 import "../../../../public/styles/edit-asset.css";
 import { Card } from "primereact/card";
 import { BlockUI } from 'primereact/blockui';
@@ -311,7 +310,6 @@ const AssetEdit = () => {
                 </label>
                 <br />
                    <InputText
-                    
                       id={key}
                       className="p-inputtext-lg mt-2"
                       style={{ width: "90%", borderRadius: "5px" }}
@@ -332,7 +330,7 @@ const AssetEdit = () => {
                 <Calendar
                   value={value ? new Date(value) : null}
                   className="p-inputtext-lg mt-2"
-                  style={{ width: "60%", borderRadius: "5px" }}
+                  style={{ width: "90%", borderRadius: "5px" }}
                   view="year"
                   dateFormat="yy"
                   onChange={(e) => {
@@ -342,7 +340,7 @@ const AssetEdit = () => {
                     const formattedDate = date.toLocaleString('en-US', options).replace(/\//g, '.');
                     handleChange(key, formattedDate)
                   }}
-
+                  appendTo="self"
                 />
               </div>)}
 
@@ -445,13 +443,30 @@ const AssetEdit = () => {
       </div>
     );
   };
+  
+  
+const renderCard = (title: string, keys: string[]) => {
+  return (
+    <Card title={title} className="mb-4">
+      <div className="flex p-fluid grid shadow-lg">
+        {keys.length === 0 ? (
+          <p className="ml-3">No Results Found</p>
+        ) : (
+          keys.map((key) => renderField(asset.id, key, schema!.properties[key]))
+        )}
+      </div>
+    </Card>
+  );
+};
 
 
+  const eclassKeys = Object.keys(schema?.properties || {}).filter((key) => key.startsWith('eclass'));
+  const iffsKeys = Object.keys(schema?.properties || {}).filter((key) => key.startsWith('iffs'));
   return (
     <BlockUI blocked={loading}>
       <HorizontalNavbar />
       <Toast ref={toast} />
-      <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "80%" }}>
+      <div style={{ padding: "1rem 1rem 2rem 3rem", zoom: "80%" }} className="container">
         <div>
           <h2 className="hover " style={{  marginTop: "100px" }}>
             {t('asset:editAsset')}
@@ -459,14 +474,11 @@ const AssetEdit = () => {
           <h5 style={{ fontWeight: "normal", fontSize: "20px", fontStyle: "italic", color: "#226b11" }}>{assetType} form --  {asset.id}</h5>
         </div>
 
-        <div>
-          <Card className="border-gray-500 border-1 border-round-lg mb-4">
+        <div className="mb-7">
             <form  onSubmit={handleSubmit} >
-              <div className=" flex p-fluid grid  shadow-lg">
-                {schema && schema.properties &&
-                  Object.keys(schema.properties).map((key) =>
-                    renderField(asset.id, key, schema.properties[key])
-                  )}
+              <div>
+                {renderCard("General Fields", iffsKeys)}
+                {renderCard("EClass Fields", eclassKeys)}
               </div>
               <div className="flex">
                 <div className="p-field col-13 mt-3 flex flex-column">
@@ -502,7 +514,6 @@ const AssetEdit = () => {
                  style={{ paddingTop: '30px', marginLeft: '20px', fontWeight: 'bold', color: '#008000' }}>{status}</p>}
               </div>
             </form>
-          </Card>
         </div>
         <Footer />
       </div>
