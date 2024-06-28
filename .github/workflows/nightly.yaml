@@ -42,7 +42,10 @@ jobs:
     uses: IndustryFusion/GitOpsRepo/.github/workflows/deploy.yaml@main
     with:
       APPS: fleet50
+      NAMESPACE: iff50      
       DOCKER_TAG: ${{ needs.build.outputs.DOCKER_TAG }}
+      CLUSTER: IFF-Dev-SmartFactory
+
     secrets:
       PRIVATE_GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_TOKEN }}
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
