@@ -19,48 +19,24 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const loginUrl = BACKEND_API_URL + '/auth/login';
 
 //on sucessfull login , we store access_token and refresh_token in cookies
-const login = async (username: string, password: string): Promise<Boolean> => {
-
-    const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    };
-
-    const data = {
-        'username': username,
-        'password': password,
-    };
-    
-   
+export const login = async (email: string, password: string) => {
     try {
-        const response: AxiosResponse<Boolean> = await axios.post(loginUrl as string, data, { headers });
-        if (response.data) {
-          return response.data;
-        }
-        else {
-            return false
-        }
-    } catch (error: any) {
+        const response = await axios.post(loginUrl, {
+            email,
+            password,
+            product_name:"DPP Creator"
+        });
+        return response;
+    } catch (error) {
         if (axios.isAxiosError(error)) {
-            if (error.response) {
-                console.error(error.response.data);
-                console.error(error.response.status);
-                console.error(error.response.headers);
-            } else if (error.request) {
-                console.error(error.request);
-            } else {
-                console.error('Error', error.message);
-            }
+            throw error.response?.data;
         } else {
-            console.error('Error', error.message);
+            throw new Error("An unknown error occurred.");
         }
-        throw error;
     }
 };
 
-export default {
-    login
-};

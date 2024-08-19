@@ -32,7 +32,7 @@ interface AssetDetailsCardProps {
   templateId?: any;
 }
 
-const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
 export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetailsCardProps) {
 

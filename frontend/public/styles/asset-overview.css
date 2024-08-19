@@ -1,27 +1,413 @@
-/* asset-overview.css */
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap");
+
+/* body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+} */
+:root {
+  --black-primary: #2b2b2b;
+  --blue-new: #478fb7;
+  --blue: #138ab6;
+  --white: #fff;
+  --grey-primary: #5f5f5f;
+  --grey-secondary: #95989a;
+  --grey-box: #f3f3f5;
+}
 
 body {
-  /* font-family: Roboto, sans-serif; */
-  font-family: Inter; 
-
+  margin: 0;
 }
-*{
-  box-sizing: border-box;
+
+.container {
+  font-family: "League Spartan", sans-serif;
+  height: 100vh;
+  background: #fff;
+}
+
+.container p {
+  margin: 0;
+}
+
+.select-all-checkbox.p-checkbox .p-checkbox-box.p-highlight {
+    border-color: #95989a;
+    background: #000 !important;
+    color: #fff;
+}
+.select-all-checkbox.p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover {
+  border-color: #95989a;
+  background: #000;
+  color: #fff; 
+}
+.p-paginator .p-paginator-pages .p-paginator-page {
+  font-family: "League Spartan";
+  color: var(--grey-secondary);
+  border-radius: 10px;
+  border: 2px solid #e6e6e6;
+  background: var(--white);
+}
+
+.p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  background: #fff;
+  border: 2px solid var(--black-primary);
+  border-radius: 10px;
+  color: var(--black-primary);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+.asset-overview {
+  flex: 0 84%;
+  padding: 10px 10px 10px 0px;
+}
+.asset-overview-expand {
+  flex: 0 96%;
+  padding: 10px 10px 10px 0px;
+}
+.asset-overview-sidebar-expand {
+  flex: 0 100%;
+  padding: 10px 10px 10px 0px;
+  width: 84%;
+}
+.sidebar-container {
+  flex: 0 15%;
+  padding: 0px 12px 27px;
+  border-right: 1px solid #e6e6e6;
+  background-color: var(--white);
+  transition: flex 0.3s ease;
+  height: 100vh;
+}
+
+.collapse-sidebar {
+  flex: 0 3%;
+  padding: 23px 16px 27px 12px;
+  border-right: 1px solid #e6e6e6;
+  background-color: var(--white);
+  transition: flex 0.3s ease;
+  height: 100vh;
+}
+
+.qr-container {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+.transparent-btn {
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+.p-dropdown {
+  border: none;
+}
+.p-dropdown .p-dropdown-label {
+  padding-left: 0 !important;
+}
+.p-dropdown .p-dropdown-trigger {
+  display: none;
+}
+
+.asset-header {
+  border-top: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e6e6e6;
+}
+.total-assets-text {
+  font-size: 24px;
+  font-weight: 700;
+  font-style: normal;
+  line-height: normal;
+  margin: 0;
+  padding: 15px 24px 13px;
+  border-right: 1px solid #e6e6e6;
+}
+
+.asset-count {
+  color: var(--blue-new);
+}
+.p-dropdown-items {
+  font-family: "League Spartan";
+  margin-bottom: 3px;
+  padding: 8px;
+}
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  margin-bottom: 3px;
+}
+.filter-header {
+  margin: 10px 0;
+}
+
+.asset-text {
+  color: var(--black-primary);
+}
+
+.right-content ul li {
+  cursor: pointer;
+}
+
+.p-tabview .p-tabview-nav {
+  background-color: transparent;
+}
+
+.add-asset-btn {
+  background-color: var(--black-primary);
+  color: var(--white);
+  border-radius: 8px;
+  padding: 7px 7px 7px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 10px 0;
+  cursor: pointer;
+}
+.import-dropdown {
+  color: var(--white);
+  border-radius: 8px;
+  padding: 7px 7px 7px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 10px 0;
+  cursor: pointer;
+}
+.export-btn {
+  padding: 7px 7px 7px 16px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+.asset-overview-header {
+  margin-bottom: 13px;
+  padding: 0 24px;
+}
+.assetid-content span {
+  margin-left: 3px;
+}
+.search-container {
+  position: relative;
+}
+.search-container img {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.6rem;
+}
+
+.search-input {
+  /* padding: 6px 0px 3px 28px; */
+  width: 232px;
+  border: 2px solid #e6e6e6;
+  border-radius: 8px;
+  padding: 0;
+  padding-left: 28px;
+}
+.add-icon{
+  font-size: 22px;
+  color: #fff;
+}
+.table-header {
+  padding: 16px 24px;
+}
+
+.p-datatable .p-sortable-column .p-sortable-column-icon {
+  display: none;
+}
+
+.pi.pi-angle-up,
+.pi.pi-angle-down {
+  color: var(--black-primary);
+  font-size: 13px;
+}
+
+.search-input::placeholder {
+  color: var(--grey-secondary);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.p-inputtext .p-component {
+  border: none;
+}
+
+.right-content ul {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+}
+
+.right-content ul li {
+  list-style: none;
+  color: var(--grey-secondary);
+  font-size: 16px;
+  font-weight: 400;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.tr-text {
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  color: var(--grey-secondary);
+}
+.custom-row-padding .p-datatable-wrapper {
+  height: 560px;
+}
+ .p-datatable .p-datatable-tbody > tr > td {
+  border: none;
+  border-bottom: 1px solid #e6e6e6;
+}
+.p-paginator .p-paginator-last,
+.p-paginator .p-paginator-first {
+  display: none;
+}
+/* 
+.custom-row-padding .p-datatable .p-paginator-bottom {
+  position: absolute;
+  right: 0;
+  top: 32rem;
+  left: 0;
+} */
+
+/** checkbox-container:start**/
+
+.checkbox-container {
+  background-color: var(--black-primary);
+  border-radius: 10px;
+  padding: 14px 16px 11px 10px;
+  color: var(--white);
+  justify-content: space-between;
+  position: absolute;
+  top: 0rem;
+  z-index: 1000;
+  width: 98.6%;
+}
+
+/** checkbox-container:end**/
+/** tab styling:start**/
+.asset-tabs .p-tabview-nav-container {
+  padding-left: 26px;
+  padding-top: 18px;
+}
+
+.p-tabview .p-tabview-panels {
+  padding: 0;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  padding: 0;
+  margin-right: 16px;
+}
+
+.p-tabview .p-tabview-nav {
+  border: 0px solid transparent;
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  border-color: var(--blue-new);
+  color: var(--black-primary);
+  border-width: 0 0 4px 0;
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link .p-tabview-title {
+  font-weight: 600;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  border-color: transparent;
+  color: var(--grey-secondary);
+  background-color: transparent;
+}
+
+.p-tabview-title {
+  font-family: "League Spartan";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+/* Hide checkboxes in DataTable */
+/* .custom-row-padding .asset-dynamic-table */
+.custom-row-padding .p-checkbox-box {
+  visibility: hidden;
+}
+
+/* .p-tabview-title {
+  color: var(--black-primary);
+  font-family: "League Spartan";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+} */
+
+.p-breadcrumb {
+  padding: 0;
+  border: none;
+  font-family: "League Spartan";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  background: transparent;
+}
+svg.p-icon {
+  width: 12px;
+}
+
+.p-breadcrumb .p-breadcrumb-list li .p-menuitem-link .p-menuitem-text {
+  color: var(--grey-primary);
+  font-family: "League Spartan";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-left: 8px;
+}
+
+.p-contextmenu {
+  box-shadow: 0px 0px 8px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+}
+
+.p-contextmenu .p-menuitem > .p-menuitem-content .p-menuitem-link {
+  padding: 10px;
+}
+.p-contextmenu .p-menuitem-link .p-menuitem-text {
+  color: var(--black-primary);
+  font-family: "League Spartan";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-left: 8px;
+}
+.p-contextmenu .p-menuitem-link:not(.p-disabled):hover .p-menuitem-text {
+  color: #138AB6;
+}
+.p-contextmenu .p-menuitem-link:not(.p-disabled):hover {
+  background: #e6e6e6;
+  border-radius: 10px;
+  color: #138AB6;
+}
+.p-contextmenu .p-menuitem-link{
+  margin: 0 8px;
+  margin-bottom:3px;
 }
 
 .asset-data-table,
 .asset-details-card {
   margin-top: 0;
   max-width: 100%;
-  font-family: Inter; 
+  box-sizing: border-box;
+  font-family: "League Spartan", sans-serif;
 }
-.asset-btn:hover {
-  background: #b5e1f1;
-  transition: background-color 0.15s;
-}
+
 .action-items-btn {
   border: none;
   background: transparent;
@@ -29,37 +415,8 @@ body {
   margin-left: 6px;
 }
 
-.status-complete-tag {
-  padding: 5px 10px;
-  color: rgb(1, 145, 1);
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.status-complete-tag i {
-  font-size: 13px;
-}
-
-.status-incomplete-tag {
-  padding: 5px 10px;
-  color: #363737;
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.status-incomplete-tag i {
-  color: #000;
-}
-
 .p-inputtext:enabled:focus {
   box-shadow: none;
-  border-color: #495057;
 }
 
 .asset-overview-dialog {
@@ -68,103 +425,82 @@ body {
 
 .p-paginator {
   display: flex;
-  justify-content: flex-end;
-}
-
-/** dataTable css ***/
-.p-datatable-table {
-  border-radius: 10px;
+  justify-content: center;
 }
 
 .paginator-dropdown-row {
   margin-right: 1rem;
   background-color: #ffffff;
-  border: 1px solid #dee2e6;
+  border: 2px solid #e6e6e6;
   min-width: 2.357rem;
   height: 2.357rem;
   padding: 5px;
   font-size: 15px;
+  border-radius: 10px;
 }
 
-.p-datatable>.p-datatable-wrapper {
+.custom-row-padding .p-datatable > .custom-row-padding .p-datatable-wrapper {
   margin-top: 1rem;
 }
 
-.p-datatable>.p-datatable-wrapper {
+.custom-row-padding .p-datatable > .custom-row-padding .p-datatable-wrapper {
   overflow: auto !important;
 }
 
-.p-datatable .p-datatable-tbody>tr.p-highlight {
-  background: transparent;
-  color: #000;
+.custom-row-padding .p-datatable .p-datatable-tbody > .custom-row-padding tr.p-highlight {
+  background: var(--grey-box);
+  border-radius: 2px;
 }
 
-.p-datatable .p-datatable-tbody>tr>td {
-  font-size: 14px;
+.custom-row-padding
+  .p-datatable
+  .p-datatable-tbody
+  > tr.p-highlight
+  .p-checkbox
+  .p-checkbox-box {
+  visibility: visible;
+}
+ .p-datatable .p-datatable-tbody > tr > td {
+  font-size: 16px;
   text-align: left;
- 
+  font-family: "League Spartan", sans-serif;
 }
-.p-datatable .p-datatable-tbody>tr{
-  height: 120px;
+.custom-row-padding .p-checkbox .p-checkbox-box {
+  background-color: var(--grey-box);
 }
-
-.p-datatable .p-datatable-thead>tr>th {
-  text-align: left;
-  border: 1px solid #dee2e6;
-  border: none;
-  font-weight: 600;
-  color: #212529;
-  background: #a7e3f985;
-  transition: box-shadow 0.15s;
-  font-size: 14px;
+.custom-row-padding .p-checkbox .p-checkbox-box:hover {
+  border-color: transparent;
 }
-
-.p-datatable .p-datatable-thead>tr>th:first-child {
-  border-top-left-radius: 10px;
+.custom-row-padding .p-checkbox .p-checkbox-box.p-highlight {
+  background: #000;
+  color: #ffffff;
+  visibility: visible;
+  border-color: #95989a;
 }
-
-.p-datatable .p-datatable-thead>tr>th:last-child {
-  border-top-right-radius: 10px;
-}
-
-
-/** dataTable css ***/
 .asset-heading {
   font-size: 22px;
   margin-top: 16px;
 }
-
 .search-container .pi.pi-search {
   position: absolute;
   left: 3rem;
 }
-
 .searchbar-input {
   width: 20rem;
   height: 45px;
   padding: 10px;
-  border: 1px solid #ced4da;
   border-radius: 5px;
   margin-left: -230px;
 }
-
 .p-input-icon-left {
-  position: relative
+  position: relative;
 }
 
-/* Mobile view adjustments */
 @media screen and (max-width: 768px) {
   .asset-details-card.mobile-view {
     width: 100%;
   }
 }
-
-/* Custom row padding for DataTable */
-.custom-row-padding .p-datatable-tbody>tr>td {
-  padding: 10px 14px;
-  /* Adjust the padding as needed */
-}
-
 
 .scrollable-side-panel {
   min-height: calc(100vh - 100px);
@@ -177,16 +513,13 @@ body {
   max-width: 100%;
 }
 
-/* Ensure the DataTable itself does not exceed the width of its container */
 .asset-data-table .p-datatable {
   width: auto;
   min-width: 100%;
   min-height: calc(100vh-500px);
 }
 
-/* Add this CSS in your stylesheet */
 @keyframes dot {
-
   0%,
   20% {
     color: rgba(0, 0, 0, 0);
@@ -204,4 +537,187 @@ body {
   margin-left: 2px;
   animation: dot 1.5s infinite linear;
   display: inline-block;
+}
+
+.new-asset-btn {
+  background-color: rgba(18, 56, 28, 0.635);
+  color: #ffffff;
+  border: none;
+}
+
+.new-asset-btn:hover {
+  background-color: #1c65b9;
+}
+
+.export-btn {
+  background-color: #1f658c;
+  color: #ffffff;
+  border: none;
+}
+
+.export-btn:hover {
+  background-color: #1c65b9;
+}
+
+.toolbar {
+  background-color: #c8df8a31;
+  border-color: white;
+  margin-bottom: -20px;
+  margin-top: -15px;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  text-align: left;
+  font-weight: 500;
+  background: transparent;
+  transition: box-shadow 0.15s;
+  font-size: 16px;
+  font-family: "League Spartan", sans-serif;
+  color: var(--black-primary);
+  padding: 14px;
+  border:none;
+}
+.p-datatable .p-datatable-thead > tr > th:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.p-datatable .p-datatable-thead > tr > th:last-child{
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+
+.asset-id-text {
+  color: var(--black-primary);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.id-text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 25px;
+  width: 197px;
+  font-size: 16px;
+  margin-top: 14px !important;
+  text-wrap: nowrap;
+}
+
+.custom-row-padding .expand-id-text {
+  word-wrap: break-word;
+  width: 271px;
+}
+
+.custom-row-padding .p-datatable-tbody > tr > td {
+  padding: 10px 14px;
+}
+.custom-row-padding .p-datatable-thead{
+  background-color: #f3f3f5;
+  }
+.custom-row-padding .p-datatable-tbody > tr:hover {
+  border-radius: 2px;
+  background-color: var(--grey-box);
+}
+
+.custom-row-padding .p-datatable-tbody > tr:hover .p-checkbox .p-checkbox-box,
+.custom-row-padding .p-datatable-tbody > tr:hover .context-menu-icon {
+  visibility: visible;
+}
+
+.p-column-header-content .p-checkbox .p-checkbox-box {
+  visibility: visible;
+}
+
+.dropdown-list .p-dropdown-panel {
+  left: 0 !important;
+}
+
+.dropdown-checkbox .p-checkbox .p-checkbox-box {
+  visibility: visible;
+}
+
+/** header options:start**/
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.placeholder-container {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.custom-placeholder {
+  display: flex;
+  align-items: center;
+}
+
+.p-dropdown .p-dropdown-label {
+  padding-left: 36px;
+  color: var(--grey-secondary);
+  font-family: "League Spartan";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.p-rowgroup-header-name {
+  font-size: 20px;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+/* Style for screens smaller than 1440px */
+.pagination-range-display {
+  position: absolute;
+  bottom: 2rem;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  color: var(--grey-secondary);
+}
+.clone-label{
+margin-bottom: 5px;
+color: #2B2B2B;
+font-family: "League Spartan";
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+
+}
+.mb-14{
+  margin-bottom: 14px;
+}
+.p-dialog-title{
+  font-family: "League Spartan"; 
+}
+.p-dialog-header{
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom: 1px solid #e6e6e6;
+}
+.p-dialog .p-dialog-content:last-of-type,
+.p-dialog .p-dialog-footer  {
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.clone-dialog .p-dialog-content {
+  padding-top: 17px;
+}
+.clone-dialog .p-button.p-button-danger.p-button-outlined,
+ .p-dialog .p-dialog-footer button {
+  border-radius: 8px;
+  font-family: "League Spartan";
+}
+/* Style for screens 1440px */
+@media (min-width: 2250px) {
+  .pagination-range-display {
+    bottom: 12rem;
+  }
 }

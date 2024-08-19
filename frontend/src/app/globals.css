@@ -1,3 +1,6 @@
+
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap");
+
 .footer-container {
   text-align: center;
   position: fixed;
@@ -7,5 +10,11 @@
   background-color: #424040;
   color: #fff;
   box-shadow: rgba(37, 34, 34, 0.2);
-  height: 45px;
+  padding: 16px 0;
+}
+.footer-container p{
+  margin: 0;
+}
+body{
+  font-family: "League Spartan", sans-serif;
 }

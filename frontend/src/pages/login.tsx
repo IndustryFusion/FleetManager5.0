@@ -19,7 +19,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
-import authService from "@/auth/authService";
+import { login } from "@/auth/authService";
 import Cookies from "js-cookie";
 import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import "primeflex/primeflex.css";
@@ -27,8 +27,8 @@ import { Password } from 'primereact/password';
 import "../../public/styles/login.css";
 import 'primeicons/primeicons.css';
 import { redirect, useRouter } from 'next/navigation';
-import { useDispatch } from "react-redux";
-import { login, startTimer } from "@/redux/auth/authSlice";
+import { showToast } from "@/utility/toast";
+import { storeAccessGroup } from "@/utility/indexed-db";
 
 const Login: React.FC = () => {
     // states
@@ -40,7 +40,6 @@ const Login: React.FC = () => {
     const toast = useRef<Toast>(null);
     const router = useRouter();
     const submitButtonRef = useRef<HTMLButtonElement>(null);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         // Always do navigations after the first render
@@ -96,27 +95,21 @@ const Login: React.FC = () => {
         }
         else {
             try {
-                const login_flag: Boolean = await authService.login(username, password);
-
-                if (login_flag == true) {
-                    dispatch(login(username));
-                    dispatch(startTimer());
+                const response = await login(username, password);
+                if (response.data && response.data.status === 200 && response.data.data) {
+                    const { company_ifric_id, user_name, jwt_token,access_group  } = response.data.data;
+    
+                    localStorage.setItem('user_name', user_name);
+                    localStorage.setItem('jwt_token', jwt_token);
+                    localStorage.setItem('company_ifric_id', company_ifric_id);
                     Cookies.set("login_flag", "true", { expires: 7 });
-                    toast.current?.show({
-                        severity: "success",
-                        summary: "Login Successful",
-                        detail: "Welcome!",
-                    });
-                    setIsLoggedIn(true);
-                    router.push('/asset-overview');
-                }
-
-                else {
-                    toast.current?.show({
-                        severity: "error",
-                        summary: "Login Error",
-                        detail: "Failed to login",
-                    });
+                    storeAccessGroup(access_group);
+                    showToast(toast, "success", "Success", "Login successful!");
+                    setTimeout(() => {
+                        router.push(`/asset-overview2`);
+                    }, 1000);
+                } else {
+                    showToast(toast, "error", "Error", "Login failed. Please try again.");
                 }
 
             } catch (err) {

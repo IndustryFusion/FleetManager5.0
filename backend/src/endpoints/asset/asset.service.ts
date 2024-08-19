@@ -23,53 +23,36 @@ import * as moment from 'moment';
 export class AssetService {
   constructor(private readonly templatesService: TemplatesService) { }
   private readonly scorpioUrl = process.env.SCORPIO_URL;
-  private readonly icidUrl = process.env.ICID_ORIGIN;
+  private readonly icidUrl = process.env.ICID_SERVICE_BACKEND_URL;
   private readonly assetCode = process.env.ASSETS_DEFAULT_CODE;
   private readonly context = process.env.CONTEXT;
+  private readonly registryUrl = process.env.IFRIC_REGISTRY_BACKEND_URL;
 
-  /**
-  * Retrieves all assets from scorpio.
-  * @returns Returns an array of all asset objects.
-  * @throws {Error} Throws an error if there is a failure in fetching assets from scorpio.
-  * Expected behavior:
-  * - Positive Test Case: Successful retrieval of asset with HTTP status code 200.
-  * - Negative Test Case: NotFoundException thrown when assets not found with HTTP status code 404.
-  * - Error Handling: Throws a NotFoundException in case of failure.
-  */
-  async getAssetData() {
+  async getAssetData(id: string) {
     try {
       const assetData = [];
-      const templates = await this.templatesService.getTemplates();
       const headers = {
         'Content-Type': 'application/ld+json',
         'Accept': 'application/ld+json'
       };
-      for (let i = 0; i < templates.length; i++) {
-        let template = templates[i];
-        let id = Buffer.from(template.id, 'base64').toString('utf-8');
-        const url = this.scorpioUrl + '?type=' + id;
-        const response = await axios.get(url, { headers });
-        if (response.data.length > 0) {
-          assetData.push(...response.data);
-        }
-      }
+      const assetIds = await axios.get(`${this.registryUrl}/auth/get-company-assets/${id}`, { headers });
       
-      if(assetData.length > 0) {
-        
-        assetData.sort((a, b) => {
-          const aKey = Object.keys(a).find(key => key.includes("creation_date"));
-          const bKey = Object.keys(b).find(key => key.includes("creation_date"));
-          const format = 'DD.MM.YYYY HH:mm:ss';
-          const dateA = moment(a[aKey]?.value, format);
-          const dateB = moment(b[bKey]?.value, format);
-          if (dateA.isBefore(dateB)) {
-            return 1; 
-          } else if (dateA.isAfter(dateB)) {
-            return -1; 
-          } else {
-            return 0; 
+      if(assetIds.data.length > 0) {
+        for (let i = assetIds.data.length - 1; i >= 0; i--) {
+          let assetId = assetIds.data[i].asset_ifric_id;
+          try {
+            const response = await this.getAssetDataById(assetId);
+            if(Object.keys(response).length > 0) {
+              assetData.push(response);
+            }
+          } catch(err) {
+            if (err.response && err.response.statusCode === 404) {
+              continue;
+            } else {
+              throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
+            }
           }
-        });
+        }
       }
       return assetData;
     } catch (err) {
@@ -77,15 +60,6 @@ export class AssetService {
     }
   }
 
-  /**
-   * Retrieves specific asset from scorpio.
-   * @returns Returns an array of specific asset objects.
-   * @throws {Error} Throws an error if there is a failure in fetching asset from scorpio.
-   * Expected behavior:
-   * - Positive Test Case: Successful retrieval of asset with HTTP status code 200.
-   * - Negative Test Case: NotFoundException thrown when asset not found, incorrect id with HTTP status code 404.
-   * - Error Handling: Throws a NotFoundException in case of failure.
-   */
   async getAssetDataById(id: string) {
     try {
       const headers = {
@@ -140,15 +114,6 @@ export class AssetService {
     }
   }
 
-  /**
-  * stores template data(asset) to scorpio.
-  * @returns Returns object with status and message data.
-  * @throws {Error} Throws an error if there is a failure in storing template data to scorpio.
-  * Expected behavior:
-  * - Positive Test Case: Successful store of template data in scorpio with HTTP status code 201.
-  * - Negative Test Case: scorpio error thrown when format error or id already present with HTTP status code 404.
-  * - Error Handling: Throws a scorpio error in case of failure.
-  */
   async setAssetData(id: string, data: TemplateDescriptionDto) {
     try {
       const headers = {
@@ -289,15 +254,6 @@ export class AssetService {
     }
   }
 
-  /**
-  * update specific asset and their attributes in scorpio.
-  * @returns Returns object with status and message data.
-  * @throws {Error} Throws an error if there is a failure in updating asset in scorpio.
-  * Expected behavior:
-  * - Positive Test Case: Successful updation of asset in scorpio with HTTP status code 204.
-  * - Negative Test Case: scorpio error thrown when id not present or attribute not present with HTTP status code 404.
-  * - Error Handling: Throws a scorpio error in case of failure.
-  */
   async updateAssetById(id: string, data) {
     try {
       const headers = {
@@ -342,15 +298,7 @@ export class AssetService {
       throw err;
     }
   }
-  /**
-  * delete specific asset in scorpio.
-  * @returns Returns object with status and message data.
-  * @throws {Error} Throws an error if there is a failure in deleting asset in scorpio.
-  * Expected behavior:
-  * - Positive Test Case: Successful deletion of asset in scorpio with HTTP status code 204.
-  * - Negative Test Case: scorpio error thrown when id not present with HTTP status code 404.
-  * - Error Handling: Throws a scorpio error in case of failure.
-  */
+  
   async deleteAssetById(id: string) {
     try {
       const headers = {

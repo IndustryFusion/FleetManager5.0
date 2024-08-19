@@ -1,32 +1,42 @@
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap");
 /* Alternating row colors */
 .list-row-even {
-     background-color: #e2e5e685; /* Light grey for odd rows */
+  background-color: #e2e5e685; /* Light grey for odd rows */
 }
 .list-row-odd {
-   background-color: #FFFFFF; /* White for even rows */
+  background-color: #ffffff; /* White for even rows */
 }
 
 .general-tab .p-tabview-panel {
-    margin-left: -2.5%;
+  margin-left: -2.5%;
 }
 
 .asset-view-card {
-    margin-top: 4rem;
+  margin-top: 1rem;
+}
+.asset-view-header{
+ border-bottom: 1px solid #E6E6E6;
+}
+.asset-view-header h1{
+  font-family: "League Spartan" !important;
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 0.5rem;
 }
 
 .asset-view-card .p-card-body,
-.asset-view-card .p-card-content
-{
-    padding: 0;
+.asset-view-card .p-card-content {
+  padding: 0;
 }
 
-.asset-card{
-    padding: 0 20px;
+.asset-card {
+  padding: 0 20px;
 }
 
 .tab-content {
-    max-height:490px; 
-    overflow-y: auto;
-    padding: 1rem;
-    box-sizing: border-box;
+  max-height: 490px;
+  overflow-y: auto;
+  padding: 1rem;
+  box-sizing: border-box;
+  margin-left: -3.5%;
 }

@@ -37,7 +37,7 @@ import moment from "moment";
 import Footer from "@/components/footer";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
 const AssetEdit = () => {
   const router = useRouter();

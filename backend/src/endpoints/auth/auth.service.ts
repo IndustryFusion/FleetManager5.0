@@ -16,6 +16,7 @@
 
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import { FindOneAuthDto } from './dto/find-auth-dto';
 
 /**
  * Retrieves tokens from the keylock service.
@@ -27,18 +28,36 @@ import axios from 'axios';
  */
 @Injectable()
 export class AuthService {
-    private readonly DEFAULT_USERNAME = process.env.USERNAME;
-    private readonly DEFAULT_PASSWORD = process.env.PASSWORD;
+  private readonly registryUrl = process.env.IFRIC_REGISTRY_BACKEND_URL;
 
-   login(username: string, password: string): Boolean {
+  async logIn(data: FindOneAuthDto) {
     try {
-      if(this.DEFAULT_USERNAME == username && this.DEFAULT_PASSWORD == password) {
-        return true;
+      // Find User From IFRIC Registry
+      let registryResponse = await axios.post(
+        `${this.registryUrl}/auth/login`,
+        data,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      if (registryResponse.data.status == '200') {
+        return registryResponse.data;
       } else {
-        return false;
+        return {
+          success: false,
+          status: registryResponse.data.status,
+          message: registryResponse.data.message,
+        };
       }
-    } catch (error) {
-      throw new Error('Login Failed');
+    } catch (err) {
+      return {
+        success: false,
+        status: 500,
+        message: 'Error Fetching User',
+        error: err.message,
+      };
     }
   }
 }

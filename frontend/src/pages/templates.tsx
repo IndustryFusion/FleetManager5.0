@@ -42,7 +42,7 @@ type Template = {
 const initialTemplates: Template[] = [];
 
 const cardTitleStyle = { fontSize: "19px", color: "#000", padding: "1rem, 2rem, 1rem, 2rem" };
-const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
 const GetListTemplate: React.FC = () => {
   const [templates, setTemplates] = useState<Template[]>(initialTemplates);

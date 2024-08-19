@@ -23,14 +23,10 @@ import { Request } from 'express';
 export class AssetController {
   constructor(private readonly assetService: AssetService) {}
 
-  @Get()
-  async getAssetData(@Req() req: Request, @Query('type') type: string) {
+  @Get(':id')
+  async getAssetData(@Param('id') id: string) {
     try {
-      if (type) {
-        return this.getAssetByType(type);
-      } else {
-      return await this.assetService.getAssetData();
-      }
+      return await this.assetService.getAssetData(id);
     } catch (err) {
       throw new NotFoundException();
     }
@@ -46,7 +42,7 @@ export class AssetController {
   }
 
   @Get(':id')
-  async getAssetDataById(@Param('id') id: string, @Req() req: Request) {
+  async getAssetDataById(@Param('id') id: string) {
     try {
       return await this.assetService.getAssetDataById(id);
     } catch (err) {
@@ -55,7 +51,7 @@ export class AssetController {
   }
 
   @Get(':id/keyvalues')
-  async getkeyValuesById(@Param('id') id: string, @Req() req: Request) {
+  async getkeyValuesById(@Param('id') id: string) {
     try {
       return await this.assetService.getkeyValuesById(id);
     } catch (err) {
@@ -64,7 +60,7 @@ export class AssetController {
   }
 
   @Post(':id')
-  async setAssetData(@Param('id') id: string, @Body() data, @Req() req: Request) {
+  async setAssetData(@Param('id') id: string, @Body() data) {
     try {
       const response = await this.assetService.setAssetData(id, data);
       if(response['status'] == 200 || response['status'] == 201) {
@@ -86,7 +82,7 @@ export class AssetController {
   }
 
   @Patch(':id')
-  async updateAssetById(@Param('id') id: string, @Body() data, @Req() req: Request) {
+  async updateAssetById(@Param('id') id: string, @Body() data) {
     try {
       const response = await this.assetService.updateAssetById(id, data);
       if(response['status'] == 200 || response['status'] == 204) {
@@ -108,7 +104,7 @@ export class AssetController {
   }
 
   @Delete(':id')
-  async deleteAssetById(@Param('id') id: string, @Req() req: Request) {
+  async deleteAssetById(@Param('id') id: string) {
     try {
       const response = await this.assetService.deleteAssetById(id);
       if(response['status'] == 200 || response['status'] == 204) {
