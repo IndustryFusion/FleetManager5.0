@@ -106,7 +106,7 @@ const Login: React.FC = () => {
                     storeAccessGroup(access_group);
                     showToast(toast, "success", "Success", "Login successful!");
                     setTimeout(() => {
-                        router.push(`/asset-overview2`);
+                        router.push(`/asset-overview`);
                     }, 1000);
                 } else {
                     showToast(toast, "error", "Error", "Login failed. Please try again.");
