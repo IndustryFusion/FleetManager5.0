@@ -1,0 +1,176 @@
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap");
+
+.add-user-container{
+    padding: 10px 160px 0 73px;
+    font-family: "League Spartan", sans-serif;
+    border-top: 1px solid #e6e6e6;
+}
+.add-user-heading{
+    font-size: 27px;
+    font-weight: 500;
+}
+.add-user-subheading{
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0;
+}
+.add-user-para{
+    width: 600px;
+    color: var(--grey-secondary);
+    margin: 10px 0 25px 0;
+}
+.label-text {
+    margin-bottom: 5px;
+    color: #2B2B2B;
+    font-family: "League Spartan";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.star-icon{
+    color: #ff0000;
+}
+.email-input{
+    width: 50%;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    border: 1px solid var(--grey-box) !important;
+    background: var(--white);
+    font-family: "League Spartan";
+    padding: 14px 0px 11px 16px;
+}
+.email-input::placeholder,
+.p-password-input::placeholder {
+    color: #2B2B2B;
+    font-family: "League Spartan";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+.email-input .p-password-input{
+    width: 100%;
+    border-radius: 10px;
+    background: var(--white);
+    font-family: "League Spartan";
+}
+.add-user-container
+.p-inputtext:active,
+.add-user-container .p-password-input,
+.add-user-container .p-inputtext{
+border:none;
+
+}
+.add-user-container .p-password-input{
+    padding: 0;
+}
+
+.email-input::placeholder,
+.email-input .p-password-input::placeholder{
+    font-family: "League Spartan", sans-serif;
+}
+.add-group-btn{
+    border: none;
+    outline: none;
+    background-color: var(--grey-box);
+    padding: 8px 14px;
+    border-radius: 10px;
+    color: var(--grey-primary);
+    font-family: "League Spartan", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+}
+.add-group-header{
+    width: 60%;
+}
+.user-info-container{
+    flex: 0 25%;  
+    font-family: "League Spartan", sans-serif;
+}
+.product-access-container{
+    flex: 0 70%;
+    font-family: "League Spartan", sans-serif;
+}
+.user-info-content{
+    border: 1px solid var(--grey-box);
+    border-radius: 5px;
+    width: 350px;
+    padding: 16px;
+}
+.user-info-label{
+    font-size: 15px;
+    font-weight: 600;
+    color: #696c6f;
+}
+.user-info-text{
+    font-size: 19px;
+    margin: 0;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    color: var(--black-new)
+}
+.user-name-profile{
+    width: 50px;
+    height: 50px;
+    padding: 50px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #206e26f7;
+    margin-bottom: 30px;
+}
+.user-name{
+    color: #fff;
+    font-size: 40px;
+    font-weight: 600;
+}
+.product-dropdown{
+    background: var(--white);
+    padding: 2px 10px;
+    border-radius: 10px;
+    width: 100px;
+    border: 1px solid var(--grey-box);
+    width: 105px;
+}
+.product-dropdown .p-dropdown .p-dropdown-trigger {
+    display: none;
+}
+.dropdown-icon-img{
+    margin-top: 8px;
+    width: 6px;
+    cursor: pointer;
+  }
+.product-dropdown .p-dropdown {
+    background: transparent;
+}
+.product-dropdown .p-dropdown-label {
+    color:var(--grey-primary)
+}
+.p-drodown:focus{
+    border:none
+}
+.p-dropdown:not(.p-disabled).p-focus{
+    border-color: none;
+    box-shadow: none;
+}
+.product-dropdown .p-dropdown-panel{
+    left:-11px !important;
+    border-radius: 8px;
+    background: var(--White, #FFF);
+    box-shadow: 0px 0px 8px 3px rgba(0, 0, 0, 0.25);
+}
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+    border-radius: 10px;
+    background-color: var(--grey-box);
+    color:#2b2b2b;
+}
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover {
+    border-radius: 10px;
+    background-color: var(--grey-box);
+    color:#138ab6;
+}
+

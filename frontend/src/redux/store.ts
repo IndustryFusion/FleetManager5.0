@@ -16,10 +16,12 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./auth/authSlice";
+import templatesReducer from './templates/templatesSlice';
 
 export const store = configureStore({
     reducer: {
-        auth: authReducer
+        auth: authReducer,
+        templates: templatesReducer,
     }
 });
 

@@ -1,0 +1,27 @@
+<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="18" height="18" fill="#1E1E1E"/>
+<g id="Overview Pages">
+<path d="M-2790 -426C-2790 -427.104 -2789.1 -428 -2788 -428H4031C4032.1 -428 4033 -427.105 4033 -426V2170C4033 2171.1 4032.1 2172 4031 2172H-2788C-2789.1 2172 -2790 2171.1 -2790 2170V-426Z" fill="#138AB6"/>
+<path d="M-2788 -427H4031V-429H-2788V-427ZM4032 -426V2170H4034V-426H4032ZM4031 2171H-2788V2173H4031V2171ZM-2789 2170V-426H-2791V2170H-2789ZM-2788 2171C-2788.55 2171 -2789 2170.55 -2789 2170H-2791C-2791 2171.66 -2789.66 2173 -2788 2173V2171ZM4032 2170C4032 2170.55 4031.55 2171 4031 2171V2173C4032.66 2173 4034 2171.66 4034 2170H4032ZM4031 -427C4031.55 -427 4032 -426.552 4032 -426H4034C4034 -427.657 4032.66 -429 4031 -429V-427ZM-2788 -429C-2789.66 -429 -2791 -427.657 -2791 -426H-2789C-2789 -426.552 -2788.55 -427 -2788 -427V-429Z" fill="white" fill-opacity="0.1"/>
+<g id="Table View Context Menu" clip-path="url(#clip0_0_1)">
+<rect width="1440" height="832" transform="translate(-942 -190)" fill="white"/>
+<g id="table header">
+<rect id="Rectangle 5" x="-656" y="-12" width="1122" height="40" rx="10" fill="#E6E6E6"/>
+</g>
+<g id="multiselect context menu">
+<rect id="Rectangle 21" x="-656" y="-12" width="1122" height="40" rx="10" fill="#2B2B2B"/>
+<g id="Group 6162">
+<g id="move">
+<path id="Vector" d="M7.22222 16.9155C7.62844 16.9712 8.044 17 8.46667 17C13.1795 17 17 13.4183 17 9C17 4.58169 13.1795 1 8.46667 1C8.044 1 7.62844 1.0288 7.22222 1.08444" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+<path id="Vector_2" d="M7.66669 6.77772C8.1162 7.21461 9.88892 8.37755 9.88892 8.99995M9.88892 8.99995C9.88892 9.62235 8.1162 10.7853 7.66669 11.2222M9.88892 8.99995H1.00003" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_1">
+<rect width="1440" height="832" fill="white" transform="translate(-942 -190)"/>
+</clipPath>
+</defs>
+</svg>

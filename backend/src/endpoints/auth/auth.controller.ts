@@ -14,9 +14,10 @@
 // limitations under the License. 
 // 
 
-import { Controller, Post, Req} from '@nestjs/common';
+import { Controller, Post, Body} from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from './auth.service';
+import { RegisterAuthDto } from './dto/register-auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,9 +25,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  userLogin(@Req() req: Request) {
+  userLogin(@Body() data: RegisterAuthDto) {
     try {
-      return this.authService.login(req.body.username, req.body.password)
+      return this.authService.logIn(data);
     } catch (err) {
       throw new err;
     }

@@ -1,0 +1,62 @@
+.custom-icon-button  {
+  background-image: url('../qrCodeCreatorIcon.png'); 
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 1.5em; 
+  height: 1.5em; 
+  display: inline-block;
+  vertical-align: middle;
+  background-color: white;
+  border: none;
+  opacity: 0.5;
+}
+.nav-breadcrumb{
+  margin-top: 3px;
+}
+.nav-header{
+  margin-left: 8px  !important;
+  margin: 0 ;
+}
+.nav-items img{
+cursor: pointer;
+}
+.qr_nav_icon{
+  width: 24px;
+  height: 24px;
+  margin-top: 8px;
+}
+ .current-page .p-menuitem-text{
+  color: #2196F3 !important;
+}
+.dashboard-user-name {
+  margin: 0;
+  color: var(--Black, #2B2B2B);
+  font-family: "League Spartan";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.user-company-name {
+  margin: 0;
+  color: var(--grey-primary);
+  font-family: "League Spartan";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.add-user-item .p-menuitem-text,
+.user-details-item .p-menuitem-text{
+  color: #2196f3 !important;
+}
+.sidebar-right-icon{
+  position: absolute;
+  left: 3rem;
+  top: 5rem;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  z-index: 1000;
+}

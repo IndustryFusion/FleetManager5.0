@@ -33,7 +33,7 @@ import Cookies from "js-cookie";
 import { Calendar } from "primereact/calendar";
 import moment from "moment";
 import Footer from "@/components/footer";
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import RealtimeParameters from "@/components/realtime-parameter";

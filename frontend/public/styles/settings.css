@@ -1,0 +1,67 @@
+:root {
+  --black-primary: #2b2b2b;
+  --blue-new: #478fb7;
+  --blue: #138ab6;
+  --white: #fff;
+  --grey-primary: #5f5f5f;
+  --grey-secondary: #95989a;
+  --grey-box: #f3f3f5;
+}
+
+.settings-dialog .p-dialog-header {
+  display: none;
+}
+.settings-dialog .p-dialog .p-dialog-content:last-of-type {
+  border-radius: 8px;
+  background: var(--White, #fff);
+  box-shadow: 0px 0px 8px 3px rgba(0, 0, 0, 0.25);
+}
+.settings-left-content {
+  flex: 0 20%;
+  border-right: 1px solid #e6e6e6;
+  padding-top: 19px;
+}
+.settings-right-content {
+  flex: 0 80%;
+}
+.heading {
+  color: var(--black-primary);
+  font-family: "League Spartan";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+.label-text {
+  color: var(--black-primary);
+  font-family: "League Spartan";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-bottom: 8px;
+}
+.mb-16{
+    margin-bottom: 16px;
+}
+ .settings-dialog .p-dialog .p-dialog-content {
+  padding: 0 0rem 0 1rem;
+    border-radius: 8px;
+    background: var(--white);
+    box-shadow: 0px 0px 8px 3px rgba(0, 0, 0, 0.25);
+}
+.profile-container {
+  font-family: "League Spartan", sans-serif;
+  padding: 0px 24px 0 32px;
+} 
+.product-access-header{
+  width: 100%;
+}
+.profile-navbar{
+  padding:8px 24px 0 32px;
+  border-bottom: 1px solid #e6e6e6;
+}
+.close-icon{
+  cursor: pointer;
+}
+
