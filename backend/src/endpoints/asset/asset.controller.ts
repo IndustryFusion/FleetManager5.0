@@ -59,6 +59,15 @@ export class AssetController {
     }
   }
 
+  @Get('get-company-manufacturer-asset/:id')
+  async getManufacturerCompanyAsset(@Param('id') id: string) {
+    try {
+      return await this.assetService.getManufacturerCompanyAsset(id);
+    } catch (err) {
+      throw err;
+    }
+  }
+
   @Post(':id')
   async setAssetData(@Param('id') id: string, @Body() data) {
     try {
