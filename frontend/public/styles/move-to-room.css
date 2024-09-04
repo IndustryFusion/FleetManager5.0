@@ -1,0 +1,112 @@
+.move-to-room-dialog .p-dialog-content {
+  padding: 0;
+}
+
+.move-to-room-dialog .dialog-content {
+  display: flex;
+  height: 100%;
+}
+
+.move-to-room-dialog .timeline-container {
+  width: 40%;
+  background-color: #f4f4f4;
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.move-to-room-dialog .content-container {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.move-to-room-dialog .custom-timeline {
+  padding: 0;
+  margin: 0;
+}
+
+.move-to-room-dialog .custom-timeline .p-timeline-event {
+  margin-bottom: 20px;
+}
+
+.move-to-room-dialog .custom-timeline .p-timeline-event-connector {
+  width: 2px;
+  background-color: #e0e0e0;
+  left: 14px;
+  top: 30px;
+  height: calc(100% - 30px);
+}
+
+.move-to-room-dialog .custom-timeline .p-timeline-event-content {
+  margin-left: 20px;
+}
+
+.move-to-room-dialog .custom-timeline.step-0-completed .p-timeline-event:nth-child(1) .p-timeline-event-connector,
+.move-to-room-dialog .custom-timeline.step-1-completed .p-timeline-event:nth-child(-n+2) .p-timeline-event-connector,
+.move-to-room-dialog .custom-timeline.step-2-completed .p-timeline-event:nth-child(-n+3) .p-timeline-event-connector {
+  background-color: #4caf50;
+}
+
+.move-to-room-dialog .custom-timeline .custom-marker {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+  z-index: 1;
+  position: relative;
+}
+
+.move-to-room-dialog .custom-timeline .custom-marker.completed {
+  background-color: #4caf50;
+  color: white;
+}
+
+.move-to-room-dialog .custom-timeline .custom-marker.active {
+  background-color: #2196f3;
+  color: white;
+}
+
+.move-to-room-dialog .custom-timeline .custom-content {
+  margin-left: 15px;
+}
+
+.move-to-room-dialog .custom-timeline .custom-content.completed h3 {
+  color: #4caf50;
+}
+
+.move-to-room-dialog .custom-timeline .custom-content.active h3 {
+  color: #2196f3;
+}
+
+.move-to-room-dialog .custom-timeline h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.move-to-room-dialog .custom-timeline p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.move-to-room-dialog .field {
+  margin-bottom: 20px;
+}
+
+.move-to-room-dialog .field label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.move-to-room-dialog .p-inputgroup {
+  margin-bottom: 10px;
+}
+
+.move-to-room-dialog .mt-2 {
+  margin-top: 10px;
+}

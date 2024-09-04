@@ -42,6 +42,8 @@ import { AppDispatch, RootState, store } from '@/redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import "../../public/styles/asset-overview.css";
 import { getAccessGroup  } from "@/utility/indexed-db";
+import MoveToRoomDialog from "@/components/move-to-room/move-to-room-dialog";
+import { Button } from "primereact/button";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const context = process.env.CONTEXT;
@@ -92,6 +94,8 @@ const AssetOverView: React.FC = () => {
   let deleteWarning = t("overview:deleteWarning");
   const [isFileImportDialogVisible, setIsFileImportDialogVisible] = useState(false);
   const [accessgroupIndexDb, setAccessgroupIndexedDb] =useState<any>(null);
+  const [isMoveToRoomDialogVisible, setIsMoveToRoomDialogVisible] = useState(false);
+
   useEffect(() => {
     getAccessGroup((data) => {
       setAccessgroupIndexedDb(data);
@@ -145,11 +149,19 @@ const AssetOverView: React.FC = () => {
         command: () => { },
         disabled: true
       },
-      { 
-        label: "Move to Room", 
-        icon: <img src="/logout.svg" alt="remove-comment-icon"/>,
-        command: () => {},
-        disabled: true
+        {
+        label: "Move to Room",
+        icon: <img src="/logout.svg" alt="move-to-room-icon"/>,
+        command: () => {
+          // getAccessGroup((latestAccessGroup) => {
+          //   if (latestAccessGroup?.update) {
+              setIsMoveToRoomDialogVisible(true);
+            // } else {
+            //   showToast("error", "Access Denied", "You don't have permission to move assets");
+            // }
+          // });
+        },
+        // disabled: !accessgroupIndexDb?.update
       },
       {
         label: "Delete",
@@ -574,6 +586,34 @@ const AssetOverView: React.FC = () => {
         onHide={() => setIsFileImportDialogVisible(false)}
         onImport={handleFileImport}
       />
+      <Button 
+        label="Test Move To Room Dialog" 
+        onClick={() => setIsMoveToRoomDialogVisible(true)} 
+        className="p-button-outlined p-button-info m-2"
+      />
+
+      {/* <MoveToRoomDialog
+        visible={isMoveToRoomDialogVisible}
+        onHide={() => setIsMoveToRoomDialogVisible(false)}
+        assetName={selectedProduct?.product_name || ""}
+        ifricId={selectedProduct?.id || ""}
+        onSave={() => {
+          setIsMoveToRoomDialogVisible(false);
+          showToast("success", "Success", "Asset moved successfully");
+          fetchAsset(); 
+        }}
+      /> */}
+        <MoveToRoomDialog
+          visible={isMoveToRoomDialogVisible}
+          onHide={() => setIsMoveToRoomDialogVisible(false)}
+          assetName={selectedProduct?.product_name || "Test Asset"}
+          ifricId={selectedProduct?.id || "TEST-ID"}
+          onSave={() => {
+            setIsMoveToRoomDialogVisible(false);
+            showToast("success", "Success", "Asset moved successfully");
+            fetchAsset(); // Refetch assets to update the list
+          }}
+        />
       <div className="flex">
         <div className={isSidebarExpand ? "sidebar-container" : "collapse-sidebar"}>
           <Sidebar isOpen={isSidebarExpand} setIsOpen={setSidebarExpand} />
@@ -588,7 +628,7 @@ const AssetOverView: React.FC = () => {
           }`}
         >
           <Navbar 
-          navHeader={activeTab === "Assets" ?"Asset Overview":"Model Overview"}
+          navHeader={activeTab === "Assets" ?"PDT Overview":"Model Overview"}
           />
           <OverviewHeader
             assetCount={activeTab === "Assets" ? assetCount : modelAssetCount}

@@ -29,7 +29,7 @@ const Navbar:React.FC<NavbarProps> = ({ navHeader}) => {
           label = "User Management"
          }else if(url === "/asset-overview?tab=Models"){
           url="/asset-overview"
-          label = "Asset Overview"
+          label = "PDT Overview"
          } 
          label =label.replace(/\b\w/g, char => char.toUpperCase())
          const className = index === pathParts.length - 1 ? 'current-page' : '';
