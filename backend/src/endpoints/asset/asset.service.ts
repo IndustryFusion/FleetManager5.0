@@ -114,6 +114,43 @@ export class AssetService {
     }
   }
 
+  async getManufacturerCompanyAsset(id: string) {
+    try {
+      const headers = {
+        'Content-Type': 'application/ld+json',
+        'Accept': 'application/ld+json'
+      };
+      
+      const result = [];
+      const companyData = await axios.get(`${this.registryUrl}/auth/get-company-details/${id}`, { headers });
+      
+      if (companyData.data.length === 0) {
+        throw new Error("No company found with the provided ID");
+      }
+
+      const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-owner-asset/${id}`, { headers });
+      for(let i = 0; i < companyTwinData.data.length; i++) {
+        try {
+          const url = this.scorpioUrl + '/' + companyTwinData.data[i].asset_ifric_id;
+          const response = await axios.get(url, { headers });
+  
+          if(response.data) {
+            result.push({
+              owner_company_name: companyData[0].company_name,
+              assetData: response.data
+            });
+          }
+        } catch(err) {
+          // continue if there is a asset id in company twin but not in scorpio.
+          continue;
+        }
+      }
+      return result;
+    } catch (err) {
+      throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
+    }
+  }
+
   async setAssetData(id: string, data: TemplateDescriptionDto) {
     try {
       const headers = {
