@@ -26,7 +26,6 @@ import Cookies from "js-cookie";
 import {fetchAssets, prefixJsonKeys, postJsonData, importExcelFile, importCsvFile, createModelObject, getCompanyIfricId} from "@/utility/asset";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import QRCodeDialog from "@/components/qrcode-dialog";
 import { FiCopy, FiEdit3 } from "react-icons/fi";
 import { RiDeleteBinLine } from "react-icons/ri";
 import Sidebar from "@/components/sidebar";
@@ -42,6 +41,7 @@ import { AppDispatch, RootState, store } from '@/redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import "../../public/styles/asset-overview.css";
 import { getAccessGroup  } from "@/utility/indexed-db";
+import MoveToRoomDialog from "@/components/move-to-room/move-to-room-dialog";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const context = process.env.CONTEXT;
@@ -92,6 +92,8 @@ const AssetOverView: React.FC = () => {
   let deleteWarning = t("overview:deleteWarning");
   const [isFileImportDialogVisible, setIsFileImportDialogVisible] = useState(false);
   const [accessgroupIndexDb, setAccessgroupIndexedDb] =useState<any>(null);
+  const [isMoveToRoomDialogVisible, setIsMoveToRoomDialogVisible] = useState(false);
+
   useEffect(() => {
     getAccessGroup((data) => {
       setAccessgroupIndexedDb(data);
@@ -102,6 +104,33 @@ const AssetOverView: React.FC = () => {
 
   console.log("selectedProduct inmodel", selectedProduct);
   
+  const hardcodedAssets: any= [
+  {
+    id: "urn:ifric:ifx-eur-nld-ast-a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    asset_serial_number: "SN12345678",
+    type: "Manufacturing Equipment",
+    product_name: "Industrial Robot Arm",
+    asset_manufacturer_name: "RoboTech Industries",
+    owner: "Factory A",
+    properties: {
+      product_name: "Industrial Robot Arm",
+      asset_manufacturer_name: "RoboTech Industries",
+    }
+  },
+  {
+    id: "urn:ifric:ifx-eur-nld-ast-98765432-1098-7654-3210-fedcba098765",
+    asset_serial_number: "SN87654321",
+    type: "Test Equipment",
+    product_name: "Automated Quality Control Scanner",
+    asset_manufacturer_name: "PrecisionTech Corp",
+    owner: "Quality Assurance Dept",
+    qr_code: "https://example.com/qr/SN87654321",
+    properties: {
+      product_name: "Automated Quality Control Scanner",
+      asset_manufacturer_name: "PrecisionTech Corp",
+    }
+  }
+];
   const menuModel = [
     {
       label: "Edit",
@@ -145,11 +174,19 @@ const AssetOverView: React.FC = () => {
         command: () => { },
         disabled: true
       },
-      { 
-        label: "Move to Room", 
-        icon: <img src="/logout.svg" alt="remove-comment-icon"/>,
-        command: () => {},
-        disabled: true
+        {
+        label: "Move to Room",
+        icon: <img src="/logout.svg" alt="move-to-room-icon"/>,
+        command: () => {
+          // getAccessGroup((latestAccessGroup) => {
+          //   if (latestAccessGroup?.update) {
+              setIsMoveToRoomDialogVisible(true);
+            // } else {
+            //   showToast("error", "Access Denied", "You don't have permission to move assets");
+            // }
+          // });
+        },
+        // disabled: !accessgroupIndexDb?.update
       },
       {
         label: "Delete",
@@ -327,6 +364,11 @@ const AssetOverView: React.FC = () => {
   };
   const toggleColor = () => {
     setIsBlue(!isBlue);
+  };
+
+  const handleMoveToRoom = (asset: Asset) => {
+    setSelectedProduct(asset);
+    setIsMoveToRoomDialogVisible(true);
   };
 
   const handleSelect = (rowData: Asset) => {
@@ -574,6 +616,27 @@ const AssetOverView: React.FC = () => {
         onHide={() => setIsFileImportDialogVisible(false)}
         onImport={handleFileImport}
       />
+      {/* <MoveToRoomDialog
+        visible={isMoveToRoomDialogVisible}
+        onHide={() => setIsMoveToRoomDialogVisible(false)}
+        assetName={selectedProduct?.product_name || ""}
+        ifricId={selectedProduct?.id || ""}
+        onSave={() => {
+          setIsMoveToRoomDialogVisible(false);
+          showToast("success", "Success", "Asset moved successfully");
+          fetchAsset(); 
+        }}
+      /> */}
+        <MoveToRoomDialog
+          visible={isMoveToRoomDialogVisible}
+          onHide={() => setIsMoveToRoomDialogVisible(false)}
+          assetName={selectedProduct?.product_name || "Test Asset"}
+          company_ifric_id={selectedProduct?.id || ""}
+          onSave={() => {
+            setIsMoveToRoomDialogVisible(false);
+            showToast("success", "Success", "Asset moved successfully");
+          }}
+        />
       <div className="flex">
         <div className={isSidebarExpand ? "sidebar-container" : "collapse-sidebar"}>
           <Sidebar isOpen={isSidebarExpand} setIsOpen={setSidebarExpand} />
@@ -588,7 +651,7 @@ const AssetOverView: React.FC = () => {
           }`}
         >
           <Navbar 
-          navHeader={activeTab === "Assets" ?"Asset Overview":"Model Overview"}
+          navHeader={activeTab === "Assets" ?"PDT Overview":"Model Overview"}
           />
           <OverviewHeader
             assetCount={activeTab === "Assets" ? assetCount : modelAssetCount}
@@ -652,8 +715,9 @@ const AssetOverView: React.FC = () => {
                   toggleColor={toggleColor}
                   isBlue={isBlue}
                   assetIdBodyTemplate={assetIdBodyTemplate}
-                  assetsData={filterAssetsData}
+                  assetsData={hardcodedAssets}
                   activeTab={activeTab}
+                  onMoveToRoom={handleMoveToRoom}
                 />
               )}
               {activeTab === "Models" && (
@@ -688,12 +752,6 @@ const AssetOverView: React.FC = () => {
               </div>
             )}
           </div>
-          <QRCodeDialog
-            qrCodeLink={qrCodeLink}
-            dialogProp={isDialogVisible}
-            setDialogProp={setIsDialogVisible}
-            qrCodeDialogRef={qrCodeDialogRef}
-          />
           {cloneDialog && 
           <CloneDialog
           cloneDialog={cloneDialog}

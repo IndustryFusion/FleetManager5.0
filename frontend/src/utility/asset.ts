@@ -17,12 +17,11 @@
 
 import { Asset } from "@/interfaces/assetTypes";
 import axios from "axios";
-import {EClassProperty,EClassResponse,FilteredEClassData} from "../interfaces/e-class"
+import {EClassProperty,EClassResponse,FilteredEClassData} from "@/interfaces/e-class"
 import { FilteredGeneralDataSchema } from "@/interfaces/schema-general";
 import * as XLSX from 'xlsx';
 import { fetchAssetsRedux } from "@/redux/asset/assetsSlice";
 import { fetchTemplates } from "@/redux/templates/templatesSlice";
-import { fetchModelObjects } from "@/redux/model-objects/modelObjectsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/redux/store";
 import { RefObject, useEffect } from "react";
@@ -72,7 +71,7 @@ const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
     try {
         const companyIfricId = getCompanyIfricId();
         console.log('companyIfricId ',companyIfricId);
-        const response = await axios.get(BACKEND_API_URL + `/asset/${companyIfricId}`, {
+        const response = await axios.get(BACKEND_API_URL + `/asset/get-company-manufacturer-asset/urn:ifric:ifx-eu-com-nap-6ab7cb06-bbe0-5610-878f-a9aa56a632ec`, {
         headers: {
             "Content-Type": "application/ld+json",
             "Accept": "application/ld+json"

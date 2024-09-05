@@ -17,5 +17,11 @@
     "yes": "Yes",
     "no": "No",
     "confirmation": "Confirm Delete",
-    "relationCommand": "Use Factory Manager to manage relationships."
+    "relationCommand": "Use Factory Manager to manage relationships.",
+    "owner":"Owner",
+    "id":"Asset ID",
+    "qrCode":"QR",
+    "action":"Actions"
+    
 }
+

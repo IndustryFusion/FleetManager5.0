@@ -14,18 +14,17 @@
 // limitations under the License. 
 // 
 
-import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "./auth/authSlice";
-import templatesReducer from './templates/templatesSlice';
-import assetsSliceReducer from "./asset/assetsSlice";
+export interface EClassProperty {
+  type: string;
+  value: string | number;
+}
 
-export const store = configureStore({
-    reducer: {
-        auth: authReducer,
-        templates: templatesReducer,
-        assetsSlice:assetsSliceReducer,
-    }
-});
+export interface EClassResponse {
+  id: string;
+  type: string;
+  [key: string]: EClassProperty | string | string[];
+}
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export interface FilteredEClassData {
+  [key: string]: string | number;
+}

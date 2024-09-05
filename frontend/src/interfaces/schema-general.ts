@@ -14,18 +14,6 @@
 // limitations under the License. 
 // 
 
-import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "./auth/authSlice";
-import templatesReducer from './templates/templatesSlice';
-import assetsSliceReducer from "./asset/assetsSlice";
-
-export const store = configureStore({
-    reducer: {
-        auth: authReducer,
-        templates: templatesReducer,
-        assetsSlice:assetsSliceReducer,
-    }
-});
-
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export interface FilteredGeneralDataSchema {
+  [key: string]: string;
+}

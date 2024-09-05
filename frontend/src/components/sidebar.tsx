@@ -48,7 +48,7 @@ const Sidebar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
           </div>
           <div>
             <div>
-              <h4 className="nav-heading">Digital Product Pass</h4>
+              <h4 className="nav-heading">Fleet Manager</h4>
               <ul className="nav-list">
                 <li
                   className="flex align-items-center"
@@ -60,7 +60,19 @@ const Sidebar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
                     alt="asset-series-icon"
                     className="mr-2"
                   />
-                  Asset Series
+                  Data Twins
+                </li>
+                <li
+                  className="flex align-items-center"
+                  onClick={() => router.push("/asset-overview")}
+                >
+                  {" "}
+                  <img
+                    src="/dashboard-images/assets.jpg"
+                    alt="assets-icon"
+                    className="mr-2"
+                  />
+                  IFRIC Assets
                 </li>
                 <li
                   className="flex align-items-center "
@@ -72,57 +84,21 @@ const Sidebar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
                     alt="assets-icon"
                     className="mr-2"
                   />
-                  Assets
+                  Contracts
                 </li>
-                <li
-                  className="flex align-items-center "
-                  onClick={() =>
-                    router.push(
-                      "/digital-pass-creator/qr-code-generator/create"
-                    )
-                  }
+                  <li
+                  className="flex align-items-center mb-4"
+                  onClick={() => router.push("/asset-overview")}
                 >
                   {" "}
                   <img
-                    src="/qr-code-1.jpg"
-                    alt="qr-code-icon"
+                    src="/dashboard-images/assets.jpg"
+                    alt="assets-icon"
                     className="mr-2"
                   />
-                  Pass Creator
+                  Certificates
                 </li>
               </ul>
-            </div>
-            <div className="second-item">
-              <h4 className="nav-heading">Digital Twin</h4>
-              <ul className="nav-list">
-                <li className="flex align-items-center ">
-                  {" "}
-                  <img src="/ai-browser.jpg" alt="docs-icon" className="mr-2" />
-                  Digital Twin Creator
-                </li>
-                <li className="flex align-items-center ">
-                  {" "}
-                  <img src="/ai-browser.jpg" alt="docs-icon" className="mr-2" />
-                  Menupoint 2
-                </li>
-                <li className="flex align-items-center ">
-                  {" "}
-                  <img src="/ai-browser.jpg" alt="docs-icon" className="mr-2" />
-                  Menupoint 3
-                </li>
-              </ul>
-            </div>
-            <div className="pass-quota-container">
-              <h3 className="m-0">Product Pass Quota</h3>
-              <img
-                src="/usage-bar.jpg"
-                alt="progress-bar"
-                className="progress-bar"
-              />
-              <p className="progress-value m-0">Quota remaining: 9,159</p>
-              <p className="progress-value m-0">Total quota: 10,000</p>
-
-              <p className="upgrade-text">Upgrade Plan</p>
             </div>
             <div className="flex align-items-center item-container">
               <img src="/book.jpg" alt="docs-icon" className="mr-2" />

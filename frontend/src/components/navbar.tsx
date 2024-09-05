@@ -29,7 +29,7 @@ const Navbar:React.FC<NavbarProps> = ({ navHeader}) => {
           label = "User Management"
          }else if(url === "/asset-overview?tab=Models"){
           url="/asset-overview"
-          label = "Asset Overview"
+          label = "PDT Overview"
          } 
          label =label.replace(/\b\w/g, char => char.toUpperCase())
          const className = index === pathParts.length - 1 ? 'current-page' : '';
@@ -77,14 +77,6 @@ const Navbar:React.FC<NavbarProps> = ({ navHeader}) => {
           </div>
         )}
         <div className="flex gap-4 nav-items">
-          <img
-            src="/qr-code-1.jpg"
-            alt="qr-icon"
-            className="qr_nav_icon"
-            onClick={() =>
-              router.push("/digital-pass-creator/qr-code-generator/create")
-            }
-          />
           <img src="/notification-icon.svg" alt="notification-icon" />
           <img src="/app-icon.svg" alt="app-icon" />
           <img
