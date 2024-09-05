@@ -135,7 +135,7 @@ export class AssetService {
           const response = await axios.get(url, { headers });
   
           if(response.data) {
-            const ownerCompanyData = await axios.get(`${this.registryUrl}/auth/get-company-details/${companyTwinData.data[i].owner_company_id}`, { headers });
+            const ownerCompanyData = await axios.get(`${this.registryUrl}/auth/get-company-details-id/${companyTwinData.data[i].owner_company_id}`, { headers });
             if(ownerCompanyData.data) {
             result.push({
               owner_company_name: ownerCompanyData.data.company_name,
