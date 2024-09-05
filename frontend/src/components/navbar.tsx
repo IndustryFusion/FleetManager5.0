@@ -77,14 +77,6 @@ const Navbar:React.FC<NavbarProps> = ({ navHeader}) => {
           </div>
         )}
         <div className="flex gap-4 nav-items">
-          <img
-            src="/qr-code-1.jpg"
-            alt="qr-icon"
-            className="qr_nav_icon"
-            onClick={() =>
-              router.push("/digital-pass-creator/qr-code-generator/create")
-            }
-          />
           <img src="/notification-icon.svg" alt="notification-icon" />
           <img src="/app-icon.svg" alt="app-icon" />
           <img

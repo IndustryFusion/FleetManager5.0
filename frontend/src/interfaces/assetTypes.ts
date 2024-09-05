@@ -14,6 +14,7 @@
 // limitations under the License. 
 // 
 export interface Asset {
+    owner?: string;
     id: string;
     type: string;
     manufacturer: string;

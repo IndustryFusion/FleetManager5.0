@@ -17,5 +17,10 @@
     "deleteWarning": "Sind Sie sicher, dass Sie löschen möchten",
     "yes": "Ja",
     "no": "Nein",
-    "relationCommand": "Verwenden Sie Factory, um Beziehungen zu verwalten."
+    "relationCommand": "Verwenden Sie Factory, um Beziehungen zu verwalten.",
+    "owner":"Besitzer ",
+    "id":"Asset-ID",
+    "qrCode":"QR",
+    "action":"Aktionen"
+
 }

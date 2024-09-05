@@ -26,7 +26,6 @@ import Cookies from "js-cookie";
 import {fetchAssets, prefixJsonKeys, postJsonData, importExcelFile, importCsvFile, createModelObject, getCompanyIfricId} from "@/utility/asset";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import QRCodeDialog from "@/components/qrcode-dialog";
 import { FiCopy, FiEdit3 } from "react-icons/fi";
 import { RiDeleteBinLine } from "react-icons/ri";
 import Sidebar from "@/components/sidebar";
@@ -43,7 +42,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import "../../public/styles/asset-overview.css";
 import { getAccessGroup  } from "@/utility/indexed-db";
 import MoveToRoomDialog from "@/components/move-to-room/move-to-room-dialog";
-import { Button } from "primereact/button";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const context = process.env.CONTEXT;
@@ -106,6 +104,33 @@ const AssetOverView: React.FC = () => {
 
   console.log("selectedProduct inmodel", selectedProduct);
   
+  const hardcodedAssets: any= [
+  {
+    id: "urn:ifric:ifx-eur-nld-ast-a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    asset_serial_number: "SN12345678",
+    type: "Manufacturing Equipment",
+    product_name: "Industrial Robot Arm",
+    asset_manufacturer_name: "RoboTech Industries",
+    owner: "Factory A",
+    properties: {
+      product_name: "Industrial Robot Arm",
+      asset_manufacturer_name: "RoboTech Industries",
+    }
+  },
+  {
+    id: "urn:ifric:ifx-eur-nld-ast-98765432-1098-7654-3210-fedcba098765",
+    asset_serial_number: "SN87654321",
+    type: "Test Equipment",
+    product_name: "Automated Quality Control Scanner",
+    asset_manufacturer_name: "PrecisionTech Corp",
+    owner: "Quality Assurance Dept",
+    qr_code: "https://example.com/qr/SN87654321",
+    properties: {
+      product_name: "Automated Quality Control Scanner",
+      asset_manufacturer_name: "PrecisionTech Corp",
+    }
+  }
+];
   const menuModel = [
     {
       label: "Edit",
@@ -339,6 +364,11 @@ const AssetOverView: React.FC = () => {
   };
   const toggleColor = () => {
     setIsBlue(!isBlue);
+  };
+
+  const handleMoveToRoom = (asset: Asset) => {
+    setSelectedProduct(asset);
+    setIsMoveToRoomDialogVisible(true);
   };
 
   const handleSelect = (rowData: Asset) => {
@@ -586,12 +616,6 @@ const AssetOverView: React.FC = () => {
         onHide={() => setIsFileImportDialogVisible(false)}
         onImport={handleFileImport}
       />
-      <Button 
-        label="Test Move To Room Dialog" 
-        onClick={() => setIsMoveToRoomDialogVisible(true)} 
-        className="p-button-outlined p-button-info m-2"
-      />
-
       {/* <MoveToRoomDialog
         visible={isMoveToRoomDialogVisible}
         onHide={() => setIsMoveToRoomDialogVisible(false)}
@@ -607,11 +631,10 @@ const AssetOverView: React.FC = () => {
           visible={isMoveToRoomDialogVisible}
           onHide={() => setIsMoveToRoomDialogVisible(false)}
           assetName={selectedProduct?.product_name || "Test Asset"}
-          ifricId={selectedProduct?.id || "TEST-ID"}
+          company_ifric_id={selectedProduct?.id || ""}
           onSave={() => {
             setIsMoveToRoomDialogVisible(false);
             showToast("success", "Success", "Asset moved successfully");
-            fetchAsset(); // Refetch assets to update the list
           }}
         />
       <div className="flex">
@@ -692,8 +715,9 @@ const AssetOverView: React.FC = () => {
                   toggleColor={toggleColor}
                   isBlue={isBlue}
                   assetIdBodyTemplate={assetIdBodyTemplate}
-                  assetsData={filterAssetsData}
+                  assetsData={hardcodedAssets}
                   activeTab={activeTab}
+                  onMoveToRoom={handleMoveToRoom}
                 />
               )}
               {activeTab === "Models" && (
@@ -728,12 +752,6 @@ const AssetOverView: React.FC = () => {
               </div>
             )}
           </div>
-          <QRCodeDialog
-            qrCodeLink={qrCodeLink}
-            dialogProp={isDialogVisible}
-            setDialogProp={setIsDialogVisible}
-            qrCodeDialogRef={qrCodeDialogRef}
-          />
           {cloneDialog && 
           <CloneDialog
           cloneDialog={cloneDialog}

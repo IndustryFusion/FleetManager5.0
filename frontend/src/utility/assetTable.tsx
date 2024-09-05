@@ -7,7 +7,7 @@ import { Checkbox } from "primereact/checkbox";
 
 export const ifricIdHeader = (t: (key: string) => string): React.ReactNode => {
   return (
-    <div className="flex gap-1 align-items-center">
+    <div className="flex gap-1 align-items-center ml-4">
       <p>{t("overview:id")} </p>
       <img src="/sort-arrow.svg" alt="sort-arrow-icon" />
     </div>
@@ -135,16 +135,16 @@ export const serialNumberBodyTemplate = (rowData: Asset): React.ReactNode => {
   return <p className="tr-text">{rowData?.asset_serial_number}</p>;
 };
 
-export const actionItemsTemplate = () => {
+export const actionItemsTemplate = (rowData: Asset, onMoveToRoom: (asset: Asset) => void) => {
   return (
     <img
-      src="/context-menu.jpg"
-      alt="context-menu-icon"
-      className="context-menu-icon"
+      src="/move-to-room.svg" 
+      alt="move-icon"
+      className="context-menu-icon cursor-pointer"
+      onClick={() => onMoveToRoom(rowData)}
     />
   );
 };
-
 
 
 export const checkboxContainer = (

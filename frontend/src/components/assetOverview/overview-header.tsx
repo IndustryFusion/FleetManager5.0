@@ -50,45 +50,9 @@ const OverviewHeader: React.FC<overviewHeaderProps> = ({
                 }
               >
                 <TabPanel header="Assets"></TabPanel>
-                <TabPanel header="Models"></TabPanel>
+                <TabPanel header="Import"></TabPanel>
               </TabView>
             </div>
-          </div>
-          <div className="flex gap-2">
-          <div>
-        
-            <Dropdown
-              optionLabel="label"
-              placeholder="Import Asset"
-              options={importOptions}
-              className="import-dropdown"
-              onChange={(e) => onImportOptionSelect(e.value)}
-              disabled={!accessgroupIndexDb?.create} 
-              tooltip={!accessgroupIndexDb?.create ? tooltipContent : undefined}
-              tooltipOptions={{ position: 'bottom', showOnDisabled: true }}
-            />
-              <i className="pi pi-download" style={{marginRight:"8px", color:"#95989A"}} />
-            </div>
-            <Button
-              className="add-asset-btn flex justify-content-center align-items-center border-none"
-              onClick={handleCreateAssetClick}
-              disabled={!accessgroupIndexDb?.create} 
-             tooltip={!accessgroupIndexDb?.create ? tooltipContent : undefined}
-              tooltipOptions={{ position: 'bottom', showOnDisabled: true }}
-            >
-              {t("overview:addAsset")}
-              <img src="/plus-icon.png" alt="plus icon" />
-            </Button>
-            <Button
-              className="add-asset-btn flex justify-content-center align-items-center border-none"
-              onClick={handleCreateModelClick}
-              disabled={!accessgroupIndexDb?.create} 
-              tooltip={!accessgroupIndexDb?.create ? tooltipContent : undefined}
-              tooltipOptions={{ position: 'bottom', showOnDisabled: true }}
-            >
-              Add Model
-              <img src="/plus-icon.png" alt="plus icon" />
-            </Button>
           </div>
         </div>
       </div>

@@ -36,26 +36,24 @@ const AssetTable: React.FC<any> = ({
   cm,
   t,
   selectedGroupOption,
-  qrCodeTemplate,
   toggleColor,
   isBlue,
   assetIdBodyTemplate,
   assetsData,
   activeTab,
+  onMoveToRoom
+  
 }) => {
 
   const [rangeDisplay, setRangeDisplay] = useState('');
+  const ownerBodyTemplate = (rowData: Asset) => {
+    return <span>{rowData.owner || 'N/A'}</span>;
+  };
   const columnConfig = [
     {
       selectionMode: "multiple" as "multiple",
       headerStyle: { width: "3rem" },
       columnKey: "assetSelectCheckBox",
-    },
-    {
-      field: "qr-code",
-      header: t("overview:qrCode"),
-      body: qrCodeTemplate,
-      columnKey: "qrCode",
     },
     {
       field: "id",
@@ -92,12 +90,22 @@ const AssetTable: React.FC<any> = ({
       body: manufacturerDataTemplate,
       sortable: true,
     },
+  
+     {
+      columnKey: "Owner",
+      field: "Owner",
+      header: t("overview:owner"),
+      body: ownerBodyTemplate,
+      sortable: true,
+    },
     {
-      columnKey: "actions",
-      body: actionItemsTemplate,
+      columnKey: "Action",
+      field: "action",
+      header: t("overview:action"),
+      body: (rowData: Asset) => actionItemsTemplate(rowData, onMoveToRoom),
     },
   ];
-
+ 
   const modelColumnConfig = [
     {
       selectionMode: "multiple" as "multiple",
