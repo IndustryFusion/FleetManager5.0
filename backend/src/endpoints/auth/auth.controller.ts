@@ -15,9 +15,8 @@
 // 
 
 import { Controller, Post, Body} from '@nestjs/common';
-import { Request } from 'express';
 import { AuthService } from './auth.service';
-import { RegisterAuthDto } from './dto/register-auth.dto';
+import { FindOneAuthDto } from './dto/find-auth-dto';
 
 @Controller('auth')
 export class AuthController {
@@ -25,7 +24,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  userLogin(@Body() data: RegisterAuthDto) {
+  userLogin(@Body() data: FindOneAuthDto) {
     try {
       return this.authService.logIn(data);
     } catch (err) {

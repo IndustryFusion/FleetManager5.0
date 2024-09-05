@@ -33,6 +33,7 @@ export class AuthService {
   async logIn(data: FindOneAuthDto) {
     try {
       // Find User From IFRIC Registry
+      
       let registryResponse = await axios.post(
         `${this.registryUrl}/auth/login`,
         data,
