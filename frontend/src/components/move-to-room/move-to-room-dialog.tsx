@@ -62,16 +62,6 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
     { label: 'cert_HSA1_IFRIC', value: 'cert_HSA1_IFRIC' },
   ];
 
-  const hardCodedOwnerDetails: { [key: string]: OwnerDetails } = {
-    'owner1': {
-      name: 'Global Tech Solution(RJ)',
-      companyIfricId: 'urn:ifric:ifx-eu-com-nap-eee5d2c3-ac9f-5a7f-a94f-662dd0be1e65',
-      certifiedCompany: 'ABC Certified Corp',
-      role: 'Factory Owner',
-      country: 'UK'
-    }
-  };
-
   useEffect(() => {
     fetchFactoryOwners();
   }, []);
@@ -123,17 +113,6 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const handleFactoryOwnerChange = (e: DropdownChangeEvent) => {
     const selectedOwner = e.value;
     setFactoryOwner(selectedOwner);
-    if (selectedOwner && selectedOwner.id in hardCodedOwnerDetails) {
-      const ownerDetails = hardCodedOwnerDetails[selectedOwner.id];
-      setOwnerDetails(ownerDetails);
-    
-      setFactoryOwner({
-        ...selectedOwner,
-        companyIfricId: ownerDetails.companyIfricId
-      });
-    } else {
-      setOwnerDetails(null);
-    }
   };
 
   const fetchFactoryOwners = async () => {
@@ -293,7 +272,9 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                 )}
               </div>
               <div style={{ flex: 1 }}>
-                <OwnerDetailsCard owner={ownerDetails} />
+                {factoryOwner && (
+                  <OwnerDetailsCard owner={factoryOwner} />
+                )}
               </div>
             </div>
           </div>
