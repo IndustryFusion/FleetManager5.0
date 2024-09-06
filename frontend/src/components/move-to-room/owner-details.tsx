@@ -5,10 +5,8 @@ import "../../../public/styles/owner-card.css";
 interface OwnerDetailsCardProps {
   owner: {
     name: string;
-    companyIfric: string;
-    certifiedCompany: string;
-    role: string;
-    country: string;
+    companyIfricId: string;
+    company_category: string;
   } | null;
 }
 
@@ -27,19 +25,11 @@ const OwnerDetailsCard: React.FC<OwnerDetailsCardProps> = ({ owner }) => {
         </div>
         <div className="field">
           <span className="label">Company IFRIC:</span>
-          {owner.companyIfric}
+          {owner.companyIfricId}
         </div>
         <div className="field">
-          <span className="label">IFRIC Certified :</span>
-          {owner.certifiedCompany}
-        </div>
-        <div className="field">
-          <span className="label">Role:</span>
-          {owner.role}
-        </div>
-        <div className="field">
-          <span className="label">Country:</span>
-          {owner.country}
+          <span className="label">Company Category :</span>
+          {owner.company_category}
         </div>
       </div>
     </Card>

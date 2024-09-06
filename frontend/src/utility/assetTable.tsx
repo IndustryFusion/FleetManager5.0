@@ -76,63 +76,70 @@ export const modelTypeHeader = (
 export const modelManufacturerTemplate = (rowData:any)=>{
   return (
     <div className="flex flex-column">
-      {rowData?.properties?.logo_manufacturer && rowData?.properties?.logo_manufacturer !== "NULL" && (
+      {rowData?.assetdata?.logo_manufacturer && rowData?.assetData?.logo_manufacturer !== "NULL" && (
         <img
-          src={rowData?.properties?.logo_manufacturer}
+          src={rowData?.assetData?.logo_manufacturer}
           alt="maufacturer_logo"
           className="w-4rem shadow-2 border-round"
         />
       )}
-      <p className="m-0 mt-1 tr-text">{rowData?.properties?.asset_manufacturer_name}</p>
+      <p className="m-0 mt-1 tr-text">{rowData?.assetData?.asset_manufacturer_name}</p>
     </div>
   );
 }
 export const modelProductImageTemplate = (rowData:any)=>{
   return (
   <img
-    src={rowData?.properties?.product_icon}
+    src={rowData?.assetData?.product_icon}
     alt="product_image"
     width={"100px"}
     height={"100px"}
   />)
 }
 export const modelProductNameTemplate = (rowData:any)=>{
-  return <p className="tr-text">{rowData?.properties?.product_name}</p>;
+  console.log("rowData",rowData)
+  return <p className="tr-text">{rowData?.assetData?.product_name}</p>;
 }
 export const modelTypeTemplate = (rowData:any)=>{
-  return <p className="tr-text">{rowData?.type}</p>; 
+  return <p className="tr-text">{rowData?.assetData?.type}</p>; 
 }
 export const modelProductTypeTemplate = (rowData:any)=>{
-  const assetType = rowData?.type?.split("/").pop();
+  const assetType = rowData?.assetData?.type?.split("/").pop();
   return <p className="tr-text">{assetType}</p>; 
 }
 
-export const manufacturerDataTemplate = (rowData: Asset): React.ReactNode => {
+export const manufacturerDataTemplate = (rowData: any): React.ReactNode => {
   return (
-    <div className="flex flex-column">
-      {rowData.logo_manufacturer && rowData.logo_manufacturer !== "NULL" && (
+    <div className="flex flex-column align-items-center">
+      {rowData?.assetData?.logo_manufacturer !== "NULL" && rowData?.assetData?.logo_manufacturer && (
         <img
-          src={rowData.logo_manufacturer}
-          alt="maufacturer_logo"
-          className="w-4rem shadow-2 border-round"
+          src={rowData.assetData.logo_manufacturer}
+          alt="manufacturer_logo"
+          className="shadow-2 border-round"
+          style={{
+            maxWidth: '4rem', 
+            maxHeight: '4rem', 
+            objectFit: 'contain', 
+          }}
         />
       )}
-      <p className="m-0 mt-1 tr-text">{rowData.asset_manufacturer_name}</p>
+      <p className="m-0 mt-1 tr-text">{rowData?.assetData?.asset_manufacturer_name || "N/A"}</p>
     </div>
   );
 };
 
+
 export const productNameBodyTemplate = (rowData: any): React.ReactNode => {
-  return <p className="tr-text">{rowData.product_name}</p>;
+  return <p className="tr-text">{rowData?.assetData?.product_name}</p>;
 };
 
-export const assetTypeBodyTemplate = (rowData: Asset): React.ReactNode => {
-  const assetType = rowData?.type?.split("/").pop();
+export const assetTypeBodyTemplate = (rowData: any): React.ReactNode => {
+  const assetType = rowData?.assetData?.type?.split("/").pop();
   return <p className="tr-text">{assetType}</p>;
 };
 
-export const serialNumberBodyTemplate = (rowData: Asset): React.ReactNode => {
-  return <p className="tr-text">{rowData?.asset_serial_number}</p>;
+export const serialNumberBodyTemplate = (rowData: any): React.ReactNode => {
+  return <p className="tr-text">{rowData?.assetData?.asset_serial_number}</p>;
 };
 
 export const actionItemsTemplate = (rowData: Asset, onMoveToRoom: (asset: Asset) => void) => {
@@ -146,7 +153,9 @@ export const actionItemsTemplate = (rowData: Asset, onMoveToRoom: (asset: Asset)
   );
 };
 
-
+export  const ownerBodyTemplate = (rowData: any) => {
+  return <span>{rowData?.owner_company_name || 'N/A'}</span>;
+};
 export const checkboxContainer = (
   assetsSelected: Asset[],
   showAssetSelected: boolean,

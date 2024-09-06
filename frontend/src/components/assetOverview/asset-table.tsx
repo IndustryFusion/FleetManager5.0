@@ -16,6 +16,7 @@ import {
   productTypeHeader,
   serialNumberBodyTemplate,
   serialNumberHeader,
+  ownerBodyTemplate
 } from "@/utility/assetTable";
 import { Column } from "primereact/column";
 
@@ -46,9 +47,6 @@ const AssetTable: React.FC<any> = ({
 }) => {
 
   const [rangeDisplay, setRangeDisplay] = useState('');
-  const ownerBodyTemplate = (rowData: Asset) => {
-    return <span>{rowData.owner || 'N/A'}</span>;
-  };
   const columnConfig = [
     {
       selectionMode: "multiple" as "multiple",

@@ -42,6 +42,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import "../../public/styles/asset-overview.css";
 import { getAccessGroup  } from "@/utility/indexed-db";
 import MoveToRoomDialog from "@/components/move-to-room/move-to-room-dialog";
+import { fetchAssetsRedux } from "@/redux/asset/assetsSlice";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const context = process.env.CONTEXT;
@@ -53,7 +54,9 @@ type Model = {
 };
 
 const AssetOverView: React.FC = () => {
+  const reduxAssets = useSelector((state: RootState) => state.assetsSlice.assets);
   const [assets, setAssets] = useState<Asset[]>([]);
+  const assetStatus = useSelector((state: RootState) => state.assetsSlice.status);
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
   const [selectedModelAssets, setSelectedModelAssets]=useState<Asset[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Asset | null>(null);
@@ -93,16 +96,14 @@ const AssetOverView: React.FC = () => {
   const [isFileImportDialogVisible, setIsFileImportDialogVisible] = useState(false);
   const [accessgroupIndexDb, setAccessgroupIndexedDb] =useState<any>(null);
   const [isMoveToRoomDialogVisible, setIsMoveToRoomDialogVisible] = useState(false);
-
-  useEffect(() => {
-    getAccessGroup((data) => {
-      setAccessgroupIndexedDb(data);
-  
-    });
-  }, []);
+  const dispatch = useDispatch<AppDispatch>();
 
 
-  console.log("selectedProduct inmodel", selectedProduct);
+ useEffect(() => {
+    if (assetStatus === "idle") {
+      dispatch(fetchAssetsRedux());
+    }
+  }, [dispatch, assetStatus]);
   
   const hardcodedAssets: any= [
   {
@@ -212,7 +213,6 @@ const AssetOverView: React.FC = () => {
 
   const { query } = router;
   const templates = useSelector((state: RootState) => state.templates.templates);
-  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (query.tab) {
@@ -251,7 +251,6 @@ const AssetOverView: React.FC = () => {
       const response = await fetchAssets();
       console.log('response ',response)
       setAssetCount(response?.length || 0);
-      setAssets(response || []);
       console.log("all assets here", response);
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
@@ -388,7 +387,7 @@ const AssetOverView: React.FC = () => {
         }
       );
       if (response.status === 200) {
-        const updatedAssets = assets.filter((asset) => asset.id !== assetId);
+        const updatedAssets = reduxAssets.filter((asset) => asset.id !== assetId);
         setAssets(updatedAssets);
         showToast("success", "Deleted success", "Asset deleted successfully");
       } else {
@@ -446,21 +445,21 @@ const AssetOverView: React.FC = () => {
     }
   };
   const assetIdBodyTemplate = (rowData: any) => {
-    const key = expandValue[rowData?.id] || false;
+    const key = expandValue[rowData?.assetData?.id] || false;
     return (
       <div>
         <div
           className="flex gap-1 justify-content-center align-items-center tr-text"
           style={{ width: "271px" }}
         >
-          {rowData?.asset_status === "complete" ? (
+          {rowData?.assetData?.asset_status === "complete" ? (
             <img src="/complete-icon.jpg" alt="complete-icon" />
           ) : (
             <img src="/incomplete-icon.jpg" alt="incomplete-icon" />
           )}
-          <p className={key ? "expand-id-text" : "id-text"}>{rowData?.id}</p>
+          <p className={key ? "expand-id-text" : "id-text"}>{rowData?.assetData?.id}</p>
           <button
-            onClick={() => toggleExpansion(rowData?.id)}
+            onClick={() => toggleExpansion(rowData?.assetData?.id)}
             className="transparent-btn"
           >
             <i className="pi pi-angle-down"></i>
@@ -518,7 +517,7 @@ const AssetOverView: React.FC = () => {
                 .toLowerCase()
                 .includes(globalFilterValue.toLowerCase())
             )
-          : assets;
+          : reduxAssets;
       setAssets(filteredAssets);
     }
   };
@@ -616,25 +615,17 @@ const AssetOverView: React.FC = () => {
         onHide={() => setIsFileImportDialogVisible(false)}
         onImport={handleFileImport}
       />
-      {/* <MoveToRoomDialog
-        visible={isMoveToRoomDialogVisible}
-        onHide={() => setIsMoveToRoomDialogVisible(false)}
-        assetName={selectedProduct?.product_name || ""}
-        ifricId={selectedProduct?.id || ""}
-        onSave={() => {
-          setIsMoveToRoomDialogVisible(false);
-          showToast("success", "Success", "Asset moved successfully");
-          fetchAsset(); 
-        }}
-      /> */}
+
         <MoveToRoomDialog
           visible={isMoveToRoomDialogVisible}
           onHide={() => setIsMoveToRoomDialogVisible(false)}
-          assetName={selectedProduct?.product_name || "Test Asset"}
-          company_ifric_id={selectedProduct?.id || ""}
+          assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
+          company_ifric_id="urn:ifric:ifx-eu-com-nap-6ab7cb06-bbe0-5610-878f-a9aa56a632ec"  //its hardcoded at this time
+          assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
           onSave={() => {
             setIsMoveToRoomDialogVisible(false);
             showToast("success", "Success", "Asset moved successfully");
+            dispatch(fetchAssetsRedux())
           }}
         />
       <div className="flex">
@@ -715,7 +706,7 @@ const AssetOverView: React.FC = () => {
                   toggleColor={toggleColor}
                   isBlue={isBlue}
                   assetIdBodyTemplate={assetIdBodyTemplate}
-                  assetsData={hardcodedAssets}
+                  assetsData={reduxAssets}
                   activeTab={activeTab}
                   onMoveToRoom={handleMoveToRoom}
                 />
