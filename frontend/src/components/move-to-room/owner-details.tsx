@@ -5,7 +5,7 @@ import "../../../public/styles/owner-card.css";
 interface OwnerDetailsCardProps {
   owner: {
     name: string;
-    companyIfric: string;
+    companyIfricId: string;
     certifiedCompany: string;
     role: string;
     country: string;
@@ -27,7 +27,7 @@ const OwnerDetailsCard: React.FC<OwnerDetailsCardProps> = ({ owner }) => {
         </div>
         <div className="field">
           <span className="label">Company IFRIC:</span>
-          {owner.companyIfric}
+          {owner.companyIfricId}
         </div>
         <div className="field">
           <span className="label">IFRIC Certified :</span>

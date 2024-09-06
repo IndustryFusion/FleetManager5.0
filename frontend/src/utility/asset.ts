@@ -41,36 +41,28 @@ const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
     return "";
     };
 
-    // Function to map the backend data to the Asset structure
-    export const mapBackendDataToAsset = (backendData: any[]): Asset[] => {
-        return backendData.map((item: any) => {
-        const newItem: any = {};
-        Object.keys(item).forEach((key) => {
-            if (key.includes("/")) {
-            const newKey = key.split('/').pop() || '';
-                if(item[key].type === "Property") {
-                newItem[newKey] = item[key].value
-                }
-                else if (item[key].type === "Relationship") {
-                    newItem[newKey] = item[key].object
-                }
-                }
-                else {
-                if (key == "type" || key == "id" ) {
-                    newItem[key] = item[key]
-                } else if(key=="templateId" ){
-                    newItem[key] = item[key].value;
-                    }
-                }
-            });
-            return newItem;
-        });
-    };
+// Function to map the backend data to the Asset structure
+export const mapBackendDataToAsset =(assetData: any) => {
+    const refactoredData: any = {};
+    Object.keys(assetData).forEach((key) => {
+    const property = assetData[key];
 
-    export const fetchAssets = async () => {
+    // Check if it's a property object with a value
+    if (property && property.type === 'Property') {
+        const shortenedKey:any = key.split("/").pop(); // Use only the last part of the URL as key
+        refactoredData[shortenedKey] = property.value;
+    }
+    });
+
+    // Keep the asset's main identifier and type
+    refactoredData.id = assetData.id;
+    refactoredData.type = assetData.type;
+
+    return refactoredData;
+};
+
+export const fetchAssets = async () => {
     try {
-        const companyIfricId = getCompanyIfricId();
-        console.log('companyIfricId ',companyIfricId);
         const response = await axios.get(BACKEND_API_URL + `/asset/get-company-manufacturer-asset/urn:ifric:ifx-eu-com-nap-6ab7cb06-bbe0-5610-878f-a9aa56a632ec`, {
         headers: {
             "Content-Type": "application/ld+json",
@@ -78,7 +70,12 @@ const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
             }
         });
         const responseData = response.data;
-        const mappedData = mapBackendDataToAsset(responseData);
+        console.log("responseData",responseData)
+         const mappedData = responseData.map((asset: any) => ({
+            owner_company_name: asset.owner_company_name,
+        assetData: mapBackendDataToAsset(asset.assetData), 
+        }));
+        console.log("mappedData",mappedData)
         return mappedData;
         } catch (error:any) {
             console.error("Error:", error);  

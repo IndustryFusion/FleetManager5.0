@@ -48,7 +48,7 @@ export interface Asset {
     ce_marking: string;
     hasObject: string;
     templateId: string;
-    // Include any other properties that are common across both uses
+   
   }
 
   export interface RelationItem {

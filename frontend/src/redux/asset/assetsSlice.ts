@@ -19,7 +19,7 @@ export const fetchAssetsRedux = createAsyncThunk(
   async () => {
     const assetData = await fetchAssets();
     if(assetData) {
-      return assetData
+      return assetData || [];
     } else {
       return [];
     }
