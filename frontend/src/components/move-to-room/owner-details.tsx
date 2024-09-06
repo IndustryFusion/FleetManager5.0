@@ -6,9 +6,7 @@ interface OwnerDetailsCardProps {
   owner: {
     name: string;
     companyIfricId: string;
-    certifiedCompany: string;
-    role: string;
-    country: string;
+    company_category: string;
   } | null;
 }
 
@@ -30,16 +28,8 @@ const OwnerDetailsCard: React.FC<OwnerDetailsCardProps> = ({ owner }) => {
           {owner.companyIfricId}
         </div>
         <div className="field">
-          <span className="label">IFRIC Certified :</span>
-          {owner.certifiedCompany}
-        </div>
-        <div className="field">
-          <span className="label">Role:</span>
-          {owner.role}
-        </div>
-        <div className="field">
-          <span className="label">Country:</span>
-          {owner.country}
+          <span className="label">Company Category :</span>
+          {owner.company_category}
         </div>
       </div>
     </Card>

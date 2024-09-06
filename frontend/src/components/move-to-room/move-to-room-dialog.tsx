@@ -122,7 +122,8 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
         const formattedOwners = response.data.map((owner: any) => ({
           id: owner.company_ifric_id,
           name: owner.company_name,
-          companyIfricId: owner.company_ifric_id
+          companyIfricId: owner.company_ifric_id,
+          company_category:owner.company_category
         }));
         setFactoryOwners(formattedOwners);
       } else {
