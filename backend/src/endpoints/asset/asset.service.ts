@@ -128,7 +128,7 @@ export class AssetService {
         throw new Error("No company found with the provided ID");
       }
 
-      const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${id}`, { headers });
+      const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${companyData.data[0]['_id']}`, { headers });     
       for(let i = 0; i < companyTwinData.data.length; i++) {
         try {
           const url = this.scorpioUrl + '/' + companyTwinData.data[i].asset_ifric_id;
@@ -137,18 +137,14 @@ export class AssetService {
           if(response.data) {
             const ownerCompanyData = await axios.get(`${this.registryUrl}/auth/get-company-details-id/${companyTwinData.data[i].owner_company_id}`, { headers });
             if(ownerCompanyData.data) {
-            result.push({
-              owner_company_name: ownerCompanyData.data[0].company_name,
-              assetData: response.data
-            });
-          } else {
-            console.log("Error in fetching owner");
-            continue;
-          }
+              result.push({
+                owner_company_name: ownerCompanyData.data[0].company_name,
+                assetData: response.data
+              });
+            }
           }
         } catch(err) {
-          console.log("Failed", err.message)
-          throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
+          console.log("Failed", err?.message);
           continue;
         }
       }
