@@ -620,7 +620,7 @@ const AssetOverView: React.FC = () => {
           visible={isMoveToRoomDialogVisible}
           onHide={() => setIsMoveToRoomDialogVisible(false)}
           assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
-          company_ifric_id="urn:ifric:ifx-eu-com-nap-6ab7cb06-bbe0-5610-878f-a9aa56a632ec"  //its hardcoded at this time
+          company_ifric_id="urn:ifric:ifx-eu-com-nap-667bdc8b-bb1f-5af7-8045-e16821a5567d"  //its hardcoded at this time
           assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
           onSave={() => {
             setIsMoveToRoomDialogVisible(false);
