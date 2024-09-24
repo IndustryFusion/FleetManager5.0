@@ -176,7 +176,7 @@ const AssetOverView: React.FC = () => {
         disabled: true
       },
         {
-        label: "Move to Room",
+        label: "Assign Owner",
         icon: <img src="/logout.svg" alt="move-to-room-icon"/>,
         command: () => {
           // getAccessGroup((latestAccessGroup) => {
