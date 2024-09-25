@@ -41,7 +41,7 @@ export const serialNumberHeader = (
 ): React.ReactNode => {
   return (
     <div className="flex gap-1 align-items-center">
-      <p>{t("overview:serialNumber")} </p>
+      <p>Machine Serial Number </p>
       <img src="/sort-arrow.svg" alt="sort-arrow-icon" />
     </div>
   );
@@ -59,54 +59,6 @@ export const productNameHeader = (
   );
 };
 
-export const modelTypeHeader = (
-  t: (key: string) => string
-): React.ReactNode => {
-  return (
-    <div className="flex gap-1 align-items-center">
-      <p>Type </p>
-      <img src="/sort-arrow.svg" alt="sort-arrow-icon" />
-    </div>
-  );
-};
-
-
-//all body templates of table
-
-export const modelManufacturerTemplate = (rowData:any)=>{
-  return (
-    <div className="flex flex-column">
-      {rowData?.assetdata?.logo_manufacturer && rowData?.assetData?.logo_manufacturer !== "NULL" && (
-        <img
-          src={rowData?.assetData?.logo_manufacturer}
-          alt="maufacturer_logo"
-          className="w-4rem shadow-2 border-round"
-        />
-      )}
-      <p className="m-0 mt-1 tr-text">{rowData?.assetData?.asset_manufacturer_name}</p>
-    </div>
-  );
-}
-export const modelProductImageTemplate = (rowData:any)=>{
-  return (
-  <img
-    src={rowData?.assetData?.product_icon}
-    alt="product_image"
-    width={"100px"}
-    height={"100px"}
-  />)
-}
-export const modelProductNameTemplate = (rowData:any)=>{
-  console.log("rowData",rowData)
-  return <p className="tr-text">{rowData?.assetData?.product_name}</p>;
-}
-export const modelTypeTemplate = (rowData:any)=>{
-  return <p className="tr-text">{rowData?.assetData?.type}</p>; 
-}
-export const modelProductTypeTemplate = (rowData:any)=>{
-  const assetType = rowData?.assetData?.type?.split("/").pop();
-  return <p className="tr-text">{assetType}</p>; 
-}
 
 export const manufacturerDataTemplate = (rowData: any): React.ReactNode => {
   return (
@@ -144,12 +96,14 @@ export const serialNumberBodyTemplate = (rowData: any): React.ReactNode => {
 
 export const actionItemsTemplate = (rowData: Asset, onMoveToRoom: (asset: Asset) => void) => {
   return (
-    <img
-      src="/move-to-room.svg" 
-      alt="move-icon"
-      className="context-menu-icon cursor-pointer"
-      onClick={() => onMoveToRoom(rowData)}
+    <button onClick={() => onMoveToRoom(rowData)} className="action-menu-icon cursor-pointer" >
+      <img
+      src="/move-icon.svg" 
+      alt="move-icon" 
+      className="mr-2"
     />
+    Assign Owner
+    </button>
   );
 };
 
@@ -210,7 +164,6 @@ export const checkboxContainer = (
 export const filterAssets = (
   sortedassets: any,
   selectedFilters: { [key: string]: { [key: string]: boolean } },
-  activeTab:string
 ): any => {
   const noFiltersSelected =
     Object.keys(selectedFilters).length === 0 ||
@@ -222,15 +175,15 @@ export const filterAssets = (
     return sortedassets;
   }
 
-  return sortedassets.filter((asset) => {
-    const manufacturerName = activeTab === "Models" ? asset?.properties?.asset_manufacturer_name : asset.asset_manufacturer_name
+  return sortedassets.filter(({assetData}) => {
+    const manufacturerName =  assetData.asset_manufacturer_name
     return Object.keys(selectedFilters).every((filterCategory) => {
       const filters = selectedFilters[filterCategory];
       if (filters && Object.values(filters).some((value) => value === true)) {
         return Object.keys(filters).some((filterKey) => {
           if (filters[filterKey]) {
             if (
-              (filterCategory === "type" && asset.type?.split("/").pop() === filterKey) ||
+              (filterCategory === "type" && assetData.type?.split("/").pop() === filterKey) ||
               (filterCategory === "manufacturer_name" &&
                 manufacturerName  === filterKey)
             ) {

@@ -14,6 +14,8 @@
 // limitations under the License. 
 // 
 export interface Asset {
+  owner_company_name:string,
+  assetData:{
     owner?: string;
     id: string;
     type: string;
@@ -48,7 +50,7 @@ export interface Asset {
     ce_marking: string;
     hasObject: string;
     templateId: string;
-   
+  }
   }
 
   export interface RelationItem {
