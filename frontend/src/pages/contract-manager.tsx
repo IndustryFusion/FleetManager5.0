@@ -7,6 +7,7 @@ import { InputText } from 'primereact/inputtext';
 import { Tree } from 'primereact/tree';
 import { NodeService } from '@/service/NodeService';
 import ContractCards from '@/components/contractManager/contract-cards';
+import { Checkbox } from 'primereact/checkbox';
 
 const ContractManager = () => {
     const [isSidebarExpand, setSidebarExpand] = useState(true);
@@ -40,11 +41,25 @@ const ContractManager = () => {
             </div>
             <div className='mt-6'>
                 <h3 className='m-0 ml-1 folder-heading'>Folders</h3>
-                <div className="card flex mt-3 contracts-tree">
+             <div className="card flex mt-1 contracts-tree">
             <Tree
-           
             value={nodes} selectionMode="single" selectionKeys={selectedKey} onSelectionChange={(e) => setSelectedKey(e.value)}  />
-        </div>
+            </div>
+            </div>
+            <div className='mt-6'>
+            <h3 className='m-0 ml-1 folder-heading'>Simple Lawfirm Members</h3>
+            <div className='flex gap-3'>
+                <p className='card-label-grey'>Select All</p>
+                <p className='card-label-grey'>Unselect All</p>
+            </div>
+            <div className='flex gap-2 align-items-center'>
+                <Checkbox />
+                <p className='m-0'>Ewelina</p>
+            </div>
+            <div className='flex gap-2 align-items-center mt-2'>
+                <Checkbox />
+                <p className='m-0'>Patt Member</p>
+            </div>
             </div>
                 </div>
                 <div className='contract-right-container'>

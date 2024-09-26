@@ -46,7 +46,7 @@ const TableHeader:React.FC<any> =({
         <>
          <div className="table-header flex justify-content-between">
             <div className="search-container">
-              <img src="/search_icon.jpg" alt="search-icon" />
+              <img src="/search_icon.svg" alt="search-icon" />
               <InputText
                 className="search-input"
                 value={globalFilterValue}

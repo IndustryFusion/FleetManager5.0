@@ -4,11 +4,10 @@ import React from 'react'
 const ContractHeader = () => {
   return (
     <>
-    <div>
+    <div className='contract-header-container'>
     <div>
               <TabView
                 className="asset-tabs"
-               
               >
                 <TabPanel header="All"></TabPanel>
                 <TabPanel header="Require Action" disabled></TabPanel>
@@ -18,7 +17,13 @@ const ContractHeader = () => {
                 <TabPanel header="Dismissed" disabled></TabPanel>
                 <TabPanel header="Imported" disabled></TabPanel>
               </TabView>
-            </div>
+    </div>
+    <div>
+        Filters
+    </div>
+    <div className='flex gap-2'>
+    Sort by
+    </div>
     </div>
     </>
   )
