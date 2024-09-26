@@ -107,6 +107,12 @@ const AssetOverView: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState("Assets");
 
+  useEffect(() => {
+    if (assetStatus === "idle") {
+      dispatch(fetchAssetsRedux());
+    }
+  }, [dispatch, assetStatus]);
+  
   const dataTableStyle: CSSProperties = {
     flexGrow: 1,
     overflow: "auto",
