@@ -52,7 +52,7 @@ const Sidebar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
               <ul className="nav-list">
                 <li
                   className="flex align-items-center"
-                  onClick={() => router.push("/asset-overview?tab=Models")}
+                  onClick={() => router.push("/asset-overview")}
                 >
                   {" "}
                   <img
@@ -61,18 +61,6 @@ const Sidebar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
                     className="mr-2"
                   />
                   Data Twins
-                </li>
-                <li
-                  className="flex align-items-center"
-                  onClick={() => router.push("/asset-overview")}
-                >
-                  {" "}
-                  <img
-                    src="/dashboard-images/assets.jpg"
-                    alt="assets-icon"
-                    className="mr-2"
-                  />
-                  IFRIC Assets
                 </li>
                 <li
                   className="flex align-items-center "
