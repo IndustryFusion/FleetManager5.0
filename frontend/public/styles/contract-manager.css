@@ -1,0 +1,76 @@
+.contract-container {
+  padding-top: 10px;
+  width: 97%;
+  background-color: #f9f9fa;
+  height: 100vh;
+}
+.contract-container-collpase {
+  padding-top: 10px;
+  width: 97%;
+  background-color: #f9f9fa;
+  height: 100vh;
+}
+.contract-left-container{
+    font-family: "League Spartan", sans-serif;
+    flex: 0 20%;
+    padding: 1.5rem 26px;
+    background-color: #f9f9fa;
+    height: 100vh;
+}
+.contract-right-container{
+    flex: 0 70%;
+   
+}
+.contract-search-container img {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.9rem;
+}
+.contract-search-input{
+    width: 290px;
+    border: 2px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 10px;
+    font-family: "League Spartan", sans-serif;
+}
+.contract-search-container {
+    position: relative;
+}
+.contracts-tree .p-tree{
+  border: none;
+  padding: 0;
+  background-color: transparent;
+  font-family: "League Spartan", sans-serif;
+}
+.contracts-tree .p-treenode-label{
+    color: #2b2b2b;
+    font-weight: 500;
+    font-size: 17.5px;
+}
+.folder-heading{
+    color: #95989a;
+    font-weight: 500;
+}
+.contract-cards-container{
+    font-family: "League Spartan", sans-serif;  
+}
+.contract-cards-container p{
+    margin: 0;
+}
+.contract-card{
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 8px;
+}
+.card-label-grey{
+    color: #95989a;
+}
+.card-label-black{
+    font-weight: 600;
+    font-size: 17px;
+    color: #2b2b2b;
+}
+.contract-card-heading{
+    font-weight: 500;
+    font-size: 20px;
+}
