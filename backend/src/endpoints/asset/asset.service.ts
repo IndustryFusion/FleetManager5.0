@@ -19,6 +19,7 @@ import { TemplateDescriptionDto } from '../templates/dto/templateDescription.dto
 import { TemplatesService } from '../templates/templates.service';
 import axios from 'axios';
 import * as moment from 'moment';
+import { Request } from 'express';
 @Injectable()
 export class AssetService {
   constructor(private readonly templatesService: TemplatesService) { }
@@ -28,14 +29,19 @@ export class AssetService {
   private readonly context = process.env.CONTEXT;
   private readonly registryUrl = process.env.IFRIC_REGISTRY_BACKEND_URL;
 
-  async getAssetData(id: string) {
+  async getAssetData(id: string, req: Request) {
     try {
       const assetData = [];
       const headers = {
         'Content-Type': 'application/ld+json',
         'Accept': 'application/ld+json'
       };
-      const assetIds = await axios.get(`${this.registryUrl}/auth/get-company-assets/${id}`, { headers });
+      const registryHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization']
+      };
+      const assetIds = await axios.get(`${this.registryUrl}/auth/get-company-assets/${id}`, { headers: registryHeaders });
       
       if(assetIds.data.length > 0) {
         for (let i = assetIds.data.length - 1; i >= 0; i--) {
@@ -114,42 +120,46 @@ export class AssetService {
     }
   }
 
-  async getManufacturerCompanyAsset(id: string) {
+  async getManufacturerCompanyAsset(id: string, req: Request) {
     try {
+      console.log("id ",id)
       const headers = {
         'Content-Type': 'application/ld+json',
         'Accept': 'application/ld+json'
       };
-      
+
+      const registryHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization']
+      };
+      console.log("registryHeaders ",registryHeaders);
       const result = [];
-      const companyData = await axios.get(`${this.registryUrl}/auth/get-company-details/${id}`, { headers });
-      
+      const companyData = await axios.get(`${this.registryUrl}/auth/get-company-details/${id}`, { headers: registryHeaders });
+      console.log("companyData ",companyData.data);
       if (companyData.data.length === 0) {
         throw new Error("No company found with the provided ID");
       }
 
-      const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${id}`, { headers });
+      const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${id}`, { headers: registryHeaders });  
+      console.log("companyTwinData ",companyTwinData.data);   
       for(let i = 0; i < companyTwinData.data.length; i++) {
         try {
           const url = this.scorpioUrl + '/' + companyTwinData.data[i].asset_ifric_id;
           const response = await axios.get(url, { headers });
   
           if(response.data) {
-            const ownerCompanyData = await axios.get(`${this.registryUrl}/auth/get-company-details-id/${companyTwinData.data[i].owner_company_id}`, { headers });
+            const ownerCompanyData = await axios.get(`${this.registryUrl}/auth/get-company-details-id/${companyTwinData.data[i].owner_company_id}`, { headers: registryHeaders });
             if(ownerCompanyData.data) {
-            result.push({
-              owner_company_name: ownerCompanyData.data[0].company_name,
-              assetData: response.data
-            });
-          } else {
-            console.log("Error in fetching owner");
-            continue;
-          }
+              result.push({
+                owner_company_name: ownerCompanyData.data[0].company_name,
+                assetData: response.data
+              });
+            }
           }
         } catch(err) {
-          console.log("Failed", err.message)
+          console.log("Failed", err?.message);
           continue;
-          throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
         }
       }
       return result;

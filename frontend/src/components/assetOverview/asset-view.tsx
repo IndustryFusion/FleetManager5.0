@@ -26,6 +26,7 @@ import axios from "axios";
 import { Toast, ToastMessage } from "primereact/toast";
 import "../../../public/styles/asset-view.css"
 import { useTranslation } from "next-i18next";
+import { fetchTemplateByName } from "@/utility/templates";
 interface AssetDetailsCardProps {
   asset: Asset | null;
   setShowExtraCard: any;
@@ -46,17 +47,10 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
   useEffect(() => {
     const fetchSchema = async () => {
       try {
-        const response = await axios.get(BACKEND_API_URL + `/templates/template-name/`, {
-          params: {
-            name: asset?.asset_category
-          },
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json"
-          }
-        })
-
-        setTemplateKeys(Object.keys(response.data?.[0]?.properties));
+        if(asset && asset.asset_category) {
+          const response = await fetchTemplateByName(asset.asset_category);
+          setTemplateKeys(Object.keys(response?.data?.[0]?.properties));
+        }
       } catch (error: any) {
         console.error(error);
         showToast('error', "Error", 'Fetching template schema');
