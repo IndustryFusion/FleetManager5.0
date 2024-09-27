@@ -1,0 +1,219 @@
+.certificates-container{
+    padding-top: 10px;
+    width: 97%;
+    background-color: #f9f9fa;
+    height: 100vh;
+  }
+  .certificates-container-collpase {
+    padding-top: 10px;
+    width: 97%;
+    background-color: #f9f9fa;
+    height: 100vh;
+  }
+  .certificates-main-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-left: 4.2rem;
+  }
+  .certificates-main-content-collapse {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-left: 16.5rem;
+  }
+  
+  .certificates-content-wrapper {
+    padding: 24px;
+    display: flex;
+    /*styles for scrollbar*/
+    height: calc(100% - 72px);
+    overflow: auto;
+  }
+  
+  /* TabView Styling */
+  .certificates-tabview .p-tabview-nav {
+    justify-content: flex-start;
+    padding-left: 2rem;
+    /* margin-bottom: 1rem; */
+    margin-bottom: 1rem;
+    padding-top: 1.5rem;
+  }
+  .certificates-tabview .p-tabview-panel {
+    background-color: #fff;
+    padding: 2rem 2.2rem 2rem 0rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    margin-left: 3rem;
+  }
+  .certificates-tabview .p-tabview-nav li {
+    margin-left: 0;
+  }
+  
+  .certificates-tabview .p-tabview-nav li:not(:first-child) {
+    margin-left: 3rem;
+  }
+  
+  .certificates-tabview.spaced-tabs .p-tabview-panels {
+    padding-top: 1rem;
+    background: transparent;
+  }
+  
+  .certificates-tabview.spaced-tabs .p-tabview-nav li .p-tabview-nav-link {
+    font-size: 4.5rem;
+    padding: 1rem 1.25rem;
+  }
+  
+  .certificates-tabview.spaced-tabs
+    .p-tabview-nav
+    li
+    .p-tabview-nav-link
+    .tab-header {
+    display: flex;
+    align-items: center;
+  }
+  
+  .certificates-tabview.spaced-tabs
+    .p-tabview-nav
+    li
+    .p-tabview-nav-link
+    .tab-header
+    i {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+  }
+  
+  /* .spaced-tab-panel {
+    padding-top: 1rem;
+  } */
+  
+  .certificate-container {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+  }
+  .message-text {
+    margin-left: 175px;
+  }
+  
+  /* .certificate-input-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 1.5rem;
+  } */
+  
+  /* Flex container for calendar and button */
+  .flex-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Add space between Calendar and Button */
+  }
+  
+  .certificate-container .p-calendar .p-inputtext {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    background-color: white;
+    font-family: "League Spartan", sans-serif;
+    transition: border-color 0.2s ease-in-out;
+    flex-grow: 1; /* Allow the calendar to take up available space */
+  }
+  
+  .certificate-container .p-calendar .p-inputtext:focus {
+    border-color: #495057;
+  }
+  
+  .generate-cert-btn {
+    background-color: #2b2b2b;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    justify-content: center;
+    min-width: 220px;
+    border: none;
+    margin-top: -28px;
+    margin-left: 1rem;
+  }
+  
+  .arrow-button {
+    background-color: transparent;
+    border: none;
+    color: grey;
+    padding: 0;
+    margin-left: 1%;
+    border: none;
+  }
+  
+  .certificate-input {
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    background-color: white;
+    font-family: "League Spartan", sans-serif;
+    transition: border-color 0.2s ease-in-out;
+    margin-top: 5px;
+  }
+  
+  .certificate-input:focus {
+    border-color: #495057;
+  }
+  
+  .arrow-button .p-button-icon {
+    margin-bottom: 1%;
+  }
+  
+  /* .generate-cert-btn:hover {
+    background-color: #333;
+  } */
+  
+  .certificate-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  /* Calendar Icon Styling */
+  .calendar-icon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #6c757d;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    font-size: 14px;
+  }
+  
+  /* General Styles */
+  input,
+  button {
+    font-family: "League Spartan", sans-serif;
+  }
+  
+  .get-cert-btn {
+    background-color: #000;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    justify-content: center;
+    min-width: 180px;
+    border: none;
+    margin-top: -5px;
+  }
+  
+  input::placeholder {
+    color: #6c757d;
+  }
+  
