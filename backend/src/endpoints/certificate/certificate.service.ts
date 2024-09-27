@@ -80,17 +80,39 @@ export class CertificateService {
   }
 
 
-  async verifyCompanyCertificate(company_ifric_id: string, certificate_data: string) {
+  async verifyCompanyCertificate(company_ifric_id: string, req: Request) {
     try {
-      const verifiedResponse = await axios.post(`${this.icidServiceUrl}/certificate/verify-company-certificate`, {
-        company_ifric_id,
-        certificate_data
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      return verifiedResponse;
+            const registryHeaders = {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': req.headers['authorization']
+            };
+            // check whether the last created certificate is valid or expired or not
+            const checkLastCertificate = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${company_ifric_id}`, {headers: registryHeaders});
+      
+            if(checkLastCertificate.data.length > 0) {
+              const verifyLastCertificate = await axios.post(`${this.ifricRegistryUrl}/certificate/verify-company-certificate`,{
+                certificate_data: checkLastCertificate.data[0].certificate_data,
+                company_ifric_id,
+              }, {
+                headers: registryHeaders
+              });
+              
+              if(verifyLastCertificate.data.valid) {
+                return {
+                  success: false,
+                  status: 400,
+                  message: 'Cannot create more than one active certificate'
+                };
+              }
+            } else {
+                return {
+                  success: false,
+                  status: 400,
+                  message: 'no certificates found for the company'
+                };
+            }
+
     } catch (err) {
       throw err;
     }

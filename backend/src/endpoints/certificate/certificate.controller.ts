@@ -35,10 +35,10 @@ export class CertificateController {
   }
 
   @Post('verify-company-certificate')
-  async verifyCompanyCertificate(@Body() data: {company_ifric_id: string; certificate_data: string;}) {
+  async verifyCompanyCertificate(@Body() company_ifric_id: string, @Req() req: Request) {
     try {
-      const response = await this.certificateService.verifyCompanyCertificate(data.company_ifric_id, data.certificate_data);
-      return response.data;  
+      const response = await this.certificateService.verifyCompanyCertificate(company_ifric_id, req);
+      return response.data;
     } catch(err) {
       return { 
         success: false, 
