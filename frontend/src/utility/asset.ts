@@ -27,8 +27,8 @@ import { RootState, AppDispatch } from "@/redux/store";
 import { RefObject, useEffect } from "react";
 import { showToast } from "./toast";
 import { Toast } from "primereact/toast";
-import Papa from 'papaparse';
-
+import api from "./jwt";
+import { updatePopupVisible } from './update-popup';
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
@@ -61,7 +61,7 @@ export const mapBackendDataToAsset =(assetData: any) => {
 
 export const fetchAssets = async () => {
     try {
-        const response = await axios.get(BACKEND_API_URL + `/asset/get-company-manufacturer-asset/urn:ifric:ifx-eu-com-nap-6ab7cb06-bbe0-5610-878f-a9aa56a632ec`, {
+        const response = await api.get(BACKEND_API_URL + `/asset/get-company-manufacturer-asset/urn:ifric:ifx-eu-com-nap-6ab7cb06-bbe0-5610-878f-a9aa56a632ec`, {
         headers: {
             "Content-Type": "application/ld+json",
             "Accept": "application/ld+json"
@@ -76,7 +76,29 @@ export const fetchAssets = async () => {
        // console.log("mappedData",mappedData)
         return mappedData;
         } catch (error:any) {
-            console.error("Error:", error);  
+            console.log('err from fetch asset ',error);
+            if (error?.response && error?.response?.status === 401) {
+                updatePopupVisible(true);
+            } else {
+                throw error;
+            }
+        }
+    };
+
+    export const postFile = async (formData: FormData) => {
+        try {
+            return await api.post(`${BACKEND_API_URL}/file`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+        } catch (error: any) {
+            console.log('err from fetch asset ',error);
+            if (error?.response && error?.response?.status === 401) {
+              updatePopupVisible(true);
+            } else {
+              throw error;
+            }
         }
     };
 

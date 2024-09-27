@@ -13,7 +13,6 @@
 // limitations under the License.
 //
 
-import axios from "axios";
 
 function openDatabase(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
@@ -60,54 +59,42 @@ async function ensureObjectStore(db: IDBDatabase, storeName: string): Promise<vo
     }
 }
 
-export async function storeAccessGroup(accessGroup: any) {
+export async function storeAccessGroup(loginData: any) {
     try {
         const db = await openDatabase();
-        await ensureObjectStore(db, "accessGroupStore");
         const transaction = db.transaction(["accessGroupStore"], "readwrite");
         const objectStore = transaction.objectStore("accessGroupStore");
 
-        const request = objectStore.put({ id: "accessGroup", data: accessGroup });
-
-        request.onsuccess = function () {
-            console.log("Access group data stored successfully");
+        const dataToStore = {
+            id: "accessGroup",
+            company_ifric_id: loginData.company_ifric_id,
+            user_name: loginData.user_name,
+            jwt_token: loginData.jwt_token,
+            user_role: loginData.user_role,
+            access_group_DPP: loginData.access_group_DPP,
+            access_group_Ifric_Dashboard: loginData.access_group_Ifric_Dashboard,
+            user_email: loginData.user_email
         };
 
-        request.onerror = function (event) {
-            console.error("Error storing access group data: " + (event.target as IDBRequest).error);
-        };
+        const request = objectStore.put(dataToStore);
+
+        return new Promise<void>((resolve, reject) => {
+            request.onsuccess = function () {
+                console.log("Access group data stored successfully");
+                resolve();
+            };
+
+            request.onerror = function (event) {
+                console.error("Error storing access group data: " + (event.target as IDBRequest).error);
+                reject(new Error("Failed to store access group data"));
+            };
+        });
     } catch (error) {
         console.error(error);
+        throw error;
     }
 }
-
-export async function getAccessGroup(callback: (data: any) => void) {
-    try {
-        const db = await openDatabase();
-        await ensureObjectStore(db, "accessGroupStore");
-        const transaction = db.transaction(["accessGroupStore"], "readonly");
-        const objectStore = transaction.objectStore("accessGroupStore");
-
-        const request = objectStore.get("accessGroup");
-
-        request.onsuccess = function () {
-            const result = request.result;
-            if (result && result.data) {
-                callback(result.data);
-            } else {
-                console.error("No access group data found");
-            }
-        };
-
-        request.onerror = function (event) {
-            console.error("Error retrieving access group data: " + (event.target as IDBRequest).error);
-        };
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-export async function getAccessGroupId(): Promise<string | null> {
+export async function getAccessGroup(): Promise<any> {
     try {
         const db = await openDatabase();
         await ensureObjectStore(db, "accessGroupStore");
@@ -118,32 +105,38 @@ export async function getAccessGroupId(): Promise<string | null> {
             const request = objectStore.get("accessGroup");
             request.onsuccess = function () {
                 const result = request.result;
-                if (result && result.data && result.data._id) {
-                    resolve(result.data._id);
+                if (result) {
+                    resolve(result);
                 } else {
-                    console.error("No access group ID found");
+                    console.error("No access group data found");
                     resolve(null);
                 }
             };
             request.onerror = function (event) {
-                console.error("Error retrieving access group ID: " + (event.target as IDBRequest).error);
-                reject(null);
+                console.error("Error retrieving access group data: " + (event.target as IDBRequest).error);
+                reject(new Error("Failed to retrieve access group data"));
             };
         });
     } catch (error) {
         console.error(error);
-        return null;
+        throw error;
     }
 }
 
-export const fetchAccessGroupId = async () => {
-    const id = await getAccessGroupId();
-    if (id) {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL}/auth/get-access-group/${id}`);
-        if (response.data) {
-            return response.data
-        }
-    } else {
-        console.error("No access group ID found");
+
+export const clearIndexedDbOnLogout = async () => {
+    try {
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+            const request = indexedDB.open("myDatabase");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+
+        const transaction = db.transaction(["accessGroupStore"], "readwrite");
+        const objectStore = transaction.objectStore("accessGroupStore");
+        await objectStore.clear();
+        db.close();
+    } catch (error) {
+        console.error("Error clearing IndexedDB:", error);
     }
-}
+};
