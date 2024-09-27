@@ -53,4 +53,4 @@ jobs:
       HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
       USERNAME: ${{ secrets.USERNAME }}
       PASSWORD: ${{ secrets.PASSWORD }}
-      
+      MONGO_URL: ${{ secrets.MONGO_URL }}
