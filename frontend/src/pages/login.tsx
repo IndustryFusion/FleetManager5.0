@@ -43,7 +43,7 @@ const Login: React.FC = () => {
 
     useEffect(() => {
         // Always do navigations after the first render
-
+        
         if (Cookies.get("login_flag") === "true") {
             router.push("/asset-overview");
         } else {
@@ -97,13 +97,9 @@ const Login: React.FC = () => {
             try {
                 const response = await login(username, password);
                 if (response.data && response.data.status === 200 && response.data.data) {
-                    const { company_ifric_id, user_name, jwt_token,access_group  } = response.data.data;
-    
-                    localStorage.setItem('user_name', user_name);
-                    localStorage.setItem('jwt_token', jwt_token);
-                    localStorage.setItem('company_ifric_id', company_ifric_id);
+                    const loginData = response.data.data;
+                    await storeAccessGroup(loginData);
                     Cookies.set("login_flag", "true", { expires: 7 });
-                    storeAccessGroup(access_group);
                     showToast(toast, "success", "Success", "Login successful!");
                     setTimeout(() => {
                         router.push(`/asset-overview`);

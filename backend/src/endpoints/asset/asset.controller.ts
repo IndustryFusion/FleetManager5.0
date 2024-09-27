@@ -24,9 +24,9 @@ export class AssetController {
   constructor(private readonly assetService: AssetService) {}
 
   @Get(':id')
-  async getAssetData(@Param('id') id: string) {
+  async getAssetData(@Param('id') id: string, @Req() req: Request) {
     try {
-      return await this.assetService.getAssetData(id);
+      return await this.assetService.getAssetData(id, req);
     } catch (err) {
       throw new NotFoundException();
     }
@@ -60,9 +60,10 @@ export class AssetController {
   }
 
   @Get('get-company-manufacturer-asset/:id')
-  async getManufacturerCompanyAsset(@Param('id') id: string) {
+  async getManufacturerCompanyAsset(@Param('id') id: string, @Req() req: Request) {
     try {
-      return await this.assetService.getManufacturerCompanyAsset(id);
+      console.log("inside get manufacturer asset")
+      return await this.assetService.getManufacturerCompanyAsset(id, req);
     } catch (err) {
       throw err;
     }

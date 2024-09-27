@@ -64,7 +64,7 @@ const Sidebar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
                 </li>
                 <li
                   className="flex align-items-center "
-                  onClick={() => router.push("/asset-overview")}
+                  onClick={() => router.push("/contract-manager")}
                 >
                   {" "}
                   <img

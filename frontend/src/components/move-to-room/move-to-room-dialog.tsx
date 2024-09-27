@@ -11,6 +11,8 @@ import { Checkbox } from 'primereact/checkbox';
 import '../../../public/styles/move-to-room.css';
 import axios from 'axios';
 import OwnerDetailsCard from './owner-details';
+import { postFile } from '@/utility/asset';
+import { updateCompanyTwin, getCategorySpecificCompany } from '@/utility/auth';
 
 interface Company {
   id: string;
@@ -84,26 +86,23 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
 
     const dataToSend = {
       owner_company_ifric_id: factoryOwner.companyIfricId,
-      // owner_company_ifric_id: "urn:ifric:ifx-eu-com-nap-3ef587d6-bfde-5051-a4bf-63a4f9a92abd",
-      maufacturer_ifric_id: "urn:ifric:ifx-eu-com-nap-6ab7cb06-bbe0-5610-878f-a9aa56a632ec",
+      // owner_company_ifric_id: "urn:ifric:ifx-eur-nld-ast-b28fa8b9-5027-58e2-b06f-1eef75e62d0d",
+      maufacturer_ifric_id: "urn:ifric:ifx-eu-com-nap-667bdc8b-bb1f-5af7-8045-e16821a5567d",
       asset_ifric_id: assetIfricId
     };
 
     console.log("Data being sent to API:", dataToSend);
 
-    const response = await axios.patch(
-      `${IFRIC_REGISTRY_BACKEND_URL}/auth/update-company-twin`,
-      dataToSend
-    );
+    const response = await updateCompanyTwin(dataToSend);
 
     console.log("API response:", response);
 
-    if (response.data.status === 204) {
+    if (response && response.data.status === 204) {
       onSave();
       onHide();
       toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Asset assignment updated successfully' });
     } else {
-      throw new Error(response.data.message || 'Failed to update');
+      throw new Error(response?.data.message || 'Failed to update');
     }
   } catch (error: any) {
     console.error('Error updating asset assignment:', error);
@@ -117,8 +116,8 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
 
   const fetchFactoryOwners = async () => {
     try {
-      const response = await axios.get(`${IFRIC_REGISTRY_BACKEND_URL}/auth/get-category-specific-company/factory_owner`);
-      if (response.data && Array.isArray(response.data)) {
+      const response = await getCategorySpecificCompany("factory_owner");
+      if (response && response.data && Array.isArray(response.data)) {
         const formattedOwners = response.data.map((owner: any) => ({
           id: owner.company_ifric_id,
           name: owner.company_name,
@@ -141,12 +140,8 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
     formData.append('file', file);
 
     try {
-      const response = await axios.post(BACKEND_API_URL + '/file', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      if (response.status === 201) {
+      const response = await postFile(formData);
+      if (response && response.status === 201) {
         if (salesAgreement) {
           setSalesAgreementFile(response.data);
         } else {

@@ -24,6 +24,7 @@ import '../static/jank-empty.css';
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import { appWithTranslation } from "next-i18next";
+import { UnauthorizedPopup } from '../utility/jwt';
 
 // Import your custom components or layout components
 function MyApp({ Component, pageProps }:AppProps) {
@@ -32,6 +33,7 @@ function MyApp({ Component, pageProps }:AppProps) {
     <Provider store={store}>
     <div>
       <Component {...pageProps} />
+      <UnauthorizedPopup />
     </div>
     </Provider>
   );
