@@ -100,9 +100,9 @@ export class CertificateService {
               
               if(verifyLastCertificate.data.valid) {
                 return {
-                  success: false,
-                  status: 400,
-                  message: 'Cannot create more than one active certificate'
+                  success: true,
+                  status: 201,
+                  message: 'Company Verified'
                 };
               }
             } else {
@@ -235,16 +235,40 @@ export class CertificateService {
     }
   }
 
-  async verifyAssetCertificate(asset_ifric_id: string, certificate_data: string) {
+  async verifyAssetCertificate(asset_ifric_id: string, company_ifric_id:string, req :Request) {
     try {
-      return await axios.post(`${this.icidServiceUrl}/certificate/verify-company-certificate`, {
-        asset_ifric_id,
-        certificate_data
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
+      const registryHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization']
+      };
+      const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate?asset_ifric_id=${asset_ifric_id}&company_ifric_id=${company_ifric_id}`,{headers: registryHeaders});
+      console.log("checkLastCertificate", checkLastCertificate.data)
+      if(checkLastCertificate.data.length > 0) {
+        const verifyLastCertificate = await axios.post(`${this.icidServiceUrl}/certificate/verify-asset-certificate`,{
+          certificate_data: checkLastCertificate.data[0].certificate_data,
+          asset_ifric_id,
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        console.log("verifyLastCertificate", verifyLastCertificate.data)
+        if(verifyLastCertificate.data.valid) {
+          return {
+            success: true,
+            status: 201,
+            message: 'Asset Certified'
+          };
         }
-      });
+      } else {
+        return {
+          success: false,
+          status: 404,
+          message: 'Asset Certificates not found'
+        };
+      }
+      
     } catch (err) {
       throw err;
     }
