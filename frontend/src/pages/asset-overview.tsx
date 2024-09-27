@@ -52,8 +52,8 @@ const AssetOverView: React.FC = () => {
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Asset | null>(null);
   const [showSelectedAsset, setShowSelectedAsset] = useState(false);
-  const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<string>("4");
-  const [assetCount, setAssetCount] = useState(reduxAssets?.length || 0);
+  const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<string>("10");
+  const [assetCount, setAssetCount] = useState(0);
   const [showExtraCard, setShowExtraCard] = useState<boolean>(false);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [searchFilters, setSearchFilters] = useState({
@@ -107,12 +107,7 @@ const AssetOverView: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState("Assets");
 
-  useEffect(() => {
-    if (assetStatus === "idle") {
-      dispatch(fetchAssetsRedux());
-    }
-  }, [dispatch, assetStatus]);
-  
+
   const dataTableStyle: CSSProperties = {
     flexGrow: 1,
     overflow: "auto",
@@ -145,9 +140,11 @@ const AssetOverView: React.FC = () => {
       dispatch(fetchAssetsRedux());
     }
   }, [dispatch, assetStatus]);
+  
 
   useEffect(()=>{
     setAssets(reduxAssets)
+    setAssetCount(reduxAssets?.length)
   },[reduxAssets])
 
   useEffect(() => {

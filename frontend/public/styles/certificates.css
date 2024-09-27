@@ -30,7 +30,9 @@
     height: calc(100% - 72px);
     overflow: auto;
   }
-  
+  .certificates-content-wrapper .p-inline-message {
+    border-radius: 8px;
+  }
   /* TabView Styling */
   .certificates-tabview .p-tabview-nav {
     justify-content: flex-start;
