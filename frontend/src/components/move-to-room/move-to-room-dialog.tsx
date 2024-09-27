@@ -15,6 +15,7 @@ import OwnerDetailsCard from './owner-details';
 interface Company {
   id: string;
   name: string;
+  companyIfricId:string
 }
 
 interface Certificate {
@@ -25,25 +26,26 @@ interface Certificate {
 interface MoveToRoomDialogProps {
   assetName: string;
   company_ifric_id: string;
+  assetIfricId:string;
   visible: boolean;
   onHide: () => void;
   onSave: () => void;
 }
 
 interface OwnerDetails {
-  name: string;
-  companyIfric: string;
-  certifiedCompany: string;
-  role: string;
-  country: string;
+  name?: string;
+  companyIfricId: string;
+  certifiedCompany?: string;
+  role?: string;
+  country?: string;
 }
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const IFRIC_REGISTRY_BACKEND_URL = process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
 
-const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, company_ifric_id, visible, onHide, onSave }) => {
+const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfricId, company_ifric_id, visible, onHide, onSave }) => {
   const [factoryOwner, setFactoryOwner] = useState<Company | null>(null);
-  const [factoryOwners, setFactoryOwners] = useState<Company[]>([]);
+  const [factoryOwners, setFactoryOwners] = useState<OwnerDetails[]>([]);
   const [certificate, setCertificate] = useState<Certificate | null>(null);
   const [contract, setContract] = useState<string>('');
   const [completedSteps, setCompletedSteps] = useState<boolean[]>([false, false, false, false]);
@@ -60,30 +62,6 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, company_
     { label: 'cert_HSA1_IFRIC', value: 'cert_HSA1_IFRIC' },
   ];
 
-  const hardCodedOwnerDetails: { [key: string]: OwnerDetails } = {
-    'owner1': {
-      name: 'ABC Manufacturing',
-      companyIfric: 'IFRIC-123456789',
-      certifiedCompany: 'ABC Certified Corp',
-      role: 'Factory Owner',
-      country: 'UK'
-    },
-    'owner2': {
-      name: 'XYZ Industries',
-      companyIfric: 'IFRIC-987654321',
-      certifiedCompany: 'XYZ Certified Ltd',
-      role: 'Factory Owner',
-      country: 'Germany'
-    },
-    'owner3': {
-      name: 'Global Tech Solutions',
-      companyIfric: 'IFRIC-456789123',
-      certifiedCompany: 'Global Certified Inc',
-      role: 'Factory Owner',
-      country: 'Poland'
-    }
-  };
-
   useEffect(() => {
     fetchFactoryOwners();
   }, []);
@@ -99,48 +77,58 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, company_
   }, [factoryOwner, contract, salesAgreement, salesAgreementFile, certificate]);
 
   const handleSave = async () => {
-    try {
-      const response = await axios.patch(
-        `${IFRIC_REGISTRY_BACKEND_URL}/auth/update-company-product/${company_ifric_id}`,
-        {
-          factoryOwner: factoryOwner?.id,
-          certificate: certificate?.value,
-          contract: salesAgreement ? salesAgreementFile : contract,
-          product_name: assetName,
-          preCertifyAsset
-        }
-      );
-
-      if (response.status === 200) {
-        onSave();
-        onHide();
-      } else {
-        throw new Error('Failed to update');
-      }
-    } catch (error) {
-      console.error('Error updating asset assignment:', error);
-      toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to update asset assignment' });
+  try {
+    if (!factoryOwner?.companyIfricId) {
+      throw new Error('Factory owner ID is missing');
     }
-  };
 
-  const handleFactoryOwnerChange = (e: DropdownChangeEvent) => {
-    setFactoryOwner(e.value);
-    if (e.value && e.value.id in hardCodedOwnerDetails) {
-      setOwnerDetails(hardCodedOwnerDetails[e.value.id]);
+    const dataToSend = {
+      owner_company_ifric_id: factoryOwner.companyIfricId,
+      // owner_company_ifric_id: "urn:ifric:ifx-eu-com-nap-3ef587d6-bfde-5051-a4bf-63a4f9a92abd",
+      maufacturer_ifric_id: "urn:ifric:ifx-eu-com-nap-6ab7cb06-bbe0-5610-878f-a9aa56a632ec",
+      asset_ifric_id: assetIfricId
+    };
+
+    console.log("Data being sent to API:", dataToSend);
+
+    const response = await axios.patch(
+      `${IFRIC_REGISTRY_BACKEND_URL}/auth/update-company-twin`,
+      dataToSend
+    );
+
+    console.log("API response:", response);
+
+    if (response.data.status === 204) {
+      onSave();
+      onHide();
+      toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Asset assignment updated successfully' });
     } else {
-      setOwnerDetails(null);
+      throw new Error(response.data.message || 'Failed to update');
     }
+  } catch (error: any) {
+    console.error('Error updating asset assignment:', error);
+    toast.current?.show({ severity: 'error', summary: 'Error', detail: error.message || 'Failed to update asset assignment' });
+  }
+};
+  const handleFactoryOwnerChange = (e: DropdownChangeEvent) => {
+    const selectedOwner = e.value;
+    setFactoryOwner(selectedOwner);
   };
 
   const fetchFactoryOwners = async () => {
     try {
-      // Simulating API call with hard-coded data
-      const hardCodedFactoryOwners = [
-        { id: 'owner1', name: 'ABC Manufacturing' },
-        { id: 'owner2', name: 'XYZ Industries' },
-        { id: 'owner3', name: 'Global Tech Solutions' }
-      ];
-      setFactoryOwners(hardCodedFactoryOwners);
+      const response = await axios.get(`${IFRIC_REGISTRY_BACKEND_URL}/auth/get-category-specific-company/factory_owner`);
+      if (response.data && Array.isArray(response.data)) {
+        const formattedOwners = response.data.map((owner: any) => ({
+          id: owner.company_ifric_id,
+          name: owner.company_name,
+          companyIfricId: owner.company_ifric_id,
+          company_category:owner.company_category
+        }));
+        setFactoryOwners(formattedOwners);
+      } else {
+        throw new Error('Invalid data format received from the server');
+      }
     } catch (error) {
       console.error('Error fetching factory owners:', error);
       toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to fetch factory owners' });
@@ -228,7 +216,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, company_
   const dialogHeader = (
     <div className="dialog-header">
       <h2>{assetName}</h2>
-      <p className="text-sm text-gray-500">{company_ifric_id}</p>
+      <p className="text-sm text-gray-500">{assetIfricId}</p>
     </div>
   );
 
@@ -285,7 +273,9 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, company_
                 )}
               </div>
               <div style={{ flex: 1 }}>
-                <OwnerDetailsCard owner={ownerDetails} />
+                {factoryOwner && (
+                  <OwnerDetailsCard owner={factoryOwner} />
+                )}
               </div>
             </div>
           </div>

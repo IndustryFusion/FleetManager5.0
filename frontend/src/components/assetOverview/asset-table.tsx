@@ -5,22 +5,17 @@ import {
   ifricIdHeader,
   manufacturerDataTemplate,
   manufacturerHeader,
-  modelManufacturerTemplate,
-  modelProductImageTemplate,
-  modelProductNameTemplate,
-  modelProductTypeTemplate,
-  modelTypeHeader,
-  modelTypeTemplate,
   productNameBodyTemplate,
   productNameHeader,
   productTypeHeader,
   serialNumberBodyTemplate,
   serialNumberHeader,
+  ownerBodyTemplate
 } from "@/utility/assetTable";
 import { Column } from "primereact/column";
 
 import { DataTable } from "primereact/datatable";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect,useState } from "react";
 
 
 const AssetTable: React.FC<any> = ({
@@ -31,9 +26,6 @@ const AssetTable: React.FC<any> = ({
   setSelectedAssets,
   handleSelect,
   setShowSelectedAsset,
-  setSelectedProduct,
-  selectedProduct,
-  cm,
   t,
   selectedGroupOption,
   toggleColor,
@@ -41,14 +33,11 @@ const AssetTable: React.FC<any> = ({
   assetIdBodyTemplate,
   assetsData,
   activeTab,
-  onMoveToRoom
-  
+  onMoveToRoom,
+  searchFilters 
 }) => {
 
   const [rangeDisplay, setRangeDisplay] = useState('');
-  const ownerBodyTemplate = (rowData: Asset) => {
-    return <span>{rowData.owner || 'N/A'}</span>;
-  };
   const columnConfig = [
     {
       selectionMode: "multiple" as "multiple",
@@ -56,7 +45,7 @@ const AssetTable: React.FC<any> = ({
       columnKey: "assetSelectCheckBox",
     },
     {
-      field: "id",
+      field: "assetData.id",
       header: ifricIdHeader(t),
       body: assetIdBodyTemplate,
       columnKey: "ifricId",
@@ -64,28 +53,28 @@ const AssetTable: React.FC<any> = ({
     },
     {
       columnKey: "serialNumber",
-      field: "asset_serial_number",
+      field: "assetData.asset_serial_number",
       header: serialNumberHeader(t),
       body: serialNumberBodyTemplate,
       sortable: true,
     },
     {
       columnKey: "type",
-      field: "type",
+      field: "assetData.type",
       header: productTypeHeader(t),
       body: assetTypeBodyTemplate,
       sortable: true,
     },
     {
       columnKey: "productName",
-      field: `product_name`,
+      field: "assetData.product_name",
       header: productNameHeader(t, toggleColor, isBlue),
       body: productNameBodyTemplate,
       sortable: true,
     },
     {
       columnKey: "manufacturer",
-      field: "asset_manufacturer_name",
+      field: "assetData.asset_manufacturer_name",
       header: manufacturerHeader(t),
       body: manufacturerDataTemplate,
       sortable: true,
@@ -93,7 +82,7 @@ const AssetTable: React.FC<any> = ({
   
      {
       columnKey: "Owner",
-      field: "Owner",
+      field: "owner_company_name",
       header: t("overview:owner"),
       body: ownerBodyTemplate,
       sortable: true,
@@ -106,46 +95,6 @@ const AssetTable: React.FC<any> = ({
     },
   ];
  
-  const modelColumnConfig = [
-    {
-      selectionMode: "multiple" as "multiple",
-      headerStyle: { width: "3rem" },
-      columnKey: "assetSelectCheckBox",
-    },
-    {
-      columnKey: "productName",
-      field: "properties.product_name",
-      header: productNameHeader(t, toggleColor, isBlue),
-      body: modelProductNameTemplate,
-      sortable: true,
-    },
-    {
-      columnKey: "Type",
-      field: "type",
-      header: modelTypeHeader(t),
-      body: modelTypeTemplate,
-      sortable: true,
-    },
-    {
-      columnKey: "Manufacturer",
-      field: "properties.asset_manufacturer_name",
-      header: manufacturerHeader(t),
-      body: modelManufacturerTemplate,
-      sortable: true,
-    },
-    {
-      columnKey: "ProductType",
-      field: "type",
-      header: productTypeHeader(t),
-      body: modelProductTypeTemplate,
-      sortable: true,
-    },
-    {
-      columnKey: "actions",
-      body: actionItemsTemplate,
-    },
-  ];
-
   useEffect(() => {
     // Calculate the range of rows for the current page
     const startRow = currentPage * selectedRowsPerPage + 1;
@@ -180,32 +129,35 @@ const AssetTable: React.FC<any> = ({
             console.error("Expected e.value to be an array, but got:", e.value);
           }
         }}
-        sortField="product_name"
-        onContextMenu={(e) => cm.current.show(e.originalEvent)}
-        contextMenuSelection={selectedProduct}
-        onContextMenuSelectionChange={(e) => setSelectedProduct(e.value)}
+        filters={searchFilters}
+        globalFilterFields={[
+          "assetData.id",
+          "assetData.asset_serial_number",
+          "assetData.type",
+          "assetData.product_name",
+          "assetData.asset_manufacturer_name",
+          'owner_company_name'
+        ]}
+        sortMode="multiple"
+         sortField="product_name"
+         sortOrder={-1}
         rowGroupMode={selectedGroupOption !== null ? "subheader" : undefined}
-        rowGroupHeaderTemplate={(data) => {
+        rowGroupHeaderTemplate={(data) => {      
           let rowHeader;
           if (selectedGroupOption === "type") {
-            rowHeader = data[selectedGroupOption]?.split("/").pop();
+            rowHeader = data.assetData[selectedGroupOption]?.split("/").pop();
           } else if (
             activeTab === "Assets" &&
             selectedGroupOption === "asset_manufacturer_name"
           ) {
-            rowHeader = data[selectedGroupOption];
-          } else {
-            rowHeader = data?.properties?.[selectedGroupOption];
-          }
+            rowHeader = data.assetData[selectedGroupOption];
+          } 
           return <>{selectedGroupOption !== null && rowHeader}</>;
         }}
-        groupRowsBy={selectedGroupOption}
+        groupRowsBy={selectedGroupOption ? `assetData.${selectedGroupOption}` : undefined}
       >
         {activeTab === "Assets"
-          ? columnConfig.map((col) => <Column key={col.columnKey} {...col} />)
-          : modelColumnConfig.map((col) => (
-              <Column key={col.columnKey} {...col} />
-            ))}
+          && columnConfig.map((col) => <Column key={col.columnKey} {...col} />) }
       </DataTable>
       <span className="pagination-range-display">{rangeDisplay}  Assets </span>
     </>

@@ -16,42 +16,34 @@ type FilterProp = {
 type DropdownWithCustomOptionsProps = {
   filterProp: FilterProp;
   setFilterProp: React.Dispatch<React.SetStateAction<FilterProp>>;
-  tableData: Asset[];
-  activeTab: string;
+  tableData: [
+    {
+      owner_company_name: string;
+      assetData: Asset;
+    }
+  ];
 };
 
 const DropdownWithCustomOptions: React.FC<DropdownWithCustomOptionsProps> = ({
   filterProp,
   setFilterProp,
   tableData,
-  activeTab,
 }) => {
   const assetTypes = Array.from(
-    new Set<string>(tableData.map((asset) => asset.type))
+    new Set<string>([...tableData].map(({ assetData }) => assetData.type))
   ).map((item) => item?.split("/").pop() as string);
-  let assetManufacturerName: string[];
 
-  if (activeTab === "Models") {
-    assetManufacturerName = Array.from(
-      new Set<string>(
-        tableData.map(
-          (asset) => asset.properties?.asset_manufacturer_name ?? ""
-        )
-      )
-    );
-  } else {
-    assetManufacturerName = Array.from(
-      new Set<string>(
-        tableData.map((asset) => asset.asset_manufacturer_name ?? "")
-      )
-    );
-  }
+  const assetManufacturerName = Array.from(
+    new Set<string>(
+      tableData.map(({ assetData }) => assetData.asset_manufacturer_name ?? "")
+    )
+  );
 
   const filterOptions = [
     {
       category: "Product Type",
       key: "type",
-      options: assetTypes.map((type) => ({ label: type, type })),
+      options: [...assetTypes].map((type) => ({ label: type, type })),
     },
     {
       category: "Manufacturer",
