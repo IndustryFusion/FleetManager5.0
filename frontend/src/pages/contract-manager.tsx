@@ -37,7 +37,9 @@ const ContractManager = () => {
                 // onChange={onFilter}
                 placeholder="Search contracts"
               />
-              <img src="/search_icon.svg" alt="search-icon" />
+              <img 
+              className={isSidebarExpand ? "search-expand" : "search-collapse"}
+              src="/search_icon.svg" alt="search-icon" />
             </div>
             <div className='mt-6'>
                 <h3 className='m-0 ml-1 folder-heading'>Folders</h3>
@@ -49,8 +51,8 @@ const ContractManager = () => {
             <div className='mt-6'>
             <h3 className='m-0 ml-1 folder-heading'>Simple Lawfirm Members</h3>
             <div className='flex gap-3'>
-                <p className='card-label-grey'>Select All</p>
-                <p className='card-label-grey'>Unselect All</p>
+                <p className='card-label-grey' style={{textDecoration:"underline"}}>Select All</p>
+                <p className='card-label-grey' style={{textDecoration:"underline"}}>Unselect All</p>
             </div>
             <div className='flex gap-2 align-items-center'>
                 <Checkbox />

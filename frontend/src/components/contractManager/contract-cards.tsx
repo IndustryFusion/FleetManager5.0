@@ -1,3 +1,4 @@
+import { GiAlarmClock } from "react-icons/gi";
 import { MdLockOpen, MdLockOutline } from "react-icons/md";
 
 const ContractCards =()=>{
@@ -49,7 +50,7 @@ const ContractCards =()=>{
             </div>
             <div className="flex contract-card mt-4" style={{gap:"3rem"}}>
             <div className="flex gap-2 folder-heading align-items-center">
-                <i className="pi pi-folder"></i>
+                <i className="pi pi-file-import" style={{fontSize:"22px"}}></i>
                 <h3 className="m-0 contract-card-heading">Shareholders Agreement</h3>
             </div>
             <div>
@@ -96,7 +97,9 @@ const ContractCards =()=>{
             <div className="flex justify-content-center align-items-center">
                 <button
                 className="reminder-btn"
-                >Add Reminder</button>
+                >
+                    <GiAlarmClock className="mr-2" />
+                    Add Reminder</button>
             </div>
             
             </div>
