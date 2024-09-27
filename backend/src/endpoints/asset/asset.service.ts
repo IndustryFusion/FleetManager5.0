@@ -160,6 +160,7 @@ export class AssetService {
         } catch(err) {
           console.log("Failed", err?.message);
           continue;
+          throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
         }
       }
       return result;
