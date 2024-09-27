@@ -157,6 +157,6 @@
     border-width: 0 0 5px 0;
     width: 80%;
 }
-.contract-tabs.p-tabview-nav-content{
+.contract-tabs.p-tabview .p-tabview-nav-content{
     border-bottom: 2px solid #e1e8ed;
     }

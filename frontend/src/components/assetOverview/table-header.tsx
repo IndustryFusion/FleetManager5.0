@@ -2,30 +2,46 @@ import { Dropdown } from "primereact/dropdown";
 import DropdownWithCustomOptions from "./custom-dropdown";
 import { InputText } from "primereact/inputtext";
 import { useTranslation } from "next-i18next";
+import { Asset } from "@/interfaces/assetTypes";
+
+interface GroupOption {
+  label: string;
+  value: string;
+}
 
 
-const TableHeader:React.FC<any> =({
-    enableReordering,
-    setEnableReordering,
-    selectedGroupOption,
-    setSelectedGroupOption,
-    globalFilterValue,
-    onFilter,
-    selectedFilters,
-    setSelectedFilters,
-    groupOptions,
-    tableData,
-    activeTab
+interface TableHeaderProps {
+  enableReordering: boolean;
+  setEnableReordering: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedGroupOption: string | null;
+  setSelectedGroupOption: (value: string | null) => void;
+  globalFilterValue: string;
+  onFilter: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  selectedFilters: any; // You can refine this type based on your filters data structure
+  setSelectedFilters: (filters: any) => void;
+  groupOptions: GroupOption[];
+  tableData: Asset; // You can refine this type based on your data structure
+}
 
-})=>{
-    const { t } = useTranslation(["overview", "placeholder"]);
+const TableHeader: React.FC<TableHeaderProps> = ({
+  enableReordering,
+  setEnableReordering,
+  selectedGroupOption,
+  setSelectedGroupOption,
+  globalFilterValue,
+  onFilter,
+  selectedFilters,
+  setSelectedFilters,
+  groupOptions,
+  tableData
+}) => {
+  const { t } = useTranslation(["overview", "placeholder"]);
 
-    const getStrokeColor = () => {
-        return enableReordering ? "#2196f3" : "#95989a"; // Change #000 to the desired color when not enabled
-      };
+  const getStrokeColor = () => {
+    return enableReordering ? "#2196f3" : "#95989a"; // Change #000 to the desired color when not enabled
+  };
 
-       
-  const CustomOptions = (option:any) => {
+  const CustomOptions = (option: any) => {
     return (
       <>
         <label htmlFor="">
@@ -62,11 +78,11 @@ const TableHeader:React.FC<any> =({
                   filterProp={selectedFilters}
                   setFilterProp={setSelectedFilters}
                   tableData={tableData}
-                  activeTab={activeTab}
+                 
                 />
                 </div>             
                 <div>
-                <img src="/group.jpg" alt="group-icon" style={{marginRight:"8px"}} />
+                <img src="/group_icon.svg" alt="group-icon" style={{marginRight:"8px"}} />
                 <Dropdown
                   optionLabel="label"
                   placeholder="Group"

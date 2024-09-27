@@ -603,6 +603,18 @@ svg.p-icon {
   text-wrap: nowrap;
 }
 
+.action-menu-icon{
+  background-color: transparent;
+  border:none;
+  outline: none;
+  font-size: 16px;
+  font-family: "League Spartan", sans-serif;
+  color : #138ab6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .custom-row-padding .expand-id-text {
   word-wrap: break-word;
   width: 271px;
