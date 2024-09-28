@@ -17,19 +17,19 @@ const OwnerDetailsCard: React.FC<OwnerDetailsCardProps> = ({ owner }) => {
 
   return (
     <Card title="" className="owner-details-card">
-      <div className="card-title">Owner Details</div>
-      <div className="p-fluid">
+      <div className="form_group_title">Owner Details</div>
+      <div className="owner_details_group">
         <div className="field">
-          <span className="label">Company Name:</span>
-          {owner.name}
+          <div className="owner_details_label">Company Name</div>
+          <div className="owner_details_value">{owner.name} </div>
         </div>
         <div className="field">
-          <span className="label">Company IFRIC:</span>
-          {owner.companyIfricId}
+          <div className="owner_details_label">Company IFRIC ID</div>
+          <div className="owner_details_value">{owner.companyIfricId}</div>
         </div>
         <div className="field">
-          <span className="label">Company Category :</span>
-          {owner.company_category}
+          <div className="owner_details_label">Company Category</div>
+          <div className="owner_details_value">{owner.company_category}</div>
         </div>
       </div>
     </Card>
