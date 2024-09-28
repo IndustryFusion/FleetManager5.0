@@ -25,12 +25,7 @@ export class CertificateController {
     try {
       return await this.certificateService.getCompanyCertificates(company_ifric_id, req);
     } catch(err) {
-      return { 
-        success: false, 
-        status: err?.response?.status,
-        message: 'Failed to fetch certificate',
-        error: err.message
-      };
+      throw err;
     }
   }
 
