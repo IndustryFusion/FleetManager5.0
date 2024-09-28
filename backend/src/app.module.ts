@@ -25,6 +25,8 @@ import { TemplatesService } from './endpoints/templates/templates.service';
 import { AuthService } from './endpoints/auth/auth.service';
 import { AssetService } from './endpoints/asset/asset.service';
 import { FileService } from './endpoints/file/file.service';
+import { CertificateController } from './endpoints/certificate/certificate.controller';
+import { CertificateService } from './endpoints/certificate/certificate.service';
 
 @Module({
   imports: [],
@@ -33,14 +35,16 @@ import { FileService } from './endpoints/file/file.service';
     TemplatesController,
     AuthController,
     AssetController,
-    FileController
+    FileController,
+    CertificateController
   ],
   providers: [
     AppService,
     TemplatesService,
     AuthService,
     AssetService,
-    FileService
+    FileService,
+    CertificateService
   ],
 })
 export class AppModule {}
