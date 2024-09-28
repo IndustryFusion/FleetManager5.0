@@ -41,9 +41,10 @@ export class AssetController {
     }
   }
 
-  @Get(':id')
+  @Get('getAssetById/:id')
   async getAssetDataById(@Param('id') id: string) {
     try {
+      console.log("start")
       return await this.assetService.getAssetDataById(id);
     } catch (err) {
       throw new NotFoundException();
