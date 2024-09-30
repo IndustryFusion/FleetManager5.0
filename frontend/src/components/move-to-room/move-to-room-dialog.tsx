@@ -7,10 +7,12 @@ import { Button } from 'primereact/button';
 import { Message } from 'primereact/message';
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
+import { Calendar } from 'primereact/calendar';
 import Image from 'next/image';
 import { Checkbox } from 'primereact/checkbox';
 import '../../../public/styles/move-to-room.css';
 import axios from 'axios';
+import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import OwnerDetailsCard from './owner-details';
 import { postFile } from '@/utility/asset';
 import { updateCompanyTwin, getCategorySpecificCompany } from '@/utility/auth';
@@ -49,7 +51,7 @@ const IFRIC_REGISTRY_BACKEND_URL = process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEN
 const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfricId, company_ifric_id, visible, onHide, onSave }) => {
   const [factoryOwner, setFactoryOwner] = useState<Company | null>(null);
   const [factoryOwners, setFactoryOwners] = useState<OwnerDetails[]>([]);
-  const [certificate, setCertificate] = useState<Certificate | null>(null);
+  const [certificate, setCertificate] = useState<Certificate[] | null>([]);
   const [contract, setContract] = useState<string>('');
   const [completedSteps, setCompletedSteps] = useState<boolean[]>([false, false, false, false]);
   const [preCertifyAsset, setPreCertifyAsset] = useState(false);
@@ -59,11 +61,11 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const fileUploadRef = useRef<FileUpload>(null);
   const salesAgreementFileUploadRef = useRef<FileUpload>(null);
   const [ownerDetails, setOwnerDetails] = useState<OwnerDetails | null>(null);
-  const [checkIndex, setCheckIndex] = useState(1);
-
+  const [checkIndex, setCheckIndex] = useState(0);
+  const [certificationDate, setCertificationDate] = useState<Date | null | undefined>(null);
   const certificateOptions: Certificate[] = [
-    { label: 'cert_HSA1_MIcrostep', value: 'cert_HSA1_MIcrostep' },
-    { label: 'cert_HSA1_IFRIC', value: 'cert_HSA1_IFRIC' },
+    { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
+    { label: 'contract_Insurance_IFRIC', value: 'contract_Insurance_IFRIC' },
   ];
 
   useEffect(() => {
@@ -115,6 +117,10 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
     const selectedOwner = e.value;
     setFactoryOwner(selectedOwner);
   };
+  const handleGenerateCertificate = (e: any) => {
+    e.preventDefault();
+    console.log("Certificate Generation Handled")
+  }
 
   const fetchFactoryOwners = async () => {
     try {
@@ -195,9 +201,15 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
         <path d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z" fill={fill} stroke={stroke} strokeWidth="1.5" />
         <path d="M8 12.75C8 12.75 9.6 13.6625 10.4 15C10.4 15 12.8 9.75 16 8" stroke={check} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-
     );
-
+  }
+  const handleDialogClose = () => {
+    setFactoryOwner(null);
+    setSalesAgreementFile("");
+    setPreCertifyAsset(false);
+    setCertificate(null);
+    setSalesAgreement(false);
+    setCertificationDate(null);
   }
 
   const dialogFooter = (
@@ -205,7 +217,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
       <Button
         label="Cancel"
         icon="pi pi-times"
-        onClick={onHide}
+        onClick={() => { onHide(); handleDialogClose(); }}
         className="p-button-text"
         style={{ backgroundColor: "#E6E6E6", color: "black" }} // Set text color to black
       />
@@ -237,7 +249,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
       visible={visible}
       style={{ width: '80vw', maxWidth: "1000px", height: '80vh' }}
       footer={dialogFooter}
-      onHide={onHide}
+      onHide={() => { onHide(); handleDialogClose(); }}
       className="move-to-room-dialog"
       draggable={false}
     >
@@ -414,37 +426,49 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
           <div className="custom_steps_wrapper">
             <div className="custom_step_cell">
               <div className="step_connector" style={{ backgroundColor: checkIndex >= 1 ? "#3874C9" : "#6b7280" }}></div>
-              {checkIndex >= 1 ? (
+              {factoryOwner ? (
                 <CustomCheck stroke="#3874C9" fill="#3874C9" check="white" />
               ) : (
                 <CustomCheck stroke="#6b7280" fill="white" check="white" />
               )}
               <div className='check_content_wrapper'>
-                <div className="custom_check_title" style={{ color: checkIndex >= 1 ? "#2b2b2b" : "#6b7280" }}>Factory Owner</div>
+                <div className="custom_check_title" style={{ color: factoryOwner ? "#2b2b2b" : "#6b7280" }}>Factory Owner</div>
                 <div className="custom_check_helper">Select Owner</div>
               </div>
             </div>
             <div className="custom_step_cell">
               <div className="step_connector" style={{ backgroundColor: checkIndex >= 2 ? "#3874C9" : "#6b7280" }}></div>
-              {checkIndex >= 2 ? (
+              {preCertifyAsset ? (
                 <CustomCheck stroke="#3874C9" fill="#3874C9" check="white" />
               ) : (
                 <CustomCheck stroke="#6b7280" fill="white" check="white" />
               )}
               <div className='check_content_wrapper'>
-                <div className="custom_check_title" style={{ color: checkIndex >= 2 ? "#2b2b2b" : "#6b7280" }}>Sale Contract</div>
+                <div className="custom_check_title" style={{ color: preCertifyAsset ? "#2b2b2b" : "#6b7280" }}>Asset Certified</div>
+                <div className="custom_check_helper">Select Owner</div>
+              </div>
+            </div>
+            <div className="custom_step_cell">
+              <div className="step_connector" style={{ backgroundColor: checkIndex >= 2 ? "#3874C9" : "#6b7280" }}></div>
+              {salesAgreement ? (
+                <CustomCheck stroke="#3874C9" fill="#3874C9" check="white" />
+              ) : (
+                <CustomCheck stroke="#6b7280" fill="white" check="white" />
+              )}
+              <div className='check_content_wrapper'>
+                <div className="custom_check_title" style={{ color: salesAgreement ? "#2b2b2b" : "#6b7280" }}>Sale Contract</div>
                 <div className="custom_check_helper">Selected Factory Owner</div>
               </div>
             </div>
             <div className="custom_step_cell">
               <div className="step_connector" style={{ backgroundColor: checkIndex >= 3 ? "#3874C9" : "#6b7280" }}></div>
-              {checkIndex >= 3 ? (
+              {certificate && certificate.length !== 0 ? (
                 <CustomCheck stroke="#3874C9" fill="#3874C9" check="white" />
               ) : (
                 <CustomCheck stroke="#6b7280" fill="white" check="white" />
               )}
               <div className='check_content_wrapper'>
-                <div className="custom_check_title" style={{ color: checkIndex >= 3 ? "#2b2b2b" : "#6b7280" }}>DataSpace Contract</div>
+                <div className="custom_check_title" style={{ color: certificate && certificate.length !== 0 ? "#2b2b2b" : "#6b7280" }}>DataSpace Contract</div>
                 <div className="custom_check_helper">Selected Factory Owner</div>
               </div>
             </div>
@@ -481,7 +505,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                     src="/dropdown-icon.svg"
                     alt="dropdown-icon"
                   />
-                  <label htmlFor="factoryOwner">Company Size</label>
+                  <label htmlFor="factoryOwner">Factory Owner</label>
                 </div>
               </div>
               <div className="field-checkbox">
@@ -492,18 +516,27 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                   </div>
                   <div className='asset_verified_group'>
                     <Image src="/verified_icon.svg" alt='company verified' width={16} height={16}></Image>
-                    <div>Asset Certified</div>
+                    <div>IFRIC Certified</div>
                   </div>
                 </div>
               </div>
               {preCertifyAsset && (
-                <div className="form_field margin_top">
-                  <div className="p-field p-float-label">
-                    <InputText value={assetName} disabled className="company_input" id='asset-name'
-                    ></InputText>
-                    <label htmlFor="asset-name">Product Name</label>
+                <>
+                  <div className="form_field margin_top">
+                    <div className="p-field p-float-label">
+                      <InputText value={assetName} disabled className="company_input" id='asset-name'
+                      ></InputText>
+                      <label htmlFor="asset-name">Product Name</label>
+                    </div>
                   </div>
-                </div>
+                  <div className='generate_cert_button_group'>
+                    {certificationDate && (
+                      <div style={{ marginRight: "auto" }}>Expiration Date: {certificationDate.toLocaleString()}</div>
+                    )}
+                    <Calendar className='certification_date_button' value={certificationDate} onChange={(e) => setCertificationDate(e.value)} showIcon showTime icon={<img src="calendar_icon.svg" alt="Custom Icon" />} tooltip={"Expiration date"} tooltipOptions={{ position: "left", event: "both" }} />
+                    <button className='generate_certification_button' disabled={!certificationDate} onClick={handleGenerateCertificate}>Certify</button>
+                  </div>
+                </>
               )}
             </div>
             <div className="form_field_group">
@@ -588,7 +621,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
               <h3 className='form_group_title'>DataSpace Contract</h3>
               <div className="form_field">
                 <div className="p-field p-float-label">
-                  <Dropdown
+                  {/* <Dropdown
                     id="certificate"
                     value={certificate ? certificate.value : null} // Ensure certificate.value is used
                     options={certificateOptions}
@@ -599,13 +632,24 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                     optionLabel="label"
                     placeholder="Select a certificate"
                     className="company_dropdown"
-                  />
+                  /> */}
+                  <MultiSelect id="certificate"
+                    value={certificate} // Ensure certificate.value is used
+                    options={certificateOptions}
+                    showSelectAll={false}
+                    panelHeaderTemplate={(<div></div>)}
+                    onChange={(e: DropdownChangeEvent) => {
+                      setCertificate(e.value || null);  // Set the entire certificate object
+                    }}
+                    optionLabel="label"
+                    placeholder="Select a certificate"
+                    className="company_dropdown" display="chip" />
                   <img
                     className="dropdown-icon-img "
                     src="/dropdown-icon.svg"
                     alt="dropdown-icon"
                   />
-                  <label htmlFor="factoryOwner">Company Size</label>
+                  <label htmlFor="certificate">DataSpace Contract</label>
                 </div>
               </div>
             </div>
