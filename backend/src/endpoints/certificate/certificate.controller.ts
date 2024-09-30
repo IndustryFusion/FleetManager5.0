@@ -34,11 +34,11 @@ export class CertificateController {
     }
   }
 
-  @Post('verify-company-certificate')
-  async verifyCompanyCertificate(@Body() data: {company_ifric_id: string; certificate_data: string;}) {
+  @Get('verify-company-certificate')
+  async verifyCompanyCertificate(@Param() company_ifric_id: string, @Req() req: Request) {
     try {
-      const response = await this.certificateService.verifyCompanyCertificate(data.company_ifric_id, data.certificate_data);
-      return response.data;  
+      const response = await this.certificateService.verifyCompanyCertificate(company_ifric_id, req);
+      return response;
     } catch(err) {
       return { 
         success: false, 
@@ -77,11 +77,11 @@ export class CertificateController {
     }
   }
 
-  @Post('verify-asset-certificate')
-  async verifyAssetCertificate(@Body() data: {asset_ifric_id: string; certificate_data: string;}) {
+  @Get('verify-asset-certificate')
+  async verifyAssetCertificate(@Query('asset_ifric_id') asset_ifric_id: string, @Query('company_ifric_id') company_ifric_id: string, @Req() req: Request) {
     try {
-      const response = await this.certificateService.verifyAssetCertificate(data.asset_ifric_id, data.certificate_data);
-      return response.data;  
+      const response = await this.certificateService.verifyAssetCertificate(asset_ifric_id, company_ifric_id, req);
+      return response;  
     } catch(err) {
       throw err;
     }
