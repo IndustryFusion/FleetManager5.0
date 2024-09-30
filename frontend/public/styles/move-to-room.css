@@ -419,6 +419,10 @@ display: none;
   padding: 1.125rem;
 }
 
+.owner_details_card .p-card{
+  box-shadow: 0px 0px 2px 0px #00000015;
+}
+
 
 
 /* Theme overrides */
