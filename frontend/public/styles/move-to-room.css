@@ -397,11 +397,12 @@ display: none;
   box-shadow: none;
 }
 .owner_details_card{
-  width: 400px;
+  max-width: 350px;
+  width: 50%;
   padding-top: 40px;
   position: sticky;
   top: 0px;
-  padding-right: 16px;
+  padding-right: 20px;
 }
 .owner_details_label{
   color: #2b2b2b;
