@@ -9,23 +9,30 @@ interface Certificate {
   asset_ifric_id: string;
   expiry_on: string;
   created_on: string;
-  certificate_data: string;
+  certificate_data?: string;
 }
 
 const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ certificate }) => {
   const [productName, setProductName] = useState<string>("Loading...");
   const [error, setError] = useState<string | null>(null);
 
+  console.log("certificate here", certificate);
+  
+
   useEffect(() => {
     const fetchAssetDetails = async () => {
       if (!certificate) {
+        console.log("is here in fetchAsset");
+        
         setError("No certificate data available");
         setProductName("N/A");
         return;
       }
 
       try {
-        const asset = await getAssetById(certificate.asset_ifric_id);
+        const asset = await getAssetById(certificate?.asset_ifric_id);
+        console.log("asset here in assetTab", asset);
+        
         if (asset && asset.product_name) {
           setProductName(asset.product_name);
         } else {

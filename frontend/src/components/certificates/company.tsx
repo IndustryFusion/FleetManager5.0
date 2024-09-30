@@ -110,16 +110,8 @@ const CompanyCertificates: React.FC = () => {
     fetchData();
   }, []);
 
-  // Sample format of sending data of handleGenerateCertificate  function
-  //
-  // {
-  //   "asset_ifric_id": "urn:ifric:ifx-eur-nld-ast-d0e1b706-b850-5162-a65b-7d43e9bdd5c1",
-  //   "company_ifric_id": "urn:ifric:ifx-eu-com-nap-667bdc8b-bb1f-5af7-8045-e16821a5567d",
-  //   "expiry": "2024-09-30T05:45:37.161Z",
-  //   "user_email": "lahari.jain@ib-systems.org"
-  // }
 
-  console.log("generateCertificateData", generateCertificateData);
+
   
   const handleGenerateCertificate = async () => {
     setMessage(null);
@@ -157,7 +149,7 @@ const CompanyCertificates: React.FC = () => {
 
   return (
     <>
-      <div className="mt-4 certificate-container">
+      <div className="mt-4 certificate-container" style={{width:"75%"}}>
         <div className="flex align-items-center">
           <div className="flex" style={{ gap: "2rem" }}>
             <div className="flex flex-column certificate-input-container -mt-1">

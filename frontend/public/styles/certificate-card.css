@@ -28,6 +28,13 @@
     padding: 14px 0px 11px 32px;
     width: 380px;
   }
+  .certificate-icon {
+    aspect-ratio: 1 / 1;
+    border-radius: 70px;
+    overflow: hidden;
+    width: 36px;
+    height: 36px;
+}
   .certificate-card {
     /* width: 400px; */
     width: calc(50% - 2rem);
@@ -39,6 +46,7 @@
     display: flex;
     gap: 4rem;
     flex-wrap: wrap;
+    font-family: "League Spartan";
   }
   .certificate-text {
     margin-bottom: 0;

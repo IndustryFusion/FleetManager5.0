@@ -19,6 +19,9 @@ const CertificateCard:React.FC<any> =({certificate})=>{
       };
       let expiry_on = checkExpiry(certificate?.expiry_on) ;
 
+      console.log("certificate in card here",certificate );
+      
+
      const fetchUserDetails = async() => {
         try {
           const response = await axios.get(`${REGISTRY_API_URL}/auth/get-user-details/${certificate?.user_id}`,{
@@ -26,6 +29,8 @@ const CertificateCard:React.FC<any> =({certificate})=>{
               "Content-Type": "application/json",
             }         
          })
+         console.log("response for user details", response.data);
+         
          const [{user_name}]=response.data;
          setCreatedUser(user_name)
          
@@ -101,7 +106,7 @@ const CertificateCard:React.FC<any> =({certificate})=>{
               <img
                 src="/certificate-img.png"
                 alt="profile-image"
-                className="profile-picture"
+                className="certificate-icon"
               />
               {/* <div className="certificate_avatar" style={{backgroundColor:"grey"}}>DL</div> */}
               <div className="mt-2">
