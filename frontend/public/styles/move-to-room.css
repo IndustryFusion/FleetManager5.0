@@ -104,22 +104,25 @@
 
 .move-to-room-dialog .p-checkbox .p-checkbox-box {
   background-color: #ffffff;
-  border-color: #000000;
+  border-color: #95989a;
+  box-shadow: none;
+  width: 16px;
+  height: 16px;
 }
 
 .move-to-room-dialog .p-checkbox .p-checkbox-box.p-highlight {
-  background-color: #070707;
-  border-color: #000000;
+  background-color: #2b2b2b;
+  border-color: #2b2b2b;
 }
 
 .move-to-room-dialog .p-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon {
   color: #f5f2f2;
 }
 
-.move-to-room-dialog .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover {
+/* .move-to-room-dialog .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover {
   background-color: #bdbdbd;
   border-color: #333333;
-}
+} */
 
 .move-to-room-dialog .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover {
   border-color: #000000;
@@ -152,12 +155,12 @@
 
 .dropdown-icon-img {
   position: absolute;
-  right: 10px;
-  top: 43%;
+  right: 12px;
+  top: 30%;
   transform: translateY(-50%);
   pointer-events: none;
-  width: 18px;
-  height: 18px;
+  width: 8px;
+  height: 13px;
 }
 
 .move-to-room-dialog .p-inputgroup {
@@ -166,7 +169,7 @@
 
 
 .move-to-room-dialog .field-checkbox {
-  margin-bottom: 10px; 
+  margin-bottom: 0px; 
 }
 
 
@@ -237,4 +240,204 @@
 
 .move-to-room-dialog {
   font-family: "League Spartan", sans-serif !important;
+}
+
+/* New additions */
+.company_verified_wrapper{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 20px;
+}
+.company_verified_wrapper img{
+  margin-top: -3px;
+}
+.company-dialog-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.header_asset_title{
+font-size: 1.5rem;
+font-weight: 700;
+color: #2b2b2b;
+margin: 0;
+}
+.header_ifric_id{
+font-size: 1rem;
+color: #5f5f5f;
+margin: 5px 0px 0px 0px;
+font-weight: 500;
+}
+.owner_dialog_wrapper{
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  grid-template-rows: 1fr;
+  height: 100%;
+  background-color: #f9fafb;
+}
+.owner_form_wrapper{
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+}
+.owner_form_steps{
+  padding: 40px 30px;
+  border-right: 1px solid #e6e6e6;
+  display:flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.custom_step_cell{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+.custom_step_cell svg{
+  position: relative;
+  z-index: 2;
+}
+.check_content_wrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap:3px;
+  padding-top: 2px;
+}
+.custom_check_title{
+font-size: 1rem;
+font-weight: 500;
+}
+.custom_check_helper{
+font-size: 0.875rem;
+display: none;
+}
+.custom_steps_wrapper{
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-direction: column;
+}
+.move-to-room-dialog .p-dialog-footer{
+  padding: 1.25rem;
+  border-top: 1px solid #e6e6e6;
+}
+.step_connector{
+  width: 1.5px;
+  height: 32px;
+  position: absolute;
+  bottom: -26px;
+  left: 11.5px;
+}
+.owner_form{
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+}
+.form_group_title{
+  font-size: 1.25rem;
+  color: #2b2b2b;
+  font-weight: 600;
+  margin: 0px 0px 16px 0px;
+}
+.form_field.margin_bottom{
+  margin-bottom: 15px;
+}
+.form_field.margin_top{
+  margin-top: 15px;
+}
+.form_field_group{
+  padding: 22px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0px 0px 2px 0px #00000015;
+}
+.owner_form .form_field .p-inputtext {
+  width: 100%;
+  /* height: 40px; */
+  padding-left: 15px;
+  border-radius: 8px;
+  border-width: 2px;
+  font-family: inherit;
+  padding-left: 16px !important
+}
+.p-component{
+  font-family: inherit;
+}
+.owner_form .form_field .p-inputtext:focus {
+  border-color: #138ab6;
+  box-shadow: 0 0 0 1px #138ab6 !important;
+}
+.owner_form .p-inputtext:enabled:hover {
+  border-color: #138ab6;
+}
+.company_dropdown{
+  border: 2px solid #ced4da;
+  width: 100%;
+  border-radius: 8px;
+}
+.asset_verified_group{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.company_checkbox{
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  box-shadow: none;
+}
+.owner_details_card{
+  width: 400px;
+  padding-top: 40px;
+  position: sticky;
+  top: 0px;
+  padding-right: 16px;
+}
+.owner_details_label{
+  color: #2b2b2b;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+.owner_details_group{
+  display: flex;
+  flex-direction: column;
+  gap: 10px
+}
+.owner_details_value{
+  font-size: 14px;
+}
+.owner_details_card .p-card .p-card-content{
+  padding: 0px;
+}
+.owner_details_card .p-card .p-card-body{
+  padding: 1.125rem;
+}
+
+
+
+/* Theme overrides */
+.form_field .p-float-label > label {
+  left: 15px;
+}
+.form_field .p-float-label label {
+  top: 18px;
+}
+.form_field .p-float-label input:focus ~ label,
+.form_field .p-float-label input:-webkit-autofill ~ label,
+.form_field .p-float-label input.p-filled ~ label,
+.form_field .p-float-label textarea:focus ~ label,
+.form_field .p-float-label textarea.p-filled ~ label,
+.form_field .p-float-label .p-inputwrapper-focus ~ label,
+.form_field .p-float-label .p-inputwrapper-filled ~ label,
+.form_field .p-float-label .p-tooltip-target-wrapper ~ label {
+  top: 2px;
+  left: 10px;
+  background: white;
+  padding: 0px 5px;
 }
