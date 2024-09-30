@@ -9,8 +9,9 @@ import { getAccessGroup } from "@/utility/indexed-db";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import "../../../public/styles/certificates.css";
+import { fetchCompanyCertificates, generateCompanyCertificate } from "@/utility/certificates";
 
-//const BACKEND_API_URL = process.env.NEXT_PUBLIC_IFRIC_PLATFORM_BACKEND_URL;
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const BACKEND_REGISTRY_API_URL =
   process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
 
@@ -53,12 +54,15 @@ const CompanyCertificates: React.FC = () => {
     }));
   };
 
+  
+
+
   const fetchCertificate = async (companyId: string) => {
     try {
-      const response = await axios.get<Certificate[]>(
-        `${BACKEND_REGISTRY_API_URL}/certificate/get-company-certificate/${companyId}`
-      );
-      setCertificateData(response.data);
+      const response = await fetchCompanyCertificates(companyId);
+      console.log("certificate response here", response?.data);
+      
+      setCertificateData(response?.data);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setMessage({
@@ -91,6 +95,8 @@ const CompanyCertificates: React.FC = () => {
   const fetchData = async () => {
     try {
       const companyId = await fetchAccessGroup();
+      console.log("companyId here", companyId);
+      
       if (companyId) {
         await fetchCertificate(companyId);
       }
@@ -112,20 +118,20 @@ const CompanyCertificates: React.FC = () => {
   //   "expiry": "2024-09-30T05:45:37.161Z",
   //   "user_email": "lahari.jain@ib-systems.org"
   // }
+
+  console.log("generateCertificateData", generateCertificateData);
+  
   const handleGenerateCertificate = async () => {
     setMessage(null);
     try {
-      const response = await axios.post(
-        `${BACKEND_API_URL}/certificate/create-company-certificate`,
-        generateCertificateData
-      );
+      const response = await generateCompanyCertificate(generateCertificateData);
 
-      if (response.data.success === false) {
+      if (response &&response.data.success === false) {
         setMessage({
           severity: "error",
           text: response.data.message || "Failed to generate certificate",
         });
-      } else if (response.data.success === true) {
+      } else if (response && response.data.success === true) {
         setMessage({
           severity: "success",
           text: "Certificate generated successfully",
