@@ -9,7 +9,7 @@ interface Certificate {
   asset_ifric_id: string;
   expiry_on: string;
   created_on: string;
-  certificate_data: string;
+  certificate_data?: string;
 }
 
 const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ certificate }) => {
@@ -25,9 +25,9 @@ const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ c
       }
 
       try {
-        const asset = await getAssetById(certificate.asset_ifric_id);
-        if (asset && asset.product_name) {
-          setProductName(asset.product_name);
+        const asset = await getAssetById(certificate?.asset_ifric_id);
+        if (asset && asset?.product_name) {
+          setProductName(asset?.product_name);
         } else {
           setProductName("N/A");
         }
@@ -47,7 +47,7 @@ const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ c
 
   const handleDownload = () => {
     // Create a Blob from the certificate data (PEM format)
-    const blob = new Blob([certificate.certificate_data], { type: 'application/x-pem-file' });
+    const blob = new Blob([certificate?.certificate_data], { type: 'application/x-pem-file' });
   
     // Create a download link
     const downloadLink = document.createElement('a');
@@ -66,7 +66,7 @@ const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ c
 
   const handleCopy = () => {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(certificate.certificate_data)
+      navigator.clipboard.writeText(certificate?.certificate_data)
         .then(() => {
           console.log('Certificate data copied to clipboard!');
         })
@@ -91,9 +91,9 @@ const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ c
       <div className="flex justify-content-between align-items-center certificate-header">
         <div className="flex gap-1">
           <img
-            src="/certificate-img.png"
+            src="/certificate-img.svg"
             alt="profile-image"
-            className="profile-picture"
+            className="certificate-icon"
           />
           <div className="mt-2">
             <p className="m-0 certificate-name">Certificate Of Company</p>

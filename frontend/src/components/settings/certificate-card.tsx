@@ -1,4 +1,5 @@
 
+import { getUserDetails } from "@/utility/auth";
 import "../../../public/styles/certificate-card.css"
  import { formatDateTime } from "@/utility/certificate";
 import axios from "axios";
@@ -19,14 +20,13 @@ const CertificateCard:React.FC<any> =({certificate})=>{
       };
       let expiry_on = checkExpiry(certificate?.expiry_on) ;
 
+     
+      
+
      const fetchUserDetails = async() => {
         try {
-          const response = await axios.get(`${REGISTRY_API_URL}/auth/get-user-details/${certificate?.user_id}`,{
-            headers: {
-              "Content-Type": "application/json",
-            }         
-         })
-         const [{user_name}]=response.data;
+          const response = await getUserDetails(certificate?.user_id )         
+         const [{user_name}]=response?.data;
          setCreatedUser(user_name)
          
          }
@@ -99,9 +99,9 @@ const CertificateCard:React.FC<any> =({certificate})=>{
           <div className="flex  justify-content-between align-items-center certificate-header">
             <div className="flex gap-1">
               <img
-                src="/certificate-img.png"
+                src="/certificate-img.svg"
                 alt="profile-image"
-                className="profile-picture"
+                className="certificate-icon"
               />
               {/* <div className="certificate_avatar" style={{backgroundColor:"grey"}}>DL</div> */}
               <div className="mt-2">
