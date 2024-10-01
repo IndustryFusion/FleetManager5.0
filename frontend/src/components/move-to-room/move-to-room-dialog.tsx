@@ -12,7 +12,7 @@ import Image from 'next/image';
 import { Checkbox } from 'primereact/checkbox';
 import '../../../public/styles/move-to-room.css';
 import axios from 'axios';
-import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
+import { MultiSelect } from 'primereact/multiselect';
 import OwnerDetailsCard from './owner-details';
 import { postFile } from '@/utility/asset';
 import { updateCompanyTwin, getCategorySpecificCompany } from '@/utility/auth';
@@ -621,18 +621,6 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
               <h3 className='form_group_title'>DataSpace Contract</h3>
               <div className="form_field">
                 <div className="p-field p-float-label">
-                  {/* <Dropdown
-                    id="certificate"
-                    value={certificate ? certificate.value : null} // Ensure certificate.value is used
-                    options={certificateOptions}
-                    onChange={(e: DropdownChangeEvent) => {
-                      const selectedCertificate = certificateOptions.find(cert => cert.value === e.value);
-                      setCertificate(selectedCertificate || null);  // Set the entire certificate object
-                    }}
-                    optionLabel="label"
-                    placeholder="Select a certificate"
-                    className="company_dropdown"
-                  /> */}
                   <MultiSelect id="certificate"
                     value={certificate} // Ensure certificate.value is used
                     options={certificateOptions}
@@ -651,6 +639,19 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                   />
                   <label htmlFor="certificate">DataSpace Contract</label>
                 </div>
+              </div>
+            </div>
+            <div className="warning_text_group">
+              <div className='warning_group_header'>
+                <Image src="warning.svg" width={18} height={18} alt='warning icon'></Image>
+                <div className='warning_group_title'>Before you proceed.</div>
+              </div>
+              <div>
+                <ul>
+                  <li>Assigning an owner means selling the physical asset.</li>
+                  <li>This action is irreversible, please submit only after a purchase agreement is executed between seller and buyer explicitly.</li>
+                  <li>Please contact Industryfusion-X team in case of wrong submission.</li>
+                </ul>
               </div>
             </div>
           </form>
