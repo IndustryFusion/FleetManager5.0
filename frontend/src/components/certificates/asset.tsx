@@ -152,7 +152,7 @@ const AssetsTab: React.FC<{ assetIfricId?: string | null }> = ({
   };
 
   return (
-    <div className="mt-4 certificate-container" style={{width: "75%"}}>
+    <div className="mt-4 certificate-container" style={{width: "80%"}}>
       <div className="flex justify-content-between align-items-center">
         <div className="flex" style={{ gap: "2rem" }}>
           <div className="certificate-input-container">
