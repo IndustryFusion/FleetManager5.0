@@ -27,7 +27,7 @@ interface AccessGroupData {
   user_email: string;
 }
 
-const CompanyCertificates: React.FC = () => {
+const CompanyCertificates: React.FC<any> = ({isSidebarExpand}) => {
   const [date, setDate] = useState<Date>(new Date());
   const [accessGroupDBData, setAccessGroupDBData] =
     useState<AccessGroupData | null>(null);
@@ -207,6 +207,7 @@ const CompanyCertificates: React.FC = () => {
           {certificateData.length > 0 ? (
             certificateData.map((certificate, index) => (
               <CertificateCard
+                isSidebarExpand={isSidebarExpand}
                 certificate={certificate}
                 key={`${certificate.id}-${certificate.created_on}-${index}`}
               />

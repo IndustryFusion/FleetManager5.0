@@ -20,8 +20,9 @@ interface Certificate {
   created_on: string;
 }
 
-const AssetsTab: React.FC<{ assetIfricId?: string | null }> = ({
+const AssetsTab: React.FC<{ assetIfricId?: string | null , isSidebarExpand:boolean}> = ({
   assetIfricId,
+  isSidebarExpand
 }) => {
   const [date, setDate] = useState<Date>(new Date());
   const [certificateData, setCertificateData] = useState<Certificate[]>([]);
@@ -152,9 +153,9 @@ const AssetsTab: React.FC<{ assetIfricId?: string | null }> = ({
   };
 
   return (
-    <div className="mt-4 certificate-container" style={{width: "80%"}}>
+    <div className="mt-4 certificate-container" style={{width: "100%"}}>
       <div className="flex justify-content-between align-items-center">
-        <div className="flex" style={{ gap: "2rem" }}>
+        <div className="flex" style={{ gap: "4rem" }}>
           <div className="certificate-input-container">
             <div className="certificate-label-row">
               <label className="certificate-label-text" htmlFor="assetID">
@@ -201,13 +202,16 @@ const AssetsTab: React.FC<{ assetIfricId?: string | null }> = ({
                 showTime
                 hourFormat="24"
               />
-              <Button
+             
+            </div>
+          </div>
+          <div>
+          <Button
                 label={isGenerating ? "Generating..." : "Generate Certificate"}
                 onClick={handleGenerateCertificate}
                 className="p-button-rounded p-button-black generate-cert-btn black_button_hover"
                 disabled={isGenerating}
               />
-            </div>
           </div>
         </div>
       </div>
@@ -222,6 +226,7 @@ const AssetsTab: React.FC<{ assetIfricId?: string | null }> = ({
             <AssetCertificateCard
               key={`${certificate.id}-${certificate.created_on}`}
               certificate={certificate}
+              isSidebarExpand={isSidebarExpand}
             />
           ))
         ) : (

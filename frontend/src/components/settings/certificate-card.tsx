@@ -1,5 +1,5 @@
 
-import { getUserDetails } from "@/utility/auth";
+import { getCompanyDetailsById, getCompanyDetailsByRecordId, getUserDetails } from "@/utility/auth";
 import "../../../public/styles/certificate-card.css"
  import { formatDateTime } from "@/utility/certificate";
 import axios from "axios";
@@ -9,8 +9,8 @@ import { FiCopy } from "react-icons/fi";
 
 const REGISTRY_API_URL =process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
 
-const CertificateCard:React.FC<any> =({certificate})=>{
-    const [createdUser, setCreatedUser]= useState("");
+const CertificateCard:React.FC<any> =({certificate, isSidebarExpand})=>{
+    const [companyName, setCompanyName]= useState("");
 
     const checkExpiry = (expiry_on: string ) => {
         const currentDate = new Date(); 
@@ -20,15 +20,12 @@ const CertificateCard:React.FC<any> =({certificate})=>{
       };
       let expiry_on = checkExpiry(certificate?.expiry_on) ;
 
-     
-      
 
      const fetchUserDetails = async() => {
         try {
-          const response = await getUserDetails(certificate?.user_id )         
-         const [{user_name}]=response?.data;
-         setCreatedUser(user_name)
-         
+          const response = await getCompanyDetailsByRecordId(certificate?.company_id )        
+         const [{company_name}]=response?.data;
+         setCompanyName(company_name)
          }
             catch (error) {
                 if (axios.isAxiosError(error) && error.response) {
@@ -95,7 +92,7 @@ const CertificateCard:React.FC<any> =({certificate})=>{
 
     return (
       <>
-        <div className="certificate-card">
+        <div className={isSidebarExpand?"certificate-card":"certificate-card-collapse"}>
           <div className="flex  justify-content-between align-items-center certificate-header">
             <div className="flex gap-1">
               <img
@@ -120,7 +117,7 @@ const CertificateCard:React.FC<any> =({certificate})=>{
             <div className="flex justify-content-between  mt-4">
               <div>
                 <p className="certificate-text">Company</p>
-                <p className="certificate-value">{createdUser}</p>
+                <p className="certificate-value">{companyName}</p>
               </div>
             </div>
             <div className="flex justify-content-between mt-1">
