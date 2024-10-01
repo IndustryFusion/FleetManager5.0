@@ -65,7 +65,7 @@ export const mapBackendDataToAsset = (assetData: any) => {
   return refactoredData;
 };
 
-export const mapBackendDataOfAsset = (backendData: any[]): Asset[] => {
+export const mapBackendDataOfAsset = (backendData: any[]) => {
   return backendData.map((item: any) => {
     const newItem: any = {};
     Object.keys(item).forEach((key) => {
@@ -137,7 +137,7 @@ export const postFile = async (formData: FormData) => {
 
 export const getAssetById = async (assetId: string): Promise<Asset | null> => {
   try {
-    const response = await api.get(`${BACKEND_API_URL}/asset/${assetId}`, {
+    const response = await api.get(`${BACKEND_API_URL}/asset/getAssetById/${assetId}`, {
       headers: {
         "Content-Type": "application/ld+json",
         Accept: "application/ld+json",

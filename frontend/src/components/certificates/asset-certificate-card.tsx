@@ -16,14 +16,9 @@ const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ c
   const [productName, setProductName] = useState<string>("Loading...");
   const [error, setError] = useState<string | null>(null);
 
-  console.log("certificate here", certificate);
-  
-
   useEffect(() => {
     const fetchAssetDetails = async () => {
       if (!certificate) {
-        console.log("is here in fetchAsset");
-        
         setError("No certificate data available");
         setProductName("N/A");
         return;
@@ -31,10 +26,8 @@ const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ c
 
       try {
         const asset = await getAssetById(certificate?.asset_ifric_id);
-        console.log("asset here in assetTab", asset);
-        
-        if (asset && asset.product_name) {
-          setProductName(asset.product_name);
+        if (asset && asset?.product_name) {
+          setProductName(asset?.product_name);
         } else {
           setProductName("N/A");
         }
@@ -54,7 +47,7 @@ const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ c
 
   const handleDownload = () => {
     // Create a Blob from the certificate data (PEM format)
-    const blob = new Blob([certificate.certificate_data], { type: 'application/x-pem-file' });
+    const blob = new Blob([certificate?.certificate_data], { type: 'application/x-pem-file' });
   
     // Create a download link
     const downloadLink = document.createElement('a');
@@ -73,7 +66,7 @@ const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ c
 
   const handleCopy = () => {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(certificate.certificate_data)
+      navigator.clipboard.writeText(certificate?.certificate_data)
         .then(() => {
           console.log('Certificate data copied to clipboard!');
         })
