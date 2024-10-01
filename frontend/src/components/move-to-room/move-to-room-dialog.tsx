@@ -247,7 +247,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
     <Dialog
       header={dialogHeader}
       visible={visible}
-      style={{ width: '80vw', maxWidth: "1000px", height: '80vh' }}
+      style={{ width: '80vw', maxWidth: "1300px", height: '80vh' }}
       footer={dialogFooter}
       onHide={() => { onHide(); handleDialogClose(); }}
       className="move-to-room-dialog"
