@@ -24,6 +24,7 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import { storeAccessGroup } from "./indexed-db";
 
 const REGISTRY_API_URL =process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
+const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
 interface CustomJwtPayload extends JwtPayload {
     user: string;  
@@ -266,25 +267,25 @@ export const getCategorySpecificCompany = async(categoryName: string) => {
     }
 }
 
-export const getAccessGroupData = async(token: string) => {
-    try {
-        const registryHeader = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`
-        };
-        const decodedToken = jwtDecode<CustomJwtPayload>(token); 
-        console.log("decodedToken ",decodedToken);
-        const response = await axios.post(`${REGISTRY_API_URL}/auth/get-indexed-db-data`,{
-            company_id: decodedToken?.sub,
-            email: decodedToken?.user,
-            product_name: "Fleet Manager"
-        }, {
-            headers: registryHeader
-        });
-        await storeAccessGroup(response.data.data)
-    } catch(error: any) {
-        console.log('err from update company twin',error);
+export const verifyCompanyCertificate = async(company_ifric_id: string) => {
+    try{
+        return await api.get(`${FLEET_MANAGER_BACKEND_URL}/certificate/verify-company-certificate?company_ifric_id=${company_ifric_id}`);
+    } catch(error: any){
+        console.log("error getting company verification", error);
+        if (error?.response && error?.response?.status === 401) {
+        updatePopupVisible(true);
+        } else {
+        throw error;
+        }
+    }
+}
+
+export const verifyAssetCertificate = async(company_ifric_id: string, asset_ifric_id: string) => {
+    try{
+        return await api.get(`${FLEET_MANAGER_BACKEND_URL}/certificate/verify-asset-certificate?asset_ifric_id=${asset_ifric_id}&company_ifric_id=${company_ifric_id}`);
+    }
+    catch(error: any){
+        console.log("error getting asset verification", error);
         if (error?.response && error?.response?.status === 401) {
         updatePopupVisible(true);
         } else {

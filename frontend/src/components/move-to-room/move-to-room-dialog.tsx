@@ -15,7 +15,7 @@ import axios from 'axios';
 import { MultiSelect } from 'primereact/multiselect';
 import OwnerDetailsCard from './owner-details';
 import { postFile } from '@/utility/asset';
-import { updateCompanyTwin, getCategorySpecificCompany } from '@/utility/auth';
+import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, verifyAssetCertificate } from '@/utility/auth';
 
 interface Company {
   id: string;
@@ -63,6 +63,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const [ownerDetails, setOwnerDetails] = useState<OwnerDetails | null>(null);
   const [checkIndex, setCheckIndex] = useState(0);
   const [certificationDate, setCertificationDate] = useState<Date | null | undefined>(null);
+  const [assetVerification, setAssetVerification] = useState(false);
   const certificateOptions: Certificate[] = [
     { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
     { label: 'contract_Insurance_IFRIC', value: 'contract_Insurance_IFRIC' },
@@ -70,6 +71,8 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
 
   useEffect(() => {
     fetchFactoryOwners();
+    getCompanyCertification();
+    getAssetCertification();
   }, []);
 
   useEffect(() => {
@@ -82,6 +85,31 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
     setCompletedSteps(newCompletedSteps);
   }, [factoryOwner, contract, salesAgreement, salesAgreementFile, certificate]);
 
+  const getCompanyCertification = async ()=>{
+    console.log(company_ifric_id)
+    try{
+      const response = await verifyCompanyCertificate(company_ifric_id);
+      console.log("company verification", response);
+    }
+    catch(error: any){
+      console.error("error fetching company certification", error);
+    }
+  }
+
+  const getAssetCertification = async () =>{
+    try{
+      const dataToSend = {
+        company_ifric_id: company_ifric_id,
+        asset_ifric_id: assetIfricId,
+      }
+      console.log(dataToSend);
+      const response = await verifyAssetCertificate(company_ifric_id, assetIfricId);
+      console.log("asset verification", response);
+    }
+    catch(error: any){
+      console.error("Error fetching asset certification", error)
+    }
+  }
   const handleSave = async () => {
     try {
       if (!factoryOwner?.companyIfricId) {
