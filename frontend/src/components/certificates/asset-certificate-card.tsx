@@ -91,9 +91,9 @@ const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ c
       <div className="flex justify-content-between align-items-center certificate-header">
         <div className="flex gap-1">
           <img
-            src="/certificate-img.png"
+            src="/certificate-img.svg"
             alt="profile-image"
-            className="profile-picture"
+            className="certificate-icon"
           />
           <div className="mt-2">
             <p className="m-0 certificate-name">Certificate Of Company</p>

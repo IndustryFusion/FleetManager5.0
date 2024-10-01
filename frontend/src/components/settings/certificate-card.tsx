@@ -99,7 +99,7 @@ const CertificateCard:React.FC<any> =({certificate})=>{
           <div className="flex  justify-content-between align-items-center certificate-header">
             <div className="flex gap-1">
               <img
-                src="/certificate-img.png"
+                src="/certificate-img.svg"
                 alt="profile-image"
                 className="certificate-icon"
               />
