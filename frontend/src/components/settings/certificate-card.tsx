@@ -119,7 +119,7 @@ const CertificateCard:React.FC<any> =({certificate})=>{
           <div className="certificate-content">
             <div className="flex justify-content-between  mt-4">
               <div>
-                <p className="certificate-text">Created User</p>
+                <p className="certificate-text">Company</p>
                 <p className="certificate-value">{createdUser}</p>
               </div>
             </div>
