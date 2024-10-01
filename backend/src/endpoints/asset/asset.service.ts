@@ -132,16 +132,14 @@ export class AssetService {
         'Accept': 'application/json',
         'Authorization': req.headers['authorization']
       };
-      console.log("registryHeaders ",registryHeaders);
+
       const result = [];
       const companyData = await axios.get(`${this.registryUrl}/auth/get-company-details/${id}`, { headers: registryHeaders });
-      console.log("companyData ",companyData.data);
       if (companyData.data.length === 0) {
         throw new Error("No company found with the provided ID");
       }
 
       const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${id}`, { headers: registryHeaders });  
-      console.log("companyTwinData ",companyTwinData.data);   
       for(let i = 0; i < companyTwinData.data.length; i++) {
         try {
           const url = this.scorpioUrl + '/' + companyTwinData.data[i].asset_ifric_id;
@@ -159,7 +157,6 @@ export class AssetService {
         } catch(err) {
           console.log("Failed", err?.message);
           continue;
-          throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
         }
       }
       return result;

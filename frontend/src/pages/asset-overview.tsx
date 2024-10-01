@@ -39,6 +39,7 @@ import { getAccessGroup  } from "@/utility/indexed-db";
 import MoveToRoomDialog from "@/components/move-to-room/move-to-room-dialog";
 import { fetchAssetsRedux } from "@/redux/asset/assetsSlice";
 import { FilterMatchMode } from "primereact/api";
+import { getAccessGroupData } from "@/utility/auth";
 
 type ExpandValue = {
   [key: string]: boolean;
@@ -107,6 +108,28 @@ const AssetOverView: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState("Assets");
 
+  const setIndexedDb = async (token: string) => {
+    try {
+      await getAccessGroupData(token);
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error response:", error.response?.data.message);
+        showToast("error", "Error", "Fetching assets");
+      } else {
+        console.error("Error:", error);
+        showToast("error", "Error", error);
+      }
+    }
+  }
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    if (token) {
+      setIndexedDb(token);
+    }
+  }, []);
 
   const dataTableStyle: CSSProperties = {
     flexGrow: 1,
@@ -116,10 +139,7 @@ const AssetOverView: React.FC = () => {
   const handleRowsPerPageChange = (event: any) => {
     setSelectedRowsPerPage(event.target.value);
   };
-
-  console.log("assets", assets);
   
-
   const fetchAsset = async () => {
     try {
       const response = await fetchAssets();

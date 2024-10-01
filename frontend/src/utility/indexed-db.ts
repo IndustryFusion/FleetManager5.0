@@ -64,16 +64,9 @@ export async function storeAccessGroup(loginData: any) {
         const db = await openDatabase();
         const transaction = db.transaction(["accessGroupStore"], "readwrite");
         const objectStore = transaction.objectStore("accessGroupStore");
-
         const dataToStore = {
             id: "accessGroup",
-            company_ifric_id: loginData.company_ifric_id,
-            user_name: loginData.user_name,
-            jwt_token: loginData.jwt_token,
-            user_role: loginData.user_role,
-            access_group_DPP: loginData.access_group_DPP,
-            access_group_Ifric_Dashboard: loginData.access_group_Ifric_Dashboard,
-            user_email: loginData.user_email
+            ...loginData 
         };
 
         const request = objectStore.put(dataToStore);

@@ -20,8 +20,14 @@
 import api from "./jwt";
 import axios from "axios";
 import { updatePopupVisible } from './update-popup';
+import { jwtDecode, JwtPayload } from "jwt-decode";
+import { storeAccessGroup } from "./indexed-db";
 
 const REGISTRY_API_URL =process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
+
+interface CustomJwtPayload extends JwtPayload {
+    user: string;  
+}
 
 export const fetchUserDetailsForRecoverPassword = async(email: string) => {
     try {
@@ -250,6 +256,33 @@ export const updateCompanyTwin = async(dataToSend: Record<string, any>) => {
 export const getCategorySpecificCompany = async(categoryName: string) => {
     try {
         return await api.get(`${REGISTRY_API_URL}/auth/get-category-specific-company/${categoryName}`);
+    } catch(error: any) {
+        console.log('err from update company twin',error);
+        if (error?.response && error?.response?.status === 401) {
+        updatePopupVisible(true);
+        } else {
+        throw error;
+        }
+    }
+}
+
+export const getAccessGroupData = async(token: string) => {
+    try {
+        const registryHeader = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const decodedToken = jwtDecode<CustomJwtPayload>(token); 
+        console.log("decodedToken ",decodedToken);
+        const response = await axios.post(`${REGISTRY_API_URL}/auth/get-indexed-db-data`,{
+            company_id: decodedToken?.sub,
+            email: decodedToken?.user,
+            product_name: "Fleet Manager"
+        }, {
+            headers: registryHeader
+        });
+        await storeAccessGroup(response.data.data)
     } catch(error: any) {
         console.log('err from update company twin',error);
         if (error?.response && error?.response?.status === 401) {
