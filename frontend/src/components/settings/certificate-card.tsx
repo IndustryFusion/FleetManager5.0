@@ -1,4 +1,5 @@
 
+import { getUserDetails } from "@/utility/auth";
 import "../../../public/styles/certificate-card.css"
  import { formatDateTime } from "@/utility/certificate";
 import axios from "axios";
@@ -19,19 +20,13 @@ const CertificateCard:React.FC<any> =({certificate})=>{
       };
       let expiry_on = checkExpiry(certificate?.expiry_on) ;
 
-      console.log("certificate in card here",certificate );
+     
       
 
      const fetchUserDetails = async() => {
         try {
-          const response = await axios.get(`${REGISTRY_API_URL}/auth/get-user-details/${certificate?.user_id}`,{
-            headers: {
-              "Content-Type": "application/json",
-            }         
-         })
-         console.log("response for user details", response.data);
-         
-         const [{user_name}]=response.data;
+          const response = await getUserDetails(certificate?.user_id )         
+         const [{user_name}]=response?.data;
          setCreatedUser(user_name)
          
          }

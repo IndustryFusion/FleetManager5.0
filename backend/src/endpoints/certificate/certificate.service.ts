@@ -73,7 +73,7 @@ export class CertificateService {
         'Authorization': req.headers['authorization']
       };
       const companyCertificates = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${company_ifric_id}`, { headers: registryHeaders });
-      return companyCertificates;
+      return companyCertificates.data;
     } catch (err) {
       throw err;
     }
