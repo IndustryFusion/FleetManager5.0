@@ -29,14 +29,14 @@ export class CertificateController {
     }
   }
 
-  @Get('verify-company-certificate')
-  async verifyCompanyCertificate(@Param() company_ifric_id: string, @Req() req: Request) {
+  @Get('verify-company-certificate/:company_ifric_id')
+  async verifyCompanyCertificate(@Param('company_ifric_id') company_ifric_id: string, @Req() req: Request) {
     try {
       const response = await this.certificateService.verifyCompanyCertificate(company_ifric_id, req);
       return response;
     } catch(err) {
       return { 
-        success: false, 
+        success: false,
         status: err?.response?.status,
         message: 'Failed to fetch certificate',
         error: err.message

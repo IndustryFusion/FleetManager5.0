@@ -88,8 +88,8 @@ export class CertificateService {
               'Authorization': req.headers['authorization']
             };
             // check whether the last created certificate is valid or expired or not
-            const checkLastCertificate = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${company_ifric_id}`, {headers: registryHeaders});
-      
+            const checkLastCertificate = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${company_ifric_id}`, { headers: registryHeaders });
+            
             if(checkLastCertificate.data.length > 0) {
               const verifyLastCertificate = await axios.post(`${this.ifricRegistryUrl}/certificate/verify-company-certificate`,{
                 certificate_data: checkLastCertificate.data[0].certificate_data,
