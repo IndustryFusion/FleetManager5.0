@@ -228,7 +228,7 @@ export class CertificateService {
       } else {
         return {
           "success": false,
-          "status": 401,
+          "status": 500,
           "message": error.response?.data?.message || "Error fetching certificates"
         }
       }
