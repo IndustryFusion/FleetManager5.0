@@ -42,9 +42,7 @@ export class AssetService {
         'Authorization': req.headers['authorization']
       };
       const assetIds = await axios.get(`${this.registryUrl}/auth/get-company-assets/${id}`, { headers: registryHeaders });
-      console.log("assetIds", assetIds.data);
-      
-      
+ 
       if(assetIds.data.length > 0) {
         for (let i = assetIds.data.length - 1; i >= 0; i--) {
           let assetId = assetIds.data[i].asset_ifric_id;
