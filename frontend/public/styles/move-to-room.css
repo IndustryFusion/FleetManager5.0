@@ -398,11 +398,13 @@ display: none;
 }
 .owner_details_card{
   max-width: 350px;
-  width: 50%;
+  min-width: 262px;
+  width: 40%;
   padding-top: 40px;
   position: sticky;
   top: 0px;
   padding-right: 20px;
+  flex-shrink: 0;
 }
 .owner_details_label{
   color: #2b2b2b;
@@ -468,6 +470,36 @@ width: 36px;
 .generate_certification_button:disabled{
 opacity: 50%;
 cursor: not-allowed;
+}
+.warning_group_header{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.warning_group_title{
+  font-size: 18px;
+  font-weight: 500;
+  color: #3874C9
+}
+.warning_text_group{
+  padding: 22px 16px 22px;
+  background-color: #e7f1ff;
+  border-radius: 8px;
+  border-left: 3px solid #3874C9;
+}
+.warning_text_group li{
+  margin-bottom: 8px;
+  color: #2b2b2b;
+  font-size: 14px;
+  line-height: 16px;
+}
+.warning_text_group li:last-child{
+  margin-bottom: 0px;
+}
+.warning_text_group ul{
+  padding-left: 26px;
+  margin-top: 10px;
+  margin-bottom: 0px;
 }
 
 
