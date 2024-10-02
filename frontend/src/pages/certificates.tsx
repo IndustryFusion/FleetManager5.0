@@ -64,7 +64,9 @@ const Certificates = () => {
                 text={companyInfoText}
                 className="mb-3 ml-5"
               />
-             <CompanyCertificates />
+             <CompanyCertificates 
+             isSidebarExpand={isSidebarExpand}
+             />
             </TabPanel>
             <TabPanel
               header={
@@ -80,7 +82,10 @@ const Certificates = () => {
                 text={assetInfoText}
                 className="mb-3 ml-5"
               />
-            <AssetsTab assetIfricId={assetIfricId} />
+            <AssetsTab
+            isSidebarExpand={isSidebarExpand} 
+            assetIfricId={assetIfricId}
+             />
             </TabPanel>
           </TabView>
         </div>

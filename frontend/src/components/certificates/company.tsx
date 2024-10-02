@@ -27,7 +27,7 @@ interface AccessGroupData {
   user_email: string;
 }
 
-const CompanyCertificates: React.FC = () => {
+const CompanyCertificates: React.FC<any> = ({isSidebarExpand}) => {
   const [date, setDate] = useState<Date>(new Date());
   const [accessGroupDBData, setAccessGroupDBData] =
     useState<AccessGroupData | null>(null);
@@ -149,9 +149,9 @@ const CompanyCertificates: React.FC = () => {
 
   return (
     <>
-      <div className="mt-4 certificate-container" style={{width:"75%"}}>
+      <div className="mt-4 certificate-container">
         <div className="flex align-items-center">
-          <div className="flex" style={{ gap: "2rem" }}>
+          <div className="flex" style={{ gap: "4rem" }}>
             <div className="flex flex-column certificate-input-container -mt-1">
               <label className="certificate-label-text" htmlFor="companyID">
                 Company ID
@@ -181,13 +181,16 @@ const CompanyCertificates: React.FC = () => {
                   dateFormat="yy-mm-dd"
                   hourFormat="24"
                 />
-                <Button
+               
+              </div>
+            </div>
+            <div>
+            <Button
                   className="generate-cert-btn black_button_hover"
                   onClick={handleGenerateCertificate}
                 >
                   Generate Certificate
                 </Button>
-              </div>
             </div>
           </div>
         </div>
@@ -204,6 +207,7 @@ const CompanyCertificates: React.FC = () => {
           {certificateData.length > 0 ? (
             certificateData.map((certificate, index) => (
               <CertificateCard
+                isSidebarExpand={isSidebarExpand}
                 certificate={certificate}
                 key={`${certificate.id}-${certificate.created_on}-${index}`}
               />

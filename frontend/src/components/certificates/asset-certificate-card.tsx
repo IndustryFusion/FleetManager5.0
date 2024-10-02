@@ -12,7 +12,7 @@ interface Certificate {
   certificate_data?: string;
 }
 
-const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ certificate }) => {
+const AssetCertificateCard: React.FC<{ certificate: Certificate | null,  isSidebarExpand: boolean }> = ({ certificate, isSidebarExpand }) => {
   const [productName, setProductName] = useState<string>("Loading...");
   const [error, setError] = useState<string | null>(null);
 
@@ -87,7 +87,7 @@ const AssetCertificateCard: React.FC<{ certificate: Certificate | null }> = ({ c
   const isExpired = checkExpiry(certificate.expiry_on);
 
   return (
-    <div className="certificate-card">
+    <div className={isSidebarExpand?"certificate-card":"certificate-card-collapse"}>
       <div className="flex justify-content-between align-items-center certificate-header">
         <div className="flex gap-1">
           <img
