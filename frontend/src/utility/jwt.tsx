@@ -23,6 +23,8 @@ import { useRouter } from 'next/router';
 import popupEventEmitter from './popupEventEmitter';
 import "../../public/styles/asset-overview.css";
 
+const ifxSuiteUrl = process.env.NEXT_PUBLIC_IFX_SUITE_FRONTEND_URL;
+
 const api = axios.create({});
 api.interceptors.request.use(
     async (config) => {
@@ -58,7 +60,7 @@ export const UnauthorizedPopup: React.FC = () => {
   }, []);
 
   const handleLogin = () => {
-    router.push('/auth/login');
+    window.location.href = `${ifxSuiteUrl}/login`;
     setVisible(false);
   }
 
