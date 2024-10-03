@@ -1,6 +1,5 @@
 import { Asset } from "@/interfaces/assetTypes";
 import {
-  actionItemsTemplate,
   assetTypeBodyTemplate,
   ifricIdHeader,
   manufacturerDataTemplate,
@@ -27,6 +26,7 @@ const AssetTable: React.FC<any> = ({
   handleSelect,
   setShowSelectedAsset,
   t,
+  cm,
   selectedGroupOption,
   toggleColor,
   isBlue,
@@ -34,7 +34,10 @@ const AssetTable: React.FC<any> = ({
   assetsData,
   activeTab,
   onMoveToRoom,
-  searchFilters 
+  searchFilters ,
+  actionItemsTemplate,
+  selectedProduct,
+  setSelectedProduct
 }) => {
 
   const [rangeDisplay, setRangeDisplay] = useState('');
@@ -101,6 +104,8 @@ const AssetTable: React.FC<any> = ({
     const endRow = Math.min(startRow + selectedRowsPerPage - 1, assetsData.length);
     setRangeDisplay(`${startRow}-${endRow}`);
   }, [currentPage, selectedRowsPerPage, assetsData]);
+ console.log("selectedProduct in table", selectedProduct);
+ 
 
   return (
     <>   
@@ -139,6 +144,9 @@ const AssetTable: React.FC<any> = ({
           'owner_company_name'
         ]}
         sortMode="multiple"
+        onContextMenu={(e) => cm.current.show(e.originalEvent)}
+        contextMenuSelection={selectedProduct}
+        onContextMenuSelectionChange={(e) => setSelectedProduct(e.value)}
          sortField="product_name"
          sortOrder={-1}
         rowGroupMode={selectedGroupOption !== null ? "subheader" : undefined}

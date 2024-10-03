@@ -94,18 +94,7 @@ export const serialNumberBodyTemplate = (rowData: any): React.ReactNode => {
   return <p className="tr-text">{rowData?.assetData?.asset_serial_number}</p>;
 };
 
-export const actionItemsTemplate = (rowData: Asset, onMoveToRoom: (asset: Asset) => void) => {
-  return (
-    <button onClick={() => onMoveToRoom(rowData)} className="action-menu-icon cursor-pointer" >
-      <img
-      src="/move-icon.svg" 
-      alt="move-icon" 
-      className="mr-2"
-    />
-    Assign Owner
-    </button>
-  );
-};
+
 
 export  const ownerBodyTemplate = (rowData: any) => {
   return <span>{rowData?.owner_company_name || 'N/A'}</span>;

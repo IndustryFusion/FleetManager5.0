@@ -40,6 +40,7 @@ import MoveToRoomDialog from "@/components/move-to-room/move-to-room-dialog";
 import { fetchAssetsRedux } from "@/redux/asset/assetsSlice";
 import { FilterMatchMode } from "primereact/api";
 import { getAccessGroupData } from "@/utility/auth";
+import { ContextMenu } from "primereact/contextmenu";
 
 type ExpandValue = {
   [key: string]: boolean;
@@ -57,6 +58,7 @@ const AssetOverView: React.FC = () => {
   const [assetCount, setAssetCount] = useState(0);
   const [showExtraCard, setShowExtraCard] = useState<boolean>(false);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
+  const [showContextMenu, setShowContextMenu] = useState(true);
   const [searchFilters, setSearchFilters] = useState({
     global: {
       value: null as string | null,
@@ -93,7 +95,6 @@ const AssetOverView: React.FC = () => {
   const [expandValue, setExpandValue] = useState<ExpandValue>({});
   const [enableReordering, setEnableReordering] = useState(false);
   const [isBlue, setIsBlue] = useState(false);
-  const [isSidebarExpand, setSidebarExpand] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedGroupOption, setSelectedGroupOption] = useState(null);
   const [groupOptions, setGroupOptions] = useState([
@@ -107,6 +108,43 @@ const AssetOverView: React.FC = () => {
   const [isMoveToRoomDialogVisible, setIsMoveToRoomDialogVisible] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState("Assets");
+
+  const menuModel = [
+    {
+    label: "Contracts",
+    icon: "",
+    command: () => {
+  }
+  },
+    {
+    label: "Certificates",
+    icon: "",
+    command: () => {  
+      if (selectedProduct?.assetData?.id) {
+        router.push({
+          pathname: "/certificates",
+          query: { asset_ifric_id: selectedProduct?.assetData?.id },
+        });
+      } else {
+        showToast(
+          "error",
+          "No Asset Selected",
+          "Please select an asset first"
+        );
+      }
+  }
+  },
+    {
+    label: "Assign Owner",
+    icon: "",
+    command: (rowData:Asset) => {
+      handleMoveToRoom(rowData)
+  }
+  }
+  ]
+
+  console.log("selectedProduct here is", selectedProduct);
+  
 
   const setIndexedDb = async (token: string) => {
     try {
@@ -247,7 +285,28 @@ const AssetOverView: React.FC = () => {
     setShowExtraCard(true);
     setSelectedProduct(rowData);
   };
+  const handleClick = (event: React.MouseEvent, rowData: Asset) => {
+    event.preventDefault();
+    setSelectedProduct(rowData);
+    if(cm.current) {
+      cm.current.show(event);
+    }
+  };
 
+  const actionItemsTemplate = (rowData: Asset) => {
+    return (
+      <button
+        className="context-menu-icon-btn"
+        onClick={(e) => handleClick(e, rowData)}
+      >
+        <img
+          src="/context-menu.svg"
+          alt="context-menu-icon"
+          className="context-menu-icon"
+        />
+      </button>
+    );
+  };
   const assetIdBodyTemplate = (rowData: any) => {
     const key = expandValue[rowData?.assetData?.id] || false;
     return (
@@ -310,6 +369,13 @@ const AssetOverView: React.FC = () => {
 
   return (
     <div className="container">
+      {showContextMenu && (
+                <ContextMenu
+                  model={menuModel}
+                  ref={cm}
+                  // onHide={() => setSelectedProduct(null)}
+                />
+              )}
       <Toast ref={toast} />
         <MoveToRoomDialog
           visible={isMoveToRoomDialogVisible}
@@ -324,18 +390,9 @@ const AssetOverView: React.FC = () => {
           }}
         />
       <div className="flex">
-        <div className={isSidebarExpand ? "sidebar-container" : "collapse-sidebar"}>
-          <Sidebar isOpen={isSidebarExpand} setIsOpen={setSidebarExpand} />
-        </div>
-        <div
-          className={`asset-overview ${
-            isSidebarExpand ? "" : "asset-overview-expand"
-          } ${
-            isSidebarExpand && showExtraCard
-              ? "asset-overview-sidebar-expand"
-              : ""
-          }`}
-        >
+      <Sidebar />
+        <div className="main_content_wrapper">
+        <div className="navbar_wrapper">
           <Navbar 
           navHeader={"PDT Overview"}
           />
@@ -394,6 +451,8 @@ const AssetOverView: React.FC = () => {
                   activeTab={activeTab}
                   onMoveToRoom={handleMoveToRoom}
                   searchFilters={searchFilters}
+                  actionItemsTemplate={actionItemsTemplate}
+
                 />
               )}
             </div>
@@ -407,8 +466,10 @@ const AssetOverView: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
+      
       <Footer />
+      </div>
+      </div>
     </div>
   );
 };

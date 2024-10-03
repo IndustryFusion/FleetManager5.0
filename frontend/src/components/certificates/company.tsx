@@ -207,7 +207,7 @@ const CompanyCertificates: React.FC<any> = ({isSidebarExpand}) => {
           {certificateData.length > 0 ? (
             certificateData.map((certificate, index) => (
               <CertificateCard
-                isSidebarExpand={isSidebarExpand}
+               
                 certificate={certificate}
                 key={`${certificate.id}-${certificate.created_on}-${index}`}
               />

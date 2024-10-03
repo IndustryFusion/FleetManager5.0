@@ -9,7 +9,7 @@ import { FiCopy } from "react-icons/fi";
 
 const REGISTRY_API_URL =process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
 
-const CertificateCard:React.FC<any> =({certificate, isSidebarExpand})=>{
+const CertificateCard:React.FC<any> =({certificate})=>{
     const [companyName, setCompanyName]= useState("");
 
     const checkExpiry = (expiry_on: string ) => {
@@ -92,7 +92,7 @@ const CertificateCard:React.FC<any> =({certificate, isSidebarExpand})=>{
 
     return (
       <>
-        <div className={isSidebarExpand?"certificate-card":"certificate-card-collapse"}>
+        <div className="certificate-card">
           <div className="flex  justify-content-between align-items-center certificate-header">
             <div className="flex gap-1">
               <img
