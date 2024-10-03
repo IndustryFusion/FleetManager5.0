@@ -91,11 +91,13 @@ export class CertificateService {
             const checkLastCertificate = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${company_ifric_id}`, { headers: registryHeaders });
             
             if(checkLastCertificate.data.length > 0) {
-              const verifyLastCertificate = await axios.post(`${this.ifricRegistryUrl}/certificate/verify-company-certificate`,{
+              const verifyLastCertificate = await axios.post(`${this.icidServiceUrl}/certificate/verify-company-certificate`,{
                 certificate_data: checkLastCertificate.data[0].certificate_data,
                 company_ifric_id,
               }, {
-                headers: registryHeaders
+                headers: {
+                  'Content-Type': 'application/json'
+                }
               });
               
               if(verifyLastCertificate.data.valid) {
@@ -242,7 +244,15 @@ export class CertificateService {
         'Accept': 'application/json',
         'Authorization': req.headers['authorization']
       };
-      const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate?asset_ifric_id=${asset_ifric_id}&company_ifric_id=${company_ifric_id}`,{headers: registryHeaders});
+      const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate`,
+        {
+          params: {
+            asset_ifric_id: asset_ifric_id,
+            company_ifric_id: company_ifric_id
+          },  
+          headers: registryHeaders
+        }
+      );
       console.log("checkLastCertificate", checkLastCertificate.data)
       if(checkLastCertificate.data.length > 0) {
         const verifyLastCertificate = await axios.post(`${this.icidServiceUrl}/certificate/verify-asset-certificate`,{
@@ -255,11 +265,7 @@ export class CertificateService {
         });
         console.log("verifyLastCertificate", verifyLastCertificate.data)
         if(verifyLastCertificate.data.valid) {
-          return {
-            success: true,
-            status: 201,
-            message: 'Asset Certified'
-          };
+          return verifyLastCertificate.data;
         }
       } else {
         return {
