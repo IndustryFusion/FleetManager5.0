@@ -196,10 +196,7 @@ export class CertificateService {
 
       return response.data;
     } catch(err) {
-      if(err.response.status == 401) {
-        throw new UnauthorizedException();
-      }
-      throw new InternalServerErrorException(`Failed to create asset certificate: ${err.message}`);
+      throw err;
     }
   }
 
