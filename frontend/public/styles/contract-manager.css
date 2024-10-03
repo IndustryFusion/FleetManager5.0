@@ -40,6 +40,7 @@
 }
 .contract-search-container {
     position: relative;
+    width: 290px;
 }
 .contracts-tree .p-tree{
   border: none;

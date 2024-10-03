@@ -36,11 +36,11 @@
     height: 36px;
 }
   .certificate-card {
-    /* width: 400px; */
-    width: calc(50% - 18rem);
+
     border-radius: 16px;
     border: 2px solid #e6e6e6;
     background: #fff;
+  
   }
   .certificate-card-collapse{
     width: calc(50% - 20rem);
@@ -49,10 +49,11 @@
     background: #fff;
   }
   .certificate-card-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 4rem;
-    flex-wrap: wrap;
     font-family: "League Spartan";
+    margin-bottom: 3rem;
   }
   .certificate-text {
     margin-bottom: 0;
