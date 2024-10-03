@@ -96,6 +96,7 @@ const AssetOverView: React.FC = () => {
   const [isSidebarExpand, setSidebarExpand] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedGroupOption, setSelectedGroupOption] = useState(null);
+  const [companyIfricId, setCompanyIfricId] = useState("");
   const [groupOptions, setGroupOptions] = useState([
     { label: "Product Type", value: "type" },
     { label: "Manufacturer", value: "asset_manufacturer_name" },
@@ -121,6 +122,13 @@ const AssetOverView: React.FC = () => {
       }
     }
   }
+  const getCompanyId = async()=>{
+    const details = await getAccessGroup();
+    setCompanyIfricId(details.company_ifric_id)
+  }
+  useEffect(() => {
+    getCompanyId();
+  })
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -311,18 +319,20 @@ const AssetOverView: React.FC = () => {
   return (
     <div className="container">
       <Toast ref={toast} />
+      {isMoveToRoomDialogVisible && (
         <MoveToRoomDialog
-          visible={isMoveToRoomDialogVisible}
-          onHide={() => setIsMoveToRoomDialogVisible(false)}
-          assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
-          company_ifric_id="urn:ifric:ifx-eu-com-nap-667bdc8b-bb1f-5af7-8045-e16821a5567d"  //its hardcoded at this time
-          assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
-          onSave={() => {
-            setIsMoveToRoomDialogVisible(false);
-            showToast("success", "Success", "Asset moved successfully");
-            dispatch(fetchAssetsRedux())
-          }}
-        />
+        visible={isMoveToRoomDialogVisible}
+        onHide={() => setIsMoveToRoomDialogVisible(false)}
+        assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
+        company_ifric_id={companyIfricId}
+        assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
+        onSave={() => {
+          setIsMoveToRoomDialogVisible(false);
+          showToast("success", "Success", "Asset moved successfully");
+          dispatch(fetchAssetsRedux())
+        }}
+      />
+      )}
       <div className="flex">
         <div className={isSidebarExpand ? "sidebar-container" : "collapse-sidebar"}>
           <Sidebar isOpen={isSidebarExpand} setIsOpen={setSidebarExpand} />
