@@ -311,18 +311,20 @@ const AssetOverView: React.FC = () => {
   return (
     <div className="container">
       <Toast ref={toast} />
+      {isMoveToRoomDialogVisible && (
         <MoveToRoomDialog
-          visible={isMoveToRoomDialogVisible}
-          onHide={() => setIsMoveToRoomDialogVisible(false)}
-          assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
-          company_ifric_id="urn:ifric:ifx-eu-com-nap-667bdc8b-bb1f-5af7-8045-e16821a5567d"  //its hardcoded at this time
-          assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
-          onSave={() => {
-            setIsMoveToRoomDialogVisible(false);
-            showToast("success", "Success", "Asset moved successfully");
-            dispatch(fetchAssetsRedux())
-          }}
-        />
+        visible={isMoveToRoomDialogVisible}
+        onHide={() => setIsMoveToRoomDialogVisible(false)}
+        assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
+        company_ifric_id="urn:ifric:ifx-eu-com-nap-667bdc8b-bb1f-5af7-8045-e16821a5567d"  //its hardcoded at this time
+        assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
+        onSave={() => {
+          setIsMoveToRoomDialogVisible(false);
+          showToast("success", "Success", "Asset moved successfully");
+          dispatch(fetchAssetsRedux())
+        }}
+      />
+      )}
       <div className="flex">
         <div className={isSidebarExpand ? "sidebar-container" : "collapse-sidebar"}>
           <Sidebar isOpen={isSidebarExpand} setIsOpen={setSidebarExpand} />

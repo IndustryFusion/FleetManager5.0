@@ -269,7 +269,7 @@ export const getCategorySpecificCompany = async(categoryName: string) => {
 
 export const verifyCompanyCertificate = async(company_ifric_id: string) => {
     try{
-        return await api.get(`${FLEET_MANAGER_BACKEND_URL}/certificate/verify-company-certificate?company_ifric_id=${company_ifric_id}`);
+        return await api.get(`${FLEET_MANAGER_BACKEND_URL}/certificate/verify-company-certificate/${company_ifric_id}`);
     } catch(error: any){
         console.log("error getting company verification", error);
         if (error?.response && error?.response?.status === 401) {
