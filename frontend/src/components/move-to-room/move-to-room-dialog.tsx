@@ -278,7 +278,12 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
         <p className="header_ifric_id">{assetIfricId}</p></div>
       <div className='company_verified_wrapper'>
         <div>Microstep Gmbh</div>
-        <Image src="/verified_icon.svg" alt='company verified' width={20} height={20}></Image>
+        {(companyVerified !== null && companyVerified === true) && (
+          <Image src="/verified_icon.svg" alt='company verified' width={20} height={20}></Image>
+        )}
+        {(companyVerified !== null && companyVerified === false) && (
+          <Image src="/warning.svg" alt='company verified' width={20} height={20}></Image>
+        )}
       </div>
     </div>
   );
