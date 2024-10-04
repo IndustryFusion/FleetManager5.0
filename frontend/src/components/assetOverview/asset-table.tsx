@@ -10,7 +10,8 @@ import {
   serialNumberBodyTemplate,
   serialNumberHeader,
   ownerBodyTemplate,
-  actionItemsTemplate
+  actionItemsTemplate,
+  ownerHeader
 } from "@/utility/assetTable";
 import { Column } from "primereact/column";
 
@@ -86,7 +87,7 @@ const AssetTable: React.FC<any> = ({
      {
       columnKey: "Owner",
       field: "owner_company_name",
-      header: t("overview:owner"),
+      header: ownerHeader(t),
       body: ownerBodyTemplate,
       sortable: true,
     },

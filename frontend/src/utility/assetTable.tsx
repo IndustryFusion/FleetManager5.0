@@ -36,6 +36,15 @@ export const manufacturerHeader = (
   );
 };
 
+export const ownerHeader =(t: (key: string) => string): React.ReactNode=>{
+  return (
+    <div className="flex gap-1 align-items-center">
+      <p>{t("overview:owner")}</p>
+      <img src="/sort-arrow.svg" alt="sort-arrow-icon" />
+    </div>
+  );
+}
+
 export const serialNumberHeader = (
   t: (key: string) => string
 ): React.ReactNode => {
