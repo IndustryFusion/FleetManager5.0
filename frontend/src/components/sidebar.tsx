@@ -1,150 +1,225 @@
-import { InputText } from "primereact/inputtext";
-import "../../public/styles/sidebar.css";
-import { useTranslation } from "next-i18next";
-import { IoSettingsOutline } from "react-icons/io5";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useTranslation } from "next-i18next";
+import { fetchAssetsRedux } from "../redux/asset/assetsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { Button } from "primereact/button";
+import { AppDispatch, RootState } from "@/redux/store";
 import SettingsDialog from "./settings/settings-dialog";
+import "../../public/styles/sidebar.css";
 
-interface SideBarProps {
-  isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
-}
+// interface SideBarProps {
+//   isOpen: boolean;
+//   setIsOpen: Dispatch<SetStateAction<boolean>>;
+// }
 
-const Sidebar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
-  const { t } = useTranslation(["overview", "placeholder"]);
+function Sidebar() {
   const router = useRouter();
+  const { t } = useTranslation(["overview", "placeholder"]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [visible, setVisible] = useState(false);
-  return (
-    <section className="sidebar">
-      {isOpen ? (
-        <>
-          <div className="logo-container flex gap-3">
-            <img
-              src="/ifric-org_horizontal.jpg"
-              alt="ifric-org-logo"
-              className="ifric-org-logo-icon"
-              onClick={() => router.push("/dashboard")}
-            />
-            <img
-              src="/sidebar-icon.jpg"
-              alt="sidebar-icon"
-              onClick={() => setIsOpen(!isOpen)}
-              style={{ cursor: "pointer" }}
-            />
-          </div>
-          <div className="sidebar-dashboard-item">
-            <div className="flex align-items-center justify-content-between ">
-              <div className="flex align-items-center sidebar-dashboard-text">
-                <img
-                  src="/dashboard-images/dashboard.jpg"
-                  alt="asset-series-icon"
-                  className="mr-2"
-                />
-                <p className="m-0">Dashboard</p>
-              </div>
-              <span className="new-tag">new</span>
-            </div>
-          </div>
-          <div>
-            <div>
-              <h4 className="nav-heading">Fleet Manager</h4>
-              <ul className="nav-list">
-                <li
-                  className="flex align-items-center"
-                  onClick={() => router.push("/asset-overview")}
-                >
-                  {" "}
-                  <img
-                    src="/dashboard-images/asset-series.jpg"
-                    alt="asset-series-icon"
-                    className="mr-2"
-                  />
-                  Data Twins
-                </li>
-                <li
-                  className="flex align-items-center "
-                  onClick={() => router.push("/contract-manager")}
-                >
-                  {" "}
-                  <img
-                    src="/dashboard-images/assets.jpg"
-                    alt="assets-icon"
-                    className="mr-2"
-                  />
-                  Contracts
-                </li>
-                  <li
-                  className="flex align-items-center mb-4"
-                  onClick={() => router.push("/certificates")}
-                >
-                  {" "}
-                  <img
-                    src="/dashboard-images/assets.jpg"
-                    alt="assets-icon"
-                    className="mr-2"
-                  />
-                  Certificates
-                </li>
-              </ul>
-            </div>
-            <div className="flex align-items-center item-container">
-              <img src="/book.jpg" alt="docs-icon" className="mr-2" />
-              <h3 className="item-heading">Helpcenter</h3>
-            </div>
-            <div
-              className="flex align-items-center item-container"
-              onClick={() => setVisible(true)}
-            >
-              <img src="/settings.jpg" alt="settings-icon" className="mr-2" />
-              <h3 className="item-heading">Settings</h3>
-            </div>
-          </div>
-        </>
-      ) : (
-        <div>
-          <div className="flex">
-            <img
-              src="/ifric-org_horizontal-RGB.png"
-              alt="ifric-org_horizontal-icon"
-              className="ifric-org-logo-icon"
-              onClick={() => router.push("/dashboard")}
-            />
-            <img
-              onClick={() => setIsOpen(!isOpen)}
-              src="/sidebar-right.png"
-              alt="sidebar-right"
-              className="sidebar-right-icon"
-            />
-          </div>
-          <div className="collapse-sidebar-menu">
-            <div className="flex flex-column gap-4 sidebar-items">
-              <img
-                src="/ai-browser-gray.svg"
-                alt="menu-item-icon"
-                width="100%"
-                height="100%"
-              />
-              <img src="/qr-code-1.jpg" alt="qr-code-icon" />
-              <img src="/ai-browser-gray.svg" alt="menu-item-icon" />
-            </div>
-            <div className="flex flex-column gap-4 sidebar-second-items">
-              <img src="/ai-browser-gray.svg" alt="menu-item-icon" />
-              <img src="/ai-browser-gray.svg" alt="menu-item-icon" />
-              <img src="/ai-browser-gray.svg" alt="menu-item-icon" />
-              <img src="/ai-browser-gray.svg" alt="menu-item-icon" />
-            </div>
-            <div className="flex flex-column gap-4 sidebar-second-items">
-              <img src="/book.jpg" alt="docs-icon" className="mr-2" />
-              <img src="/settings.jpg" alt="settings-icon" className="mr-2" />
-            </div>
-          </div>
-          <div></div>
-        </div>
-      )}
-      {visible && <SettingsDialog visible={visible} setVisible={setVisible} />}
-    </section>
-  );
-};
+  const [quota, setQuota] = useState<number | null>(null);
+  const assets = useSelector((state: RootState) => state.assetsSlice.assets);
+  const dispatch = useDispatch<AppDispatch>();
 
+  useEffect(() => {
+    dispatch(fetchAssetsRedux());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const fetchQuota = async () => {
+      try {
+        setQuota(assets.length !== 0 ? assets.length : null);
+      } catch (error) {
+        // Handle error appropriately
+        console.error("Failed to fetch quota:", error);
+      }
+    };
+
+    // // Fetch quota immediately on mount
+    fetchQuota();
+  }, [assets]); // Empty dependency array ensures this runs once on mount
+
+  function handleSidebarClose() {
+    setSidebarOpen(false);
+  }
+  function handleSidebarOpen() {
+    if (sidebarOpen === false) {
+      setSidebarOpen(true);
+    } else {
+      return;
+    }
+  }
+  function handleRoute(value: string) {
+    router.push(`/${value}`);
+  }
+  return (
+    <div
+      className={`sidebar_wrapper ${!sidebarOpen ? "collapse" : ""}`}
+      //onClick={handleSidebarOpen}
+      //onMouseEnter={handleSidebarOpen}
+    >
+      <div className="sidebar_header">
+        <div className="sidebar_logo_wrapper">
+          <Image
+            src="/sidebar/logo_expanded.svg"
+            width={200}
+            height={0}
+            alt="fleet logo"
+            onClick={() => handleRoute("dashboard")}
+            style={{ cursor: "pointer",height:"auto" }}
+          ></Image>
+          <Image
+            src="/sidebar/sidebar_collapse_icon.svg"
+            width={14}
+            height={14}
+            alt="collapse_icon"
+            onClick={handleSidebarClose}
+            className="sidebar_close"
+          ></Image>
+        </div>
+        {!sidebarOpen && (
+          <Image
+            src="/sidebar/sidebar_expand_icon.svg"
+            width={14}
+            height={14}
+            alt="expand_icon"
+            onClick={handleSidebarOpen}
+            className="sidebar_open"
+          ></Image>
+        )}
+      </div>
+      <div className="sidebar_content">
+        <div className="sidebar_link_wrapper">
+          <Button
+            className={`sidebar_navlink ${
+              router.pathname.startsWith("/asset-overview")
+                ? "is_active"
+                : ""
+            }`}
+            tooltip={!sidebarOpen ? "Data Twins" : undefined}
+            tooltipOptions={{ position: "right", event: "both" }}
+            onClick={() => handleRoute("/asset-overview")}
+          >
+            <Image
+              src="/sidebar/asset_series_icon.svg"
+              width={18}
+              height={18}
+              alt="dashboard_icon"
+            />
+            <div
+              className={`sidebar_navlink_text ${
+                !sidebarOpen ? "sidebar_collapse_fade" : ""
+              }`}
+            >
+             Data Twins
+            </div>
+          </Button>
+          <Button
+           className={`sidebar_navlink ${
+            router.pathname.startsWith("/contract-manager")
+              ? "is_active"
+              : ""
+          }`}
+            onClick={() => handleRoute("/contract-manager")}
+            tooltip={!sidebarOpen ? "Contracts" : undefined}
+            tooltipOptions={{ position: "right", event: "both" }}
+          >
+            <Image
+              src="/sidebar/assets_icon.svg"
+              width={18}
+              height={18}
+              alt="dashboard_icon"
+            />
+            <div
+              className={`sidebar_navlink_text ${
+                !sidebarOpen ? "sidebar_collapse_fade" : ""
+              }`}
+            >
+              Contracts
+            </div>
+          </Button>
+          <Button
+            className={`sidebar_navlink ${
+              router.pathname.startsWith("/certificates")
+                ? "is_active"
+                : ""
+            }`}
+            tooltip={!sidebarOpen ? "Certificates" : undefined}
+            tooltipOptions={{ position: "right", event: "both" }}
+            onClick={() =>
+              handleRoute("/certificates")
+            }
+          >
+            <Image
+              src="/sidebar/certificate_icon.svg"
+              width={18}
+              height={18}
+              alt="dashboard_icon"
+            />
+            <div
+              className={`sidebar_navlink_text ${
+                !sidebarOpen ? "sidebar_collapse_fade" : ""
+              }`}
+            >
+              Certificates
+            </div>
+          </Button>
+         <div style={{marginTop:"22rem"}}>
+         <Button
+            tooltip={!sidebarOpen ? "Help Center" : undefined}
+            tooltipOptions={{ position: "right", event: "both" }}
+            className={`sidebar_navlink ${
+              router.pathname === "/help-center" ? "is_active" : ""
+            }`}
+            onClick={() => handleRoute("help-center")}
+          >
+            <Image
+              src="/sidebar/help_center_icon.svg"
+              width={18}
+              height={18}
+              alt="dashboard_icon"
+            />
+            <div
+              className={`sidebar_navlink_text ${
+                !sidebarOpen ? "sidebar_collapse_fade" : ""
+              }`}
+              style={{ color: "#95989A" }}
+            >
+              Help Center
+            </div>
+          </Button>
+          <Button
+            tooltip={!sidebarOpen ? "Settings" : undefined}
+            tooltipOptions={{ position: "right", event: "both" }}
+            className="sidebar_navlink"
+            onClick={() => setVisible(true)}
+          >
+            <Image
+              src="/sidebar/settings_icon.svg"
+              width={18}
+              height={18}
+              alt="dashboard_icon"
+            />
+            <div
+              className={`sidebar_navlink_text ${
+                !sidebarOpen ? "sidebar_collapse_fade" : ""
+              }`}
+              style={{ color: "#95989A" }}
+            >
+              Settings
+            </div>
+          </Button>
+         </div>
+          
+
+          {visible && (
+            <SettingsDialog visible={visible} setVisible={setVisible} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 export default Sidebar;

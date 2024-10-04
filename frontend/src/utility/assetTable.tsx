@@ -36,6 +36,15 @@ export const manufacturerHeader = (
   );
 };
 
+export const ownerHeader =(t: (key: string) => string): React.ReactNode=>{
+  return (
+    <div className="flex gap-1 align-items-center">
+      <p>{t("overview:owner")}</p>
+      <img src="/sort-arrow.svg" alt="sort-arrow-icon" />
+    </div>
+  );
+}
+
 export const serialNumberHeader = (
   t: (key: string) => string
 ): React.ReactNode => {
@@ -61,22 +70,8 @@ export const productNameHeader = (
 
 
 export const manufacturerDataTemplate = (rowData: any): React.ReactNode => {
-  return (
-    <div className="flex flex-column align-items-center">
-      {rowData?.assetData?.logo_manufacturer !== "NULL" && rowData?.assetData?.logo_manufacturer && (
-        <img
-          src={rowData.assetData.logo_manufacturer}
-          alt="manufacturer_logo"
-          className="shadow-2 border-round"
-          style={{
-            maxWidth: '4rem', 
-            maxHeight: '4rem', 
-            objectFit: 'contain', 
-          }}
-        />
-      )}
+  return (    
       <p className="m-0 mt-1 tr-text">{rowData?.assetData?.asset_manufacturer_name || "N/A"}</p>
-    </div>
   );
 };
 
@@ -93,7 +88,6 @@ export const assetTypeBodyTemplate = (rowData: any): React.ReactNode => {
 export const serialNumberBodyTemplate = (rowData: any): React.ReactNode => {
   return <p className="tr-text">{rowData?.assetData?.asset_serial_number}</p>;
 };
-
 export const actionItemsTemplate = (rowData: Asset, onMoveToRoom: (asset: Asset) => void) => {
   return (
     <button onClick={() => onMoveToRoom(rowData)} className="action-menu-icon cursor-pointer" >
@@ -106,6 +100,7 @@ export const actionItemsTemplate = (rowData: Asset, onMoveToRoom: (asset: Asset)
     </button>
   );
 };
+
 
 export  const ownerBodyTemplate = (rowData: any) => {
   return <span>{rowData?.owner_company_name || 'N/A'}</span>;
