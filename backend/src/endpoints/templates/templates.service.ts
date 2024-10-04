@@ -132,25 +132,23 @@ export class TemplatesService {
 
   async getTemplateByName(name: string): Promise<TemplateDescriptionDto[]> {
     try {
-      let splitArr = name.split(/[\s!-,]+/);
-      splitArr[0] = splitArr[0].toLowerCase();
-      for (let i = 1; i < splitArr.length; i++) {
-        splitArr[i] = splitArr[i].charAt(0).toUpperCase() + splitArr[i].slice(1);
-      }
 
-      // Join the modified words back together
-      let finalName = splitArr.join('');
-      finalName = `${finalName}_schema.json`;
-      const url = `${this.baseUrl}/${finalName}`;
+      const fileName = `${name}.json`;
+      const url = `${this.baseUrl}/${fileName}`;
+      console.log("url", url)
       const templateDescriptions: TemplateDescriptionDto[] = [];
       const headers = {
-        Authorization: 'Bearer ' + this.token,
-        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.token,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
       };
+
+      console.log("url", headers)
       const response = await axios.get(url, {
-        headers,
+        headers
       });
 
+      console.log("url", url)
       if (response.data.encoding === 'base64' && response.data.content) {
         // Decode Base64 content to UTF-8 string
         const decodedContent = Buffer.from(
@@ -165,7 +163,7 @@ export class TemplatesService {
           properties: parsedContent.properties,
         });
       }
-
+      console.log("templateDescriptions", templateDescriptions)
       return templateDescriptions;
     } catch (err) {
       throw new NotFoundException(

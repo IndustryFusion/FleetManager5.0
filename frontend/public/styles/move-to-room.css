@@ -389,6 +389,10 @@ display: none;
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-top: 8px;
+}
+.asset_verified_group.no-margin{
+  margin-top: 0px;
 }
 .company_checkbox{
   width: 16px;
@@ -438,8 +442,9 @@ width: 36px;
     outline: none;
     box-shadow: none;
     opacity: 0;
-    position: relative;
-    right: -37px;
+    position: absolute;
+    right: 0px;
+    left: 0px;
     border-radius: 8px;
     cursor: pointer;
 }
