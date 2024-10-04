@@ -10,7 +10,6 @@ import ContractCards from '@/components/contractManager/contract-cards';
 import { Checkbox } from 'primereact/checkbox';
 
 const ContractManager = () => {
-    const [isSidebarExpand, setSidebarExpand] = useState(true);
     const [nodes, setNodes] = useState([]); 
     const [selectedKey, setSelectedKey] = useState('');
 
@@ -22,11 +21,9 @@ const ContractManager = () => {
   return (
     <>
      <div className="flex">
-        <div className={isSidebarExpand ? "sidebar-container" : "collapse-sidebar"}>
-          <Sidebar isOpen={isSidebarExpand} setIsOpen={setSidebarExpand} />
-        </div>
-        
-        <div className={isSidebarExpand ? "contract-container" : "contract-container-collpase"}>
+     <Sidebar  />
+        <div className="main_content_wrapper">
+        <div className="navbar_wrapper">
             <Navbar navHeader="Contracts Manager"/>
             <div className='flex gap-4 '>
                 <div className='contract-left-container'>
@@ -38,7 +35,7 @@ const ContractManager = () => {
                 placeholder="Search contracts"
               />
               <img 
-              className={isSidebarExpand ? "search-expand" : "search-collapse"}
+              className="search-expand"
               src="/search_icon.svg" alt="search-icon" />
             </div>
             <div className='mt-6'>
@@ -69,6 +66,7 @@ const ContractManager = () => {
                  <ContractCards />
                 </div>
             </div>
+        </div>
         </div>
         </div>
     </>

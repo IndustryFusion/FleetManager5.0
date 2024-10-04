@@ -24,9 +24,8 @@
   }
   
   .certificates-content-wrapper {
-    padding: 24px;
-    /*styles for scrollbar*/
-    height: calc(100% - 72px);
+    margin: 1.5rem 0rem 1.5rem 1.6rem;
+    height: 100vh;
     overflow: auto;
   }
   .certificates-content-wrapper .p-inline-message {
@@ -46,7 +45,7 @@
     padding: 2rem 2.2rem 2rem 0rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border-radius: 0.5rem;
-    margin-left: 3rem;
+    margin: 1rem;
   }
   .certificates-tabview .p-tabview-nav li {
     margin-left: 0;

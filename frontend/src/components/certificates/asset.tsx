@@ -20,9 +20,9 @@ interface Certificate {
   created_on: string;
 }
 
-const AssetsTab: React.FC<{ assetIfricId?: string | null , isSidebarExpand:boolean}> = ({
+const AssetsTab: React.FC<{ assetIfricId?: string | null }> = ({
   assetIfricId,
-  isSidebarExpand
+ 
 }) => {
   const [date, setDate] = useState<Date>(new Date());
   const [certificateData, setCertificateData] = useState<Certificate[]>([]);
@@ -226,7 +226,7 @@ const AssetsTab: React.FC<{ assetIfricId?: string | null , isSidebarExpand:boole
             <AssetCertificateCard
               key={`${certificate.id}-${certificate.created_on}`}
               certificate={certificate}
-              isSidebarExpand={isSidebarExpand}
+              
             />
           ))
         ) : (
