@@ -64,11 +64,11 @@ function Sidebar() {
         <div className="sidebar_logo_wrapper">
           <Image
             src="/sidebar/logo_expanded.svg"
-            width={199}
-            height={42}
-            alt="IFRIC logo"
+            width={200}
+            height={0}
+            alt="fleet logo"
             onClick={() => handleRoute("dashboard")}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer",height:"auto" }}
           ></Image>
           <Image
             src="/sidebar/sidebar_collapse_icon.svg"
