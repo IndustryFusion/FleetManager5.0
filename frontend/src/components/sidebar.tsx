@@ -64,7 +64,7 @@ function Sidebar() {
         <div className="sidebar_logo_wrapper">
           <Image
             src="/sidebar/logo_expanded.svg"
-            width={180}
+            width={199}
             height={42}
             alt="IFRIC logo"
             onClick={() => handleRoute("dashboard")}

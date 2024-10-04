@@ -37,7 +37,7 @@ body {
   left: 30px;
 }
 .sidebar_header {
-  padding: 22px 15px 22px 27px;
+  padding: 22px 14px 22px 27px;
   position: sticky;
   top: 0;
   right: 0;
@@ -47,7 +47,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 6px;
 }
 .sidebar_content {
   padding: 40px 15px;
@@ -185,7 +185,7 @@ body {
   left: 0;
   right: 0;
   height: 72px;
-  padding-top: 16px;
+  padding-top: 10px;
 }
 .nav_avatar {
   width: 40px;

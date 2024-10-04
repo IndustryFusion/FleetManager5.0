@@ -118,6 +118,8 @@ const Navbar: React.FC<NavbarProps> = ({ navHeader }) => {
   return (
     <>
       <div className="flex gap-3 align-items-center asset-overview-header justify-content-between">
+        <div>
+        <h2 className="nav-header">{navHeader}</h2>
         <BreadCrumb
           model={breadcrumbItems}
           home={home}
@@ -125,9 +127,10 @@ const Navbar: React.FC<NavbarProps> = ({ navHeader }) => {
             breadcrumbItems.length < 2 ? "mt-2 ml-2" : ""
           }`}
         />
+        </div>
         <div className="flex gap-4 nav-items">
-          <img src="/notification-icon.svg" alt="notification-icon" />
-          <img src="/app-icon.svg" alt="app-icon" />
+          <button className="nav_icon_button"><img src="/notification-icon.svg" alt="notification-icon" /></button>
+          <button className="nav_icon_button"><img src="/app-icon.svg" alt="app-icon" /></button>
           <img
             src="/profile-icon.jpg"
             alt="profile-icon"

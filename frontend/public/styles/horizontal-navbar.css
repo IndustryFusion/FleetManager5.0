@@ -61,3 +61,19 @@ cursor: pointer;
   cursor: pointer;
   z-index: 1000;
 }
+.nav_icon_button {
+  border: none;
+  outline: none;
+  border-radius: 8px;
+  background-color: white;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.nav_icon_button:hover,
+.nav_icon_button:focus {
+  background-color: #f3f3f5;
+}
