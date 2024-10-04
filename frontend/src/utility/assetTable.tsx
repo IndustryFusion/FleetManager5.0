@@ -61,22 +61,8 @@ export const productNameHeader = (
 
 
 export const manufacturerDataTemplate = (rowData: any): React.ReactNode => {
-  return (
-    <div className="flex flex-column align-items-center">
-      {rowData?.assetData?.logo_manufacturer !== "NULL" && rowData?.assetData?.logo_manufacturer && (
-        <img
-          src={rowData.assetData.logo_manufacturer}
-          alt="manufacturer_logo"
-          className="shadow-2 border-round"
-          style={{
-            maxWidth: '4rem', 
-            maxHeight: '4rem', 
-            objectFit: 'contain', 
-          }}
-        />
-      )}
+  return (    
       <p className="m-0 mt-1 tr-text">{rowData?.assetData?.asset_manufacturer_name || "N/A"}</p>
-    </div>
   );
 };
 
@@ -93,7 +79,18 @@ export const assetTypeBodyTemplate = (rowData: any): React.ReactNode => {
 export const serialNumberBodyTemplate = (rowData: any): React.ReactNode => {
   return <p className="tr-text">{rowData?.assetData?.asset_serial_number}</p>;
 };
-
+export const actionItemsTemplate = (rowData: Asset, onMoveToRoom: (asset: Asset) => void) => {
+  return (
+    <button onClick={() => onMoveToRoom(rowData)} className="action-menu-icon cursor-pointer" >
+      <img
+      src="/move-icon.svg" 
+      alt="move-icon" 
+      className="mr-2"
+    />
+    Assign Owner
+    </button>
+  );
+};
 
 
 export  const ownerBodyTemplate = (rowData: any) => {

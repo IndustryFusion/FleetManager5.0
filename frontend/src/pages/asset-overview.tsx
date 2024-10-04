@@ -285,28 +285,7 @@ const AssetOverView: React.FC = () => {
     setShowExtraCard(true);
     setSelectedProduct(rowData);
   };
-  const handleClick = (event: React.MouseEvent, rowData: Asset) => {
-    event.preventDefault();
-    setSelectedProduct(rowData);
-    if(cm.current) {
-      cm.current.show(event);
-    }
-  };
 
-  const actionItemsTemplate = (rowData: Asset) => {
-    return (
-      <button
-        className="context-menu-icon-btn"
-        onClick={(e) => handleClick(e, rowData)}
-      >
-        <img
-          src="/context-menu.svg"
-          alt="context-menu-icon"
-          className="context-menu-icon"
-        />
-      </button>
-    );
-  };
   const assetIdBodyTemplate = (rowData: any) => {
     const key = expandValue[rowData?.assetData?.id] || false;
     return (
@@ -451,8 +430,6 @@ const AssetOverView: React.FC = () => {
                   activeTab={activeTab}
                   onMoveToRoom={handleMoveToRoom}
                   searchFilters={searchFilters}
-                  actionItemsTemplate={actionItemsTemplate}
-
                 />
               )}
             </div>

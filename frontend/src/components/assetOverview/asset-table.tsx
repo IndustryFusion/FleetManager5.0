@@ -9,7 +9,8 @@ import {
   productTypeHeader,
   serialNumberBodyTemplate,
   serialNumberHeader,
-  ownerBodyTemplate
+  ownerBodyTemplate,
+  actionItemsTemplate
 } from "@/utility/assetTable";
 import { Column } from "primereact/column";
 
@@ -35,7 +36,6 @@ const AssetTable: React.FC<any> = ({
   activeTab,
   onMoveToRoom,
   searchFilters ,
-  actionItemsTemplate,
   selectedProduct,
   setSelectedProduct
 }) => {
