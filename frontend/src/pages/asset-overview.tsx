@@ -110,6 +110,7 @@ const AssetOverView: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState("Assets");
 
+
   const menuModel = [
     {
     label: "Contracts",
