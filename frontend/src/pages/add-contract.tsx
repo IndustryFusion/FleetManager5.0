@@ -7,6 +7,8 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
+import Sidebar from "@/components/sidebar";
+import Navbar from "@/components/navbar";
 import { getAccessGroup } from '../utility/indexed-db.ts';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -371,12 +373,16 @@ const AddContractPage: React.FC = () => {
     if (!templateData) return <div>Loading...</div>;
 
     return (
+        <div className="flex">
+      <Sidebar />
+      <div className="main_content_wrapper">
+        <div className="navbar_wrapper">
+            <Navbar navHeader={"Add Contract"} />
+        </div>
         <div className="create-contract-form-container">
             <Toast ref={toast} />
-            <div className="asset-type-list">
-                {renderAssetTypeList()}
-            </div>
-            <div className="form-container">
+            <div className="create-contract-form-grid">
+            <div className="create-contract-form-wrapper">
                 <h1 className="template-form-heading">{templateData?.title}</h1>
                 <form onSubmit={handleSubmit}>
                     <Card>
@@ -414,7 +420,13 @@ const AddContractPage: React.FC = () => {
                     </div>
                 </form>
             </div>
+            <div className="asset-type-list-cover">
+                {renderAssetTypeList()}
+            </div>
+            </div>
         </div>
+        </div>
+      </div>
     );
 };
 

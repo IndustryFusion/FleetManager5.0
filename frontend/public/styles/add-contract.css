@@ -1,22 +1,32 @@
 @import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap");
 
 .create-contract-form-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: calc(100vh - 72px);
-    overflow: hidden;
     font-family: "League Spartan", sans-serif;
+    height: 100%;
+}
+.create-contract-form-grid{
+    display: grid;
+    width: 100%;
+    overflow: auto;
+    height: 100%;
+    grid-template-columns: 1fr 250px;
 }
 
 /* Asset Type List Styling */
-.asset-type-list {
-    width: 250px;
-    padding: 20px;
+.asset-type-list-cover {
+    height: 100%;
+    position: relative;
     background-color: #f8f9fa;
-    border-right: 1px solid #e0e0e0;
+}
+.asset-type-list {
+    padding: 20px;
     overflow-y: auto;
     height: 100%;
+    max-height: calc(100vh - 72px);
+    position: sticky;
+    top: 0;
+    left:0;
+    right:0;
 }
 
 .asset-type-list h2 {
@@ -37,7 +47,7 @@
 .asset-type-list .p-button {
     width: 100%;
     font-family: "League Spartan", sans-serif;
-    border-radius: 10px;
+    border-radius: 8px;
     transition: background-color 0.3s;
 }
 
@@ -46,10 +56,9 @@
 }
 
 /* Form Container Styling */
-.form-container {
+.create-contract-form-wrapper {
     flex: 1;
     padding: 24px;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
