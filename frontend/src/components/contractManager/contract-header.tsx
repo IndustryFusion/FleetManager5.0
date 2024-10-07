@@ -1,13 +1,20 @@
 import { Dropdown } from 'primereact/dropdown'
 import { TabPanel, TabView } from 'primereact/tabview'
 import React, { useState } from 'react'
+import { useRouter } from 'next/router'
+import { Button } from 'primereact/button'
 
 const ContractHeader = () => {
+    const router = useRouter();
     const sortOptions = [
         { label: "Contract name: A - Z", value: "contract_name" },
         { label: "Contract name: Z - A", value: "!contract_name" },
       ];
       const [selectedSortOption, setSelectedSortOption] = useState(sortOptions[0].value);
+
+      const handleAddContract = () => {
+        router.push('/add-contract');
+    };
 
       const handleSortChange = (e: { value: string }) => {
         setSelectedSortOption(e.value);
@@ -30,6 +37,12 @@ const ContractHeader = () => {
               </TabView>
     </div>
     <div className='flex gap-5 align-items-center'>
+      <Button 
+        label="Add Contract" 
+        icon="pi pi-plus" 
+        className="p-button-primary" 
+        onClick={handleAddContract}
+    />
     <div className='flex'>
         <img src="/filter_icon.svg" alt="filter_icon" style={{marginRight:"8px"}} />
         <p className='filter-heading'>Filters</p>
