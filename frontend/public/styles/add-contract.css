@@ -1,0 +1,256 @@
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap");
+
+.create-contract-form-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: calc(100vh - 72px);
+    overflow: hidden;
+    font-family: "League Spartan", sans-serif;
+}
+
+/* Asset Type List Styling */
+.asset-type-list {
+    width: 250px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #e0e0e0;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.asset-type-list h2 {
+    margin-bottom: 15px;
+    color: #2b2b2b;
+    font-size: 1.2rem;
+}
+
+.asset-type-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.asset-type-list ul li {
+    margin-bottom: 10px;
+}
+
+.asset-type-list .p-button {
+    width: 100%;
+    font-family: "League Spartan", sans-serif;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+}
+
+.asset-type-list .p-button-outlined:hover {
+    background-color: #e9ecef;
+}
+
+/* Form Container Styling */
+.form-container {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.template-form-heading {
+    font-weight: normal;
+    font-size: 20px;
+    font-style: italic;
+    color: #226b11;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* Form Grid to Display Fields in Two Columns */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 20px;
+    row-gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* Form Field Styling */
+.field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.field label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #2b2b2b;
+    font-family: "League Spartan", sans-serif;
+}
+
+.half-width-field {
+    width: 100%;
+}
+
+.form-container .p-card-title {
+    font-family: "League Spartan", sans-serif;
+    color: #2b2b2b;
+}
+
+/* Input Text, Dropdown, Multiselect, and Calendar */
+.form-container .p-inputtext,
+.form-container .p-dropdown,
+.form-container .p-multiselect,
+.form-container .p-calendar .p-inputtext {
+    border-radius: 10px;
+    border: 1px solid #ced4da;
+    background: var(--white);
+    font-family: "League Spartan", sans-serif;
+    padding: 14px 16px;
+    outline: none;
+    width: 100%;
+}
+
+.form-container .p-calendar .p-button {
+    border-radius: 0 10px 10px 0;
+}
+
+/* Button Styling */
+.p-button {
+    font-family: "League Spartan", sans-serif;
+    border-radius: 10px;
+}
+
+.form-btn-container {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.custom-cancel-btn {
+    border: 1px solid #ef4444 !important;
+    color: #ef4444 !important;
+    background-color: transparent !important;
+    transition: all 0.3s ease;
+}
+
+.custom-cancel-btn:hover {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+.custom-reset-btn {
+    border: 1px solid #64748b !important;
+    color: #64748b !important;
+    background-color: transparent !important;
+    transition: all 0.3s ease;
+}
+
+.custom-reset-btn:hover {
+    background-color: #64748b !important;
+    color: #ffffff !important;
+}
+
+.custom-add-btn {
+    background-color: #3b82f6 !important;
+    border: 1px solid #3b82f6 !important;
+    color: #ffffff !important;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.custom-add-btn:hover {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+}
+
+/* Required Field Indicator */
+.required-field::after {
+    content: " *";
+    color: red;
+}
+
+
+.p-card {
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.14), 0 1px 3px 0 rgba(0,0,0,0.12);
+}
+
+.p-card .p-card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+
+.p-inputtext:enabled:focus {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.2rem #bfdbfe;
+    border-color: #3b82f6;
+}
+
+
+.p-toast {
+    font-family: "League Spartan", sans-serif;
+}
+
+.p-toast .p-toast-message {
+    border-radius: 10px;
+}
+
+.masked-input {
+    font-family: monospace;
+    letter-spacing: 0.1em;
+}
+
+.no-certificate-message {
+    color: #888;
+    font-style: italic;
+    padding: 8px 0;
+}
+
+/* Contract Clauses */
+.p-card ul {
+    padding-left: 20px;
+}
+
+.p-card ul li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+
+.p-error {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+@media screen and (max-width: 768px) {
+    .create-contract-form-container {
+        flex-direction: column;
+    }
+
+    .asset-type-list {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .form-container {
+        width: 100%;
+        padding: 16px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-btn-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+}
