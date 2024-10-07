@@ -40,6 +40,7 @@ import MoveToRoomDialog from "@/components/move-to-room/move-to-room-dialog";
 import { fetchAssetsRedux } from "@/redux/asset/assetsSlice";
 import { FilterMatchMode } from "primereact/api";
 import { getAccessGroupData } from "@/utility/auth";
+import { ContextMenu } from "primereact/contextmenu";
 
 type ExpandValue = {
   [key: string]: boolean;
@@ -57,6 +58,7 @@ const AssetOverView: React.FC = () => {
   const [assetCount, setAssetCount] = useState(0);
   const [showExtraCard, setShowExtraCard] = useState<boolean>(false);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
+  const [showContextMenu, setShowContextMenu] = useState(true);
   const [searchFilters, setSearchFilters] = useState({
     global: {
       value: null as string | null,
@@ -93,9 +95,9 @@ const AssetOverView: React.FC = () => {
   const [expandValue, setExpandValue] = useState<ExpandValue>({});
   const [enableReordering, setEnableReordering] = useState(false);
   const [isBlue, setIsBlue] = useState(false);
-  const [isSidebarExpand, setSidebarExpand] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [selectedGroupOption, setSelectedGroupOption] = useState(null);
+  const [companyIfricId, setCompanyIfricId] = useState("");
   const [groupOptions, setGroupOptions] = useState([
     { label: "Product Type", value: "type" },
     { label: "Manufacturer", value: "asset_manufacturer_name" },
@@ -107,6 +109,74 @@ const AssetOverView: React.FC = () => {
   const [isMoveToRoomDialogVisible, setIsMoveToRoomDialogVisible] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState("Assets");
+
+
+  const menuModel = [
+    {
+    label: "Contracts",
+    icon: "",
+    command: () => {
+  }
+  },
+    {
+    label: "Certificates",
+    icon: "",
+    command: () => {  
+      if (selectedProduct?.assetData?.id) {
+        router.push({
+          pathname: "/certificates",
+          query: { asset_ifric_id: selectedProduct?.assetData?.id },
+        });
+      } else {
+        showToast(
+          "error",
+          "No Asset Selected",
+          "Please select an asset first"
+        );
+      }
+  }
+  },
+    {
+    label: "Assign Owner",
+    icon: "",
+    command: (rowData:Asset) => {
+      handleMoveToRoom(rowData)
+  }
+  }
+  ]
+
+  console.log("selectedProduct here is", selectedProduct);
+  
+
+  const setIndexedDb = async (token: string) => {
+    try {
+      await getAccessGroupData(token);
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error response:", error.response?.data.message);
+        showToast("error", "Error", "Fetching assets");
+      } else {
+        console.error("Error:", error);
+        showToast("error", "Error", error);
+      }
+    }
+  }
+  const getCompanyId = async()=>{
+    const details = await getAccessGroup();
+    setCompanyIfricId(details.company_ifric_id)
+  }
+  useEffect(() => {
+    getCompanyId();
+  })
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    if (token) {
+      setIndexedDb(token);
+    }
+  }, []);
 
   const dataTableStyle: CSSProperties = {
     flexGrow: 1,
@@ -287,32 +357,32 @@ const AssetOverView: React.FC = () => {
 
   return (
     <div className="container">
+      {showContextMenu && (
+                <ContextMenu
+                  model={menuModel}
+                  ref={cm}
+                  // onHide={() => setSelectedProduct(null)}
+                />
+              )}
       <Toast ref={toast} />
+      {isMoveToRoomDialogVisible && (
         <MoveToRoomDialog
-          visible={isMoveToRoomDialogVisible}
-          onHide={() => setIsMoveToRoomDialogVisible(false)}
-          assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
-          company_ifric_id="urn:ifric:ifx-eu-com-nap-667bdc8b-bb1f-5af7-8045-e16821a5567d"  //its hardcoded at this time
-          assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
-          onSave={() => {
-            setIsMoveToRoomDialogVisible(false);
-            showToast("success", "Success", "Asset moved successfully");
-            dispatch(fetchAssetsRedux())
-          }}
-        />
+        visible={isMoveToRoomDialogVisible}
+        onHide={() => setIsMoveToRoomDialogVisible(false)}
+        assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
+        company_ifric_id={companyIfricId}
+        assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
+        onSave={() => {
+          setIsMoveToRoomDialogVisible(false);
+          showToast("success", "Success", "Asset moved successfully");
+          dispatch(fetchAssetsRedux())
+        }}
+      />
+      )}
       <div className="flex">
-        <div className={isSidebarExpand ? "sidebar-container" : "collapse-sidebar"}>
-          <Sidebar isOpen={isSidebarExpand} setIsOpen={setSidebarExpand} />
-        </div>
-        <div
-          className={`asset-overview ${
-            isSidebarExpand ? "" : "asset-overview-expand"
-          } ${
-            isSidebarExpand && showExtraCard
-              ? "asset-overview-sidebar-expand"
-              : ""
-          }`}
-        >
+      <Sidebar />
+        <div className="main_content_wrapper">
+        <div className="navbar_wrapper">
           <Navbar 
           navHeader={"PDT Overview"}
           />
@@ -384,8 +454,10 @@ const AssetOverView: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
+      
       <Footer />
+      </div>
+      </div>
     </div>
   );
 };

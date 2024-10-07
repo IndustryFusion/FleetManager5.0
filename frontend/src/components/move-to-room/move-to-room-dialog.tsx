@@ -15,7 +15,8 @@ import axios from 'axios';
 import { MultiSelect } from 'primereact/multiselect';
 import OwnerDetailsCard from './owner-details';
 import { postFile } from '@/utility/asset';
-import { updateCompanyTwin, getCategorySpecificCompany } from '@/utility/auth';
+import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, verifyAssetCertificate, generateAssetCertificate, getCompanyDetailsById } from '@/utility/auth';
+import moment from 'moment';
 
 interface Company {
   id: string;
@@ -63,6 +64,13 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const [ownerDetails, setOwnerDetails] = useState<OwnerDetails | null>(null);
   const [checkIndex, setCheckIndex] = useState(0);
   const [certificationDate, setCertificationDate] = useState<Date | null | undefined>(null);
+  const [assetVerified, setAssetVerified] = useState<boolean | null>(null);
+  const [ownerVerified, setOwnerVerified] = useState<boolean | null>(null);
+  const [companyVerified, setCompanyVerified] = useState<boolean | null>(null);
+  const [companyIfricId, setCompanyIfricId] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [companyName, setCompanyName] = useState("");
+
   const certificateOptions: Certificate[] = [
     { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
     { label: 'contract_Insurance_IFRIC', value: 'contract_Insurance_IFRIC' },
@@ -70,6 +78,9 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
 
   useEffect(() => {
     fetchFactoryOwners();
+    getCompanyCertification(company_ifric_id);
+    getAssetCertification();
+    getCompanyDetails();
   }, []);
 
   useEffect(() => {
@@ -82,6 +93,80 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
     setCompletedSteps(newCompletedSteps);
   }, [factoryOwner, contract, salesAgreement, salesAgreementFile, certificate]);
 
+  const getCompanyDetails = async () => {
+    try {
+      const response = await getCompanyDetailsById(company_ifric_id);
+      setUserEmail(response?.data[0].email);
+      setCompanyName(response?.data[0].company_name)
+    }
+    catch (error: any) {
+      console.error("Failed to fetch company details");
+    }
+  }
+
+  const getCompanyCertification = async (company_ifric_id: string) => {
+    try {
+      const response = await verifyCompanyCertificate(company_ifric_id);
+      if (response?.data.success === true && response.data.status === 201) {
+        setOwnerVerified(true);
+        if (companyVerified === null) {
+          setCompanyVerified(true);
+        }
+      }
+      else {
+        setOwnerVerified(false);
+        if (companyVerified === null) {
+          setCompanyVerified(false);
+        }
+      }
+    }
+    catch (error: any) {
+      console.error("error fetching company certification", error);
+    }
+  }
+
+  const getAssetCertification = async () => {
+    try {
+      const response = await verifyAssetCertificate(company_ifric_id, assetIfricId);
+      if (response?.data.valid === true) {
+        setAssetVerified(true);
+      }
+      else {
+        setAssetVerified(false);
+      }
+    }
+    catch (error: any) {
+      console.error("Error fetching asset certification", error)
+    }
+  }
+  const createAssetCertification = async (e: any) => {
+    e.preventDefault();
+    if (certificationDate) {
+      const formattedDate = handleDateChange(certificationDate);
+      const dataToSend = {
+        company_ifric_id: company_ifric_id,
+        asset_ifric_id: assetIfricId,
+        user_email: userEmail,
+        expiry: formattedDate
+      }
+      try {
+        const response = await generateAssetCertificate(dataToSend);
+        if (response?.data.status === 201 && response.data.success === true) {
+          setAssetVerified(true);
+          setPreCertifyAsset(false);
+        }
+        else {
+          setAssetVerified(false);
+        }
+      }
+      catch (error: any) {
+        console.error("Error generating certificate", error);
+      }
+    }
+    else {
+      console.error("Please select an expiration date.")
+    }
+  }
   const handleSave = async () => {
     try {
       if (!factoryOwner?.companyIfricId) {
@@ -116,11 +201,10 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const handleFactoryOwnerChange = (e: DropdownChangeEvent) => {
     const selectedOwner = e.value;
     setFactoryOwner(selectedOwner);
+    setOwnerVerified(null);
+    setCompanyIfricId(e.value.companyIfricId);
+    getCompanyCertification(e.value.companyIfricId);
   };
-  const handleGenerateCertificate = (e: any) => {
-    e.preventDefault();
-    console.log("Certificate Generation Handled")
-  }
 
   const fetchFactoryOwners = async () => {
     try {
@@ -140,6 +224,14 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
       console.error('Error fetching factory owners:', error);
       toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to fetch factory owners' });
     }
+  };
+
+  const handleDateChange = (date: Date) => {
+    const selectedDate = date as Date;
+    const formattedDate = moment(selectedDate)
+      .utc()
+      .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+    return formattedDate;
   };
 
   const handleFileUpload = async (event: FileUploadHandlerEvent) => {
@@ -203,21 +295,13 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
       </svg>
     );
   }
-  const handleDialogClose = () => {
-    setFactoryOwner(null);
-    setSalesAgreementFile("");
-    setPreCertifyAsset(false);
-    setCertificate(null);
-    setSalesAgreement(false);
-    setCertificationDate(null);
-  }
 
   const dialogFooter = (
     <div>
       <Button
         label="Cancel"
         icon="pi pi-times"
-        onClick={() => { onHide(); handleDialogClose(); }}
+        onClick={() => { onHide() }}
         className="p-button-text"
         style={{ backgroundColor: "#E6E6E6", color: "black" }} // Set text color to black
       />
@@ -237,8 +321,13 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
       <div><h2 className='header_asset_title'>{assetName}</h2>
         <p className="header_ifric_id">{assetIfricId}</p></div>
       <div className='company_verified_wrapper'>
-        <div>Microstep Gmbh</div>
-        <Image src="/verified_icon.svg" alt='company verified' width={20} height={20}></Image>
+        <div>{companyName}</div>
+        {(companyVerified !== null && companyVerified === true) && (
+          <Image src="/verified_icon.svg" alt='company verified' width={20} height={20}></Image>
+        )}
+        {(companyVerified !== null && companyVerified === false) && (
+          <Image src="/warning.svg" alt='company verified' width={20} height={20}></Image>
+        )}
       </div>
     </div>
   );
@@ -249,7 +338,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
       visible={visible}
       style={{ width: '80vw', maxWidth: "1300px", height: '80vh' }}
       footer={dialogFooter}
-      onHide={() => { onHide(); handleDialogClose(); }}
+      onHide={() => { onHide()}}
       className="move-to-room-dialog"
       draggable={false}
     >
@@ -438,13 +527,13 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
             </div>
             <div className="custom_step_cell">
               <div className="step_connector" style={{ backgroundColor: checkIndex >= 2 ? "#3874C9" : "#6b7280" }}></div>
-              {preCertifyAsset ? (
+              {assetVerified ? (
                 <CustomCheck stroke="#3874C9" fill="#3874C9" check="white" />
               ) : (
                 <CustomCheck stroke="#6b7280" fill="white" check="white" />
               )}
               <div className='check_content_wrapper'>
-                <div className="custom_check_title" style={{ color: preCertifyAsset ? "#2b2b2b" : "#6b7280" }}>Asset Certified</div>
+                <div className="custom_check_title" style={{ color: assetVerified ? "#2b2b2b" : "#6b7280" }}>Asset Certified</div>
                 <div className="custom_check_helper">Select Owner</div>
               </div>
             </div>
@@ -489,7 +578,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
           <form className='owner_form'>
             <div className="form_field_group">
               <h3 className='form_group_title'>Factory Owner</h3>
-              <div className="form_field margin_bottom">
+              <div className="form_field">
                 <div className="p-field p-float-label">
                   <Dropdown
                     id="factoryOwner"
@@ -508,18 +597,50 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                   <label htmlFor="factoryOwner">Factory Owner</label>
                 </div>
               </div>
-              <div className="field-checkbox">
-                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                  <div>
-                    <Checkbox inputId="preCertifyAsset" checked={preCertifyAsset} onChange={e => setPreCertifyAsset(e.checked as boolean)} className='company_checkbox' />
-                    <label htmlFor="preCertifyAsset">Pre Certify Asset</label>
-                  </div>
-                  <div className='asset_verified_group'>
-                    <Image src="/verified_icon.svg" alt='company verified' width={16} height={16}></Image>
-                    <div>IFRIC Certified</div>
-                  </div>
+              {(ownerVerified === true && factoryOwner) && (
+                <div className='asset_verified_group'>
+                  <Image src="/verified_icon.svg" alt='company verified' width={16} height={16}></Image>
+                  <div>IFRIC Verified</div>
                 </div>
-              </div>
+              )}
+              {(ownerVerified === false && factoryOwner) && (
+                <div className='asset_verified_group'>
+                  <Image src="/warning.svg" alt='company verified' width={16} height={16}></Image>
+                  <div>Not IFRIC Verified</div>
+                </div>
+              )}
+            </div>
+            <div className="form_field_group">
+              <h3 className='form_group_title'>Asset Verification</h3>
+                <div>
+                  {(assetVerified === false && assetVerified !== null) && (
+                    <div>
+                      <Checkbox inputId="preCertifyAsset" checked={preCertifyAsset} onChange={e => setPreCertifyAsset(e.checked as boolean)} className='company_checkbox' />
+                      <label htmlFor="preCertifyAsset">Pre Certify Asset</label>
+                    </div>
+                  )}
+                  {(assetVerified === true && assetVerified !== null) && (
+                    <>
+                      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                        <div>
+                          <Checkbox inputId="preCertifyAsset" checked={true} className='company_checkbox' />
+                          <label htmlFor="preCertifyAsset">Pre Certify Asset</label>
+                        </div>
+                        <div className='asset_verified_group no-margin'>
+                          <Image src="/verified_icon.svg" alt='company verified' width={16} height={16}></Image>
+                          <div>Asset Verified</div>
+                        </div>
+                        </div>
+                        <div className="form_field margin_top">
+                          <div className="p-field p-float-label">
+                            <InputText value={assetName} disabled className="company_input" id='asset-name'
+                            ></InputText>
+                            <label htmlFor="asset-name">Product Name</label>
+                          </div>
+                        </div>
+                    </>
+                  )}
+                </div>
               {preCertifyAsset && (
                 <>
                   <div className="form_field margin_top">
@@ -529,13 +650,15 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                       <label htmlFor="asset-name">Product Name</label>
                     </div>
                   </div>
-                  <div className='generate_cert_button_group'>
-                    {certificationDate && (
-                      <div style={{ marginRight: "auto" }}>Expiration Date: {certificationDate.toLocaleString()}</div>
-                    )}
-                    <Calendar className='certification_date_button' value={certificationDate} onChange={(e) => setCertificationDate(e.value)} showIcon showTime icon={<img src="calendar_icon.svg" alt="Custom Icon" />} tooltip={"Expiration date"} tooltipOptions={{ position: "left", event: "both" }} />
-                    <button className='generate_certification_button' disabled={!certificationDate} onClick={handleGenerateCertificate}>Certify</button>
-                  </div>
+                  {(assetVerified !== null && assetVerified === false) && (
+                    <div className='generate_cert_button_group'>
+                      {certificationDate && (
+                        <div style={{ marginRight: "auto" }}>Expiration Date: {certificationDate.toLocaleString()}</div>
+                      )}
+                      <Calendar className='certification_date_button' value={certificationDate} onChange={(e) => setCertificationDate(e.value)} showIcon showTime icon={<img src="calendar_icon.svg" alt="Custom Icon" />} tooltip={"Expiration date"} tooltipOptions={{ position: "left", event: "both" }} />
+                      <button className='generate_certification_button' disabled={!certificationDate} onClick={createAssetCertification}>Certify</button>
+                    </div>
+                  )}
                 </>
               )}
             </div>

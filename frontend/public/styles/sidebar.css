@@ -1,25 +1,228 @@
-@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap");
-
-:root {
-  --black-primary: #2b2b2b;
-  --blue-new: #478fb7;
-  --blue: #138ab6;
-  --white: #fff;
-  --grey-primary: #5f5f5f;
-  --grey-secondary: #95989a;
-  --grey-box: #f3f3f5;
+/* optional */
+body {
+  margin: 0;
+  padding: 0;
 }
+/* optional */
 
-.sidebar {
-  font-family: "League Spartan";
+.sidebar_wrapper {
+  width: 263px;
+  transition: width 300ms ease-in-out;
+  overflow: hidden;
+  border-right: 1px solid #e6e6e6;
+  height: 100vh;
+  font-family: inherit;
+  flex-shrink: 0;
 }
-
-.logo-container {
-  padding: 23px 0px 0 12px;
-  justify-content: space-between;
+.sidebar_wrapper.collapse {
+  width: 70px;
+}
+.sidebar_close,
+.sidebar_open {
+  cursor: pointer;
+  height: 24px;
+  width: 24px;
+  background-color: #ffffff;
+  padding: 5px;
+  border-radius: 6px;
+}
+.sidebar_close:hover,
+.sidebar_open:hover {
+  background-color: #f3f3f5;
+}
+.sidebar_open {
+  display: block;
+  margin-top: 10px;
+  position: absolute;
+  left: 30px;
+}
+.sidebar_header {
+  padding: 22px 14px 22px 27px;
+  position: sticky;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+.sidebar_logo_wrapper {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.sidebar_content {
+  padding: 40px 15px;
+  height: calc(100vh - 86px);
+  overflow-y: auto;
+}
+.sidebar_link_wrapper {
+  overflow: hidden;
+}
+.sidebar_navlink {
+  border: none;
+  min-width: 40px;
+  padding: 11px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 18px;
+  color: #2b2b2b;
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  background-color: white;
+  transition: background-color 100ms ease;
+  user-select: none;
+  margin-bottom: 3px;
+}
+.sidebar_navlink.is_active,
+.sidebar_navlink:hover,
+.sidebar_navlink:focus,
+.sidebar_navlink:active {
+  background-color: #f3f3f5;
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+.sidebar_navlink:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+.sidebar_navlink_text {
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+.link_group_title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #95989a;
+  text-transform: uppercase;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 200ms ease;
 }
 
+.sidebar_collapse_fade {
+  opacity: 0;
+}
+.sidebar_content::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar_content::-webkit-scrollbar-track {
+  background-color: #f3f3f5;
+}
+.sidebar_content::-webkit-scrollbar-thumb {
+  background-color: #7d7d7d;
+}
+
+/* pass quota styles */
+
+.pass_quota_container {
+  padding: 12px 12px;
+  background-color: #f3f3f5;
+  border-radius: 8px;
+  margin: 25px 0px;
+  width: 228px;
+}
+.pass_quota_container h3 {
+  font-size: 17px;
+  color: black;
+  font-weight: 500;
+  white-space: nowrap;
+  margin-bottom: 15px;
+  margin-top: 8px;
+}
+.progress_bar_container {
+  height: 8px;
+  background-color: #e0e0df;
+  border-radius: 25px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.progress_bar_fill {
+  height: 100%;
+  background-color: #68abe9;
+  border-radius: inherit;
+  transition: width 0.2s ease-in-out;
+}
+.progress_value {
+  font-size: 14px;
+  margin-bottom: 5px;
+  margin-top: 0px;
+}
+.upgrade_text {
+  margin-top: 10px;
+  margin-bottom: 0px;
+  text-decoration: underline;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background-color: transparent;
+  font-family: inherit;
+  padding: 0;
+  margin: 0;
+}
+.upgrade_text:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* additional styles */
+.main_content_wrapper {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+.navbar_wrapper {
+  position: sticky;
+  border-bottom: 1px solid #e6e6e6;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  padding-top: 10px;
+}
+.nav_avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  background-color: #2b2b2b;
+  border-radius: 100px;
+  padding-top: 3px;
+  cursor: pointer;
+}
+/* styles related to settings dialog */
+.nav-list {
+  margin: 0;
+  padding: 0;
+}
+.nav-list li {
+  color: var(--black-primary);
+  font-family: "League Spartan";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  list-style: none;
+  padding: 8px 11px 8px !important;
+}
+.nav-list li:hover,
+.sidebar-dashboard-item:hover {
+  border-radius: 8px;
+  background-color: var(--grey-box);
+  cursor: pointer;
+}
 .nav-heading {
   color: var(--grey-secondary);
   font-size: 14px;
@@ -29,161 +232,26 @@
   text-transform: uppercase;
 }
 
-.nav-list {
-  margin: 0;
-  padding: 0;
-}
-.sidebar-dashboard-active{
-background-color: var(--grey-box);
-border-radius: 8px;
-padding: 11px 6px 11px 11px;
-cursor: pointer;
-}
-.sidebar-dashboard-text {
-    color: var(--black-primary);
-    font-family: "League Spartan";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    list-style: none;
-    margin-bottom: 6px;
-  }
-.nav-list li {
-  color: var(--black-primary);
-  font-family: "League Spartan";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-  list-style: none;
-  margin-bottom: 6px;
-  padding: 0 11px 11px;
-}
-
-.nav-list li:hover {
+/* hover effect on filter, sort buttons  */
+.hover_state_group {
+  background-color: white;
+  padding: 3px 2px 3px 11px;
   border-radius: 8px;
-  background-color: var(--grey-box);
-  cursor: pointer;
+  transition: background-color 100ms ease;
 }
-
-.item-heading {
-  color: var(--grey-secondary);
-  font-family: "League Spartan";
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-  display: flex;
-  align-items: center;
-  margin: 0;
-  cursor: pointer;
+.hover_state_group:hover {
+  background-color: #f3f3f5;
 }
-
-.item-container {
-  margin-bottom: 28px;
+.hover_state_group .p-dropdown {
+  background-color: transparent;
 }
-.sidebar-dashboard-item {
-  margin: 82px 0 20px 0;
+.black_button_hover,
+.grey_button_hover {
+  transition: background-color 100ms ease;
 }
-
-.sidebar-search-container {
-  margin: 46px 0;
-  position: relative;
+.black_button_hover:hover {
+  background-color: #3c3c3c;
 }
-
-.sidebar-search-container img {
-  position: absolute;
-  top: 0.8rem;
-  left: 1rem;
-}
-
-.second-item {
-  margin-top: 40px;
-  margin-bottom: 47px;
-}
-
-.pass-quota-container {
-  background-color: var(--grey-box);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 24px;
-  width: 240px;
-}
-
-.pass-quota-container h3 {
-  color: var(--black-primary);
-  font-family: "League Spartan";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-}
-
-.progress-value {
-  color: var(--grey-secondary);
-  font-family: "League Spartan";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-}
-
-.upgrade-text {
-  color: var(--black-primary);
-  font-family: "League Spartan";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-  text-decoration-line: underline;
-  margin-top: 10px !important;
-}
-
-.progress-bar {
-  margin: 12px 0;
-}
-
-.nav-search-input {
-  width: 238px;
-  border: 2px solid #e6e6e6;
-  border-radius: 8px;
-  font-family: "League Spartan";
-  padding: 10px 0 12px 30px;
-}
-
-.sidebar-items img,
-.sidebar-second-items img {
-  width: 25px;
-  height: auto;
-  cursor: pointer;
-}
-.sidebar-second-items {
-  margin-top: 74px;
-}
-.collapse-sidebar-menu {
-  margin-top: 158px;
-  margin-bottom: 154px;
-}
-.new-tag {
-  color: var(--White, #fff);
-  font-family: "League Spartan";
-  font-size: 10px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-  border-radius: 9px;
-  background: var(--Blue, #138ab6);
-  padding: 5px 8px 4px 8px;
-  text-transform: uppercase;
-  margin-top: -7px;
-}
-.settings-icon{
-  color:var(--grey-secondary);
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 19px;
-}
-.ifric-org-logo-icon{
-  cursor: pointer;
+.grey_button_hover:hover {
+  background-color: #dadada;
 }
