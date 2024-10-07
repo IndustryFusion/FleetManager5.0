@@ -25,7 +25,7 @@ const ContractManager = () => {
         <div className="main_content_wrapper">
         <div className="navbar_wrapper">
             <Navbar navHeader="Contracts Manager"/>
-            <div className='flex gap-4 '>
+            <div className='flex gap-4 contract-container'>
                 <div className='contract-left-container'>
                 <div className="contract-search-container"> 
               <InputText
