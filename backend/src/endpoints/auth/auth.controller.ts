@@ -16,7 +16,7 @@
 
 import { Controller, Post, Body} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { FindOneAuthDto } from './dto/find-auth-dto';
+import { FindOneAuthDto, FindIndexedDbAuthDto } from './dto/find-auth-dto';
 
 @Controller('auth')
 export class AuthController {
@@ -29,6 +29,15 @@ export class AuthController {
       return this.authService.logIn(data);
     } catch (err) {
       throw new err;
+    }
+  }
+
+  @Post('get-indexed-db-data')
+  getIndexedData(@Body() data: FindIndexedDbAuthDto) {
+    try {
+      return this.authService.getIndexedData(data);
+    } catch (err) {
+      throw err;
     }
   }
 }

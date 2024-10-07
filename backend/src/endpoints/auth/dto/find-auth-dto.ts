@@ -3,3 +3,8 @@ export interface FindOneAuthDto {
   password: string;
   product_name: string;
 }
+
+export interface FindIndexedDbAuthDto {
+  token: string;
+  product_name: string;
+}
