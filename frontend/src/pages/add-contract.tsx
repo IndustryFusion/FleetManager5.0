@@ -43,8 +43,7 @@ const AddContractPage: React.FC = () => {
     const router = useRouter();
     const [templateData, setTemplateData] = useState<TemplateData | null>(null);
     const [formData, setFormData] = useState<{ [key: string]: any }>({
-        asset_type: 'laserCutter',
-        contract_title: 'Contract Title'
+        asset_type: 'laserCutter'
     });
     const [assetPropertiesOptions, setAssetPropertiesOptions] = useState<{ label: string; value: string }[]>([]);
     const [selectedAssetProperties, setSelectedAssetProperties] = useState<string[]>([]);
@@ -57,6 +56,11 @@ const AddContractPage: React.FC = () => {
     useEffect(() => {
         fetchData();
     }, []);
+    useEffect(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, [editTitle]);
 
     const fetchData = async () => {
         try {
@@ -82,6 +86,7 @@ const AddContractPage: React.FC = () => {
                 setFormData(prevState => ({
                     ...prevState,
                     data_consumer_company_ifric_id: userData.company_ifric_id,
+                    contract_title : template?.title
                 }));
 
                 // Fetch company certificate
@@ -131,8 +136,7 @@ const AddContractPage: React.FC = () => {
     const initializeFormData = (properties: { [key: string]: PropertyDefinition }) => {
         const initialData: { [key: string]: any } = {
             asset_type: 'laserCutter',
-            contract_title : 'Contract Title',
-            contract_start_date: new Date,
+            contract_title : templateData?.title
         };
         Object.entries(properties).forEach(([key, property]) => {
             if (property.app === 'creator') {
@@ -194,7 +198,8 @@ const AddContractPage: React.FC = () => {
     const renderContractClauses = () => {
         const clauses = templateData?.properties.contract_clauses.enums || [];
         return (
-            <Card title="Contract Clauses">
+            <div className='contract_clauses_wrapper'>
+                <div className='contract_form_subheader'>Contract Clauses</div>
                 <ul>
                     {clauses.map((clause: string, index: number) => {
                         const parts = clause.split('[consumer]');
@@ -212,7 +217,7 @@ const AddContractPage: React.FC = () => {
                         );
                     })}
                 </ul>
-            </Card>
+            </div>
         );
     };
 
@@ -281,29 +286,26 @@ const AddContractPage: React.FC = () => {
                     <Toast ref={toast} />
                     <div className="create-contract-form-grid">
                         <div className="create-contract-form-wrapper">
-                            <h1 className="template-form-heading">{templateData?.title}</h1>
                             <form onSubmit={handleSubmit}>
                                     <div className="form-grid">
                                         <div className="contract_title_group">
-                                            <InputText
+                                            <InputText ref={inputRef}
                                                 id="contract_title"
                                                 value={formData.contract_title ?? ''}
                                                 onChange={(e) => handleInputChange(e, 'contract_title')}
                                                 required
                                                 className="contract_form_field field_title"
-                                                //onBlurCapture={() => setEditTitle(false)}
-                                                disabled={!editTitle} ref={inputRef}
+                                                onBlur={() =>{setTimeout(() => {
+                                                    setEditTitle(false)
+                                                }, 200);}}
+                                                disabled={!editTitle}
                                             />
                                             <button
-                                                onClick={(e) => {
+                                                onClick={(e) =>{
                                                     e.preventDefault();
                                                     setEditTitle(!editTitle);
-                                                    if (inputRef.current) { 
-                                                        inputRef.current.focus();
-                                                      }
-                                                    }
-                                                }
-                                                className="contract_field_button"
+                                                }}
+                                                className="contract_field_button" 
                                             >
                                                 {editTitle === false ? (<Image src="/add-contract/edit_icon.svg" width={22} height={22} alt='edit icon'></Image>): (
                                                     <Image src="/add-contract/save_icon.svg" width={22} height={22} alt='save icon'></Image>
@@ -335,14 +337,13 @@ const AddContractPage: React.FC = () => {
                                         <div className="contract_form_field_column">
                                         <div className="field">
                                             <label htmlFor="contract_start_date" className="required-field">Contract Start Date</label>
-                                            <Calendar
-                                                id="contract_start_date"
-                                                value={formData.contract_start_date ?? null}
-                                                onChange={(e) => handleInputChange(e, 'contract_end_date')}
-                                                showIcon
-                                                required
-                                                className='contract_form_field'
-                                            />
+                                            <div className='text_large_bold margin_top_medium'>
+                                                {new Date().toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                })}
+                                            </div>
                                         </div>
                                         <div className="field">
                                             <label htmlFor="contract_end_date" className="required-field">Contract End Date</label>
@@ -357,7 +358,7 @@ const AddContractPage: React.FC = () => {
                                             {certificateExpiry && (
                                                 <small className="p-error">
                                                     Contract end date must be before {new Date(certificateExpiry.getTime() - 24 * 60 * 60 * 1000).toLocaleDateString()}
-                                                </small>
+                                                </small> 
                                             )}
                                         </div>
                                         </div>
@@ -393,6 +394,8 @@ const AddContractPage: React.FC = () => {
                                                 onChange={(e) => handleInputChange(e, 'interval')}
                                                 required className='contract_form_field'
                                             />
+                                            <small>Realtime update interval for properties.</small>
+
                                         </div>
                                         <div className="field half-width-field">
                                             <label htmlFor="asset_properties" className="required-field">Asset Properties</label>

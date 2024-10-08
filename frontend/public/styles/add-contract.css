@@ -10,14 +10,18 @@
     overflow: auto;
     height: 100%;
     grid-template-columns: 1fr 250px;
-    background-color: #f9fafb;
+    background-color: white;
+    padding-bottom: 80px;
+}
+.create-contract-form-container .p-card.p-component{
+    font-family: inherit;
 }
 
 /* Asset Type List Styling */
 .asset-type-list-cover {
     height: 100%;
     position: relative;
-    background-color: white;
+    background-color: #f9fafb;;
 }
 .asset-type-list {
     padding: 20px;
@@ -64,15 +68,6 @@
     flex-direction: column;
 }
 
-.template-form-heading {
-    font-weight: normal;
-    font-size: 20px;
-    font-style: italic;
-    color: #226b11;
-    margin-top: 0;
-    margin-bottom: 20px;
-}
-
 /* Form Grid to Display Fields in Two Columns */
 .form-grid {
     display: grid;
@@ -91,8 +86,9 @@
 
 .field label {
     margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #2b2b2b;
+    font-weight: 400;
+    color: #3a3a3a;
+    font-size: 16px;
     font-family: "League Spartan", sans-serif;
 }
 
@@ -135,43 +131,47 @@
     justify-content: flex-end;
     margin-top: 20px;
 }
+.custom-cancel-btn, .custom-add-btn, .custom-reset-btn{
+    box-shadow: none;
+    outline: none;
+    border: none;
+    transition: all 0.1s ease;
+    font-family: inherit;
+    border-radius: 8px;
+}
 
 .custom-cancel-btn {
-    border: 1px solid #ef4444 !important;
     color: #ef4444 !important;
-    background-color: transparent !important;
-    transition: all 0.3s ease;
+    background-color: #ffecec !important
 }
 
 .custom-cancel-btn:hover {
-    background-color: #ef4444 !important;
-    color: #ffffff !important;
+    background-color: #ffdddd !important;
 }
 
 .custom-reset-btn {
-    border: 1px solid #64748b !important;
-    color: #64748b !important;
-    background-color: transparent !important;
+    font-family: inherit;
+    border: none;
+    color: #2b2b2b !important;
+    background-color: #e8e8e8 !important;
     transition: all 0.3s ease;
 }
 
 .custom-reset-btn:hover {
-    background-color: #64748b !important;
-    color: #ffffff !important;
+    background-color: #dadada !important;;
 }
 
 .custom-add-btn {
-    background-color: #3b82f6 !important;
-    border: 1px solid #3b82f6 !important;
+    font-family: inherit;
+    background-color: #2b2b2b !important;
+    border: none;
+    box-shadow: none;
     color: #ffffff !important;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .custom-add-btn:hover {
-    background-color: #2563eb !important;
-    border-color: #2563eb !important;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+    background-color: #3c3c3c !important;
 }
 
 /* Required Field Indicator */
@@ -190,7 +190,7 @@
 .p-card .p-card-title {
     font-size: 1.2rem;
     font-weight: 600;
-    margin-bottom: 1rem;
+    margin-bottom: 0rem;
 }
 
 
@@ -220,17 +220,6 @@
     font-style: italic;
     padding: 8px 0;
 }
-
-/* Contract Clauses */
-.p-card ul {
-    padding-left: 20px;
-}
-
-.p-card ul li {
-    margin-bottom: 10px;
-    line-height: 1.5;
-}
-
 
 .p-error {
     color: #ef4444;
@@ -268,7 +257,7 @@
 /* new additions */
 .contract_form_field{
     width: 100%;
-    height: 38px;
+    height: 35px;
     border-radius: 8px;
     border-width: 2px;
     font-family: inherit;
@@ -292,13 +281,18 @@
 }
 .contract_form_field.field_title{
     border-width: 0px;
-    padding-left: 10px;
-    font-size: 20px;
+    padding-left: 0px;
     font-weight: 600;
-    width: fit-content;
-    max-width: 400px;
+    font-size: 24px;
     flex-grow: 1;
-    color: #2b2b2b
+    opacity:1;
+    box-shadow: none;
+    border-bottom: 2px solid #fff;
+    border-radius: 0px;
+}
+.contract_form_field.field_title:focus{
+    box-shadow: none;
+    color: #2b2b2b;
 }
 .contract_form_field.field_title:disabled{
     background-color: transparent;
@@ -315,9 +309,10 @@
     flex-shrink: 0;
     width: 32px;
     height: 32px;
+    cursor: pointer;
 }
 .contract_field_button:hover, .contract_field_button:focus{
-    background-color: #cecece;;
+    background-color: #e7e7e7;;
 }
 .contract_title_group{
     display: flex;
@@ -329,12 +324,31 @@
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr;
     gap: 20px;
+    padding: 0px 15px;
 }
 .contract_form_subheader{
     padding: 10px 10px 10px 16px;
-    background-color: #dedede;
+    background-color: #e7e7e7;
     color: #2b2b2b;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 500;
     border-radius: 8px;
+}
+.contract_clauses_wrapper{
+    color: #2b2b2bd6;
+}
+.contract_clauses_wrapper ul li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+.contract_clauses_wrapper ul {
+    padding-left: 30px;
+}
+.text_large_bold{
+    font-size: 18px;
+    color: #2b2b2b;
+    font-weight: 500;
+}
+.margin_top_medium{
+    margin-top: 0.875rem;
 }
