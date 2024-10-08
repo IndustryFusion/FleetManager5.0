@@ -6,6 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { MultiSelect } from 'primereact/multiselect';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
+import Image from 'next/image.js';
 import { Toast } from 'primereact/toast';
 import Sidebar from "@/components/sidebar";
 import Navbar from "@/components/navbar";
@@ -42,13 +43,16 @@ const AddContractPage: React.FC = () => {
     const router = useRouter();
     const [templateData, setTemplateData] = useState<TemplateData | null>(null);
     const [formData, setFormData] = useState<{ [key: string]: any }>({
-        asset_type: 'laserCutter'  
+        asset_type: 'laserCutter',
+        contract_title: 'Contract Title'
     });
     const [assetPropertiesOptions, setAssetPropertiesOptions] = useState<{ label: string; value: string }[]>([]);
     const [selectedAssetProperties, setSelectedAssetProperties] = useState<string[]>([]);
     const toast = useRef<Toast>(null);
     const [axiosInstance, setAxiosInstance] = useState<AxiosInstance | null>(null);
     const [certificateExpiry, setCertificateExpiry] = useState<Date | null>(null);
+    const [editTitle, setEditTitle] = useState<Boolean>(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         fetchData();
@@ -71,6 +75,7 @@ const AddContractPage: React.FC = () => {
                 // Fetch template data (from backend)
                 const templateResponse = await instance.get('/templates/template-name?name=predictiveMaintenance_laserCutter');
                 const template = templateResponse.data[0];
+                console.log(template);
                 setTemplateData(template);
                 initializeFormData(template.properties);
 
@@ -81,15 +86,14 @@ const AddContractPage: React.FC = () => {
 
                 // Fetch company certificate
                 const companyCertResponse = await instance.get(`/certificate/get-company-certificates/${userData.company_ifric_id}`);
-                console.log("companyCertResponse",companyCertResponse)
-                    if (companyCertResponse.data && companyCertResponse.data.length > 0) {
-                        const companyCert = companyCertResponse.data[0];
-                        setFormData(prevState => ({
-                            ...prevState,
-                            consumer_company_certificate_data: companyCert.certificate_data
-                        }));
-                   
-                        setCertificateExpiry(new Date(companyCert.expiry_on));
+                if (companyCertResponse.data && companyCertResponse.data.length > 0) {
+                    const companyCert = companyCertResponse.data[0];
+                    setFormData(prevState => ({
+                        ...prevState,
+                        consumer_company_certificate_data: companyCert.certificate_data
+                    }));
+
+                    setCertificateExpiry(new Date(companyCert.expiry_on));
                 }
 
                 // Fetch asset properties (from MongoDB, sandbox backend)
@@ -126,7 +130,9 @@ const AddContractPage: React.FC = () => {
 
     const initializeFormData = (properties: { [key: string]: PropertyDefinition }) => {
         const initialData: { [key: string]: any } = {
-            asset_type: 'laserCutter'
+            asset_type: 'laserCutter',
+            contract_title : 'Contract Title',
+            contract_start_date: new Date,
         };
         Object.entries(properties).forEach(([key, property]) => {
             if (property.app === 'creator') {
@@ -146,24 +152,15 @@ const AddContractPage: React.FC = () => {
         setFormData(initialData);
     };
 
-    const formatLabel = (title: string): string => {
-        return title
-            .split('_')
-            .map(word => {
-                if (word.toLowerCase() === 'ifric') {
-                    return 'IFRIC';
-                }
-                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-            })
-            .join(' ');
-    };
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | { value: any }, field: string) => {
         const value = 'target' in e ? e.target.value : e.value;
 
         if (field === 'interval') {
             if (value === '' || !isNaN(parseInt(value, 10))) {
-                if (value >= templateData?.properties[field]?.minimum && value <= templateData?.properties[field]?.maximum) {
+                if (
+                    value >= templateData?.properties[field]?.minimum &&
+                    value <= templateData?.properties[field]?.maximum
+                ) {
                     setFormData({ ...formData, [field]: value });
                 } else {
                     toast.current?.show({
@@ -178,104 +175,6 @@ const AddContractPage: React.FC = () => {
 
         setFormData({ ...formData, [field]: value });
     };
-
-    const renderField = (key: string, property: PropertyDefinition) => {
-        if (key === 'contract_ifric_id') {
-            return null;
-        }
-        const label = formatLabel(key);
-
-        if (key === 'asset_properties') {
-            return (
-                <div className="field half-width-field" key={key}>
-                    <label htmlFor={key} className="required-field">
-                        {label}
-                    </label>
-                    <MultiSelect
-                        id={key}
-                        value={selectedAssetProperties}
-                        options={assetPropertiesOptions}
-                        onChange={(e) => setSelectedAssetProperties(e.value)}
-                        optionLabel="label"
-                        filter
-                        required
-                    />
-                </div>
-            );
-        }
-
-        if (key === 'consumer_company_certificate_data') {
-            return renderMaskedField(label, formData[key], key);
-        }
-
-        if (property.app !== 'creator') {
-            return null;
-        }
-
-        switch (property.type) {
-            case 'string':
-                return (
-                    <div className="field half-width-field" key={key}>
-                        <label htmlFor={key} className="required-field">{label}</label>
-                        <InputText
-                            id={key}
-                            value={formData[key] ?? ''}
-                            onChange={(e) => handleInputChange(e, key)}
-                            required
-                        />
-                    </div>
-                );
-            case 'number':
-                return (
-                    <div className="field half-width-field" key={key}>
-                        <label htmlFor={key} className="required-field">{label}</label>
-                        <InputText
-                            id={key}
-                            type="number"
-                            value={formData[key]}
-                            onChange={(e) => handleInputChange(e, key)}
-                            required
-                        />
-                    </div>
-                );
-            case 'date':
-                return (
-                    <div className="field half-width-field" key={key}>
-                        <label htmlFor={key} className="required-field">{label}</label>
-                        <Calendar
-                            id={key}
-                            value={formData[key]}
-                            onChange={(e) => handleInputChange(e, key)}
-                            showIcon
-                            required
-                            maxDate={certificateExpiry ? new Date(certificateExpiry.getTime() - 24 * 60 * 60 * 1000) : undefined}
-                        />
-                        {certificateExpiry && (
-                            <small className="p-error">
-                                Contract end date must be before {new Date(certificateExpiry.getTime() - 24 * 60 * 60 * 1000).toLocaleDateString()}
-                            </small>
-                        )}
-                    </div>
-                );
-            default:
-                return null;
-        }
-    };
-
-    const renderMaskedField = (label: string, value: string | null, key: string) => (
-        <div className="field half-width-field" key={key}>
-            <label>{label}</label>
-            {value ? (
-                <InputText
-                    value="************************"
-                    readOnly
-                    className="masked-input"
-                />
-            ) : (
-                <div className="no-certificate-message">No data found</div>
-            )}
-        </div>
-    );
 
     const fetchConsumerCompanyName = async (companyId: string) => {
         try {
@@ -362,7 +261,6 @@ const AddContractPage: React.FC = () => {
         );
     };
 
-    
     const handleAssetTypeClick = (assetType: string) => {
         setFormData((prevState) => ({
             ...prevState,
@@ -374,59 +272,201 @@ const AddContractPage: React.FC = () => {
 
     return (
         <div className="flex">
-      <Sidebar />
-      <div className="main_content_wrapper">
-        <div className="navbar_wrapper">
-            <Navbar navHeader={"Add Contract"} />
-        </div>
-        <div className="create-contract-form-container">
-            <Toast ref={toast} />
-            <div className="create-contract-form-grid">
-            <div className="create-contract-form-wrapper">
-                <h1 className="template-form-heading">{templateData?.title}</h1>
-                <form onSubmit={handleSubmit}>
-                    <Card>
-                        <div className="form-grid">
-                            {Object.entries(templateData?.properties || {})
-                                .filter(([key]) => key !== 'contract_ifric_id')
-                                .map(([key, property]) => renderField(key, property))}
+            <Sidebar />
+            <div className="main_content_wrapper">
+                <div className="navbar_wrapper">
+                    <Navbar navHeader={"Add Contract"} />
+                </div>
+                <div className="create-contract-form-container">
+                    <Toast ref={toast} />
+                    <div className="create-contract-form-grid">
+                        <div className="create-contract-form-wrapper">
+                            <h1 className="template-form-heading">{templateData?.title}</h1>
+                            <form onSubmit={handleSubmit}>
+                                    <div className="form-grid">
+                                        <div className="contract_title_group">
+                                            <InputText
+                                                id="contract_title"
+                                                value={formData.contract_title ?? ''}
+                                                onChange={(e) => handleInputChange(e, 'contract_title')}
+                                                required
+                                                className="contract_form_field field_title"
+                                                //onBlurCapture={() => setEditTitle(false)}
+                                                disabled={!editTitle} ref={inputRef}
+                                            />
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setEditTitle(!editTitle);
+                                                    if (inputRef.current) { 
+                                                        inputRef.current.focus();
+                                                      }
+                                                    }
+                                                }
+                                                className="contract_field_button"
+                                            >
+                                                {editTitle === false ? (<Image src="/add-contract/edit_icon.svg" width={22} height={22} alt='edit icon'></Image>): (
+                                                    <Image src="/add-contract/save_icon.svg" width={22} height={22} alt='save icon'></Image>
+                                                ) }
+                                            </button>
+                                        </div>
+                                        <div className="contract_form_field_column">
+                                        <div className="field">
+                                            <label htmlFor="contract_type" className="required-field">Contract Type</label>
+                                            <InputText
+                                                id="contract_type"
+                                                value={formData.contract_type ?? ''}
+                                                onChange={(e) => handleInputChange(e, 'contract_type')}
+                                                required
+                                                className='contract_form_field'
+                                            />
+                                        </div>
+                                        <div className="field half-width-field">
+                                            <label htmlFor="asset_type" className="required-field">Asset Type</label>
+                                            <InputText
+                                                id="asset_type"
+                                                value={formData.asset_type ?? ''}
+                                                onChange={(e) => handleInputChange(e, 'asset_type')}
+                                                required className='contract_form_field'
+                                            />
+                                        </div>
+                                        </div>
+                                        <div className='contract_form_subheader'>Contract Time</div>
+                                        <div className="contract_form_field_column">
+                                        <div className="field">
+                                            <label htmlFor="contract_start_date" className="required-field">Contract Start Date</label>
+                                            <Calendar
+                                                id="contract_start_date"
+                                                value={formData.contract_start_date ?? null}
+                                                onChange={(e) => handleInputChange(e, 'contract_end_date')}
+                                                showIcon
+                                                required
+                                                className='contract_form_field'
+                                            />
+                                        </div>
+                                        <div className="field">
+                                            <label htmlFor="contract_end_date" className="required-field">Contract End Date</label>
+                                            <Calendar
+                                                id="contract_end_date"
+                                                value={formData.contract_end_date ?? null}
+                                                onChange={(e) => handleInputChange(e, 'contract_end_date')}
+                                                showIcon
+                                                required
+                                                maxDate={certificateExpiry ? new Date(certificateExpiry.getTime() - 24 * 60 * 60 * 1000) : undefined} className='contract_form_field'
+                                            />
+                                            {certificateExpiry && (
+                                                <small className="p-error">
+                                                    Contract end date must be before {new Date(certificateExpiry.getTime() - 24 * 60 * 60 * 1000).toLocaleDateString()}
+                                                </small>
+                                            )}
+                                        </div>
+                                        </div>
+                                        <div className='contract_form_subheader'>Parties</div>
+                                        <div className="contract_form_field_column">
+                                        <div className="field">
+                                            <label htmlFor="consumer_company_name" className="required-field">Provider Company Name</label>
+                                            <InputText
+                                                id="consumer_company_name"
+                                                value={formData.consumer_company_name ?? ''}
+                                                onChange={(e) => handleInputChange(e, 'consumer_company_name')}
+                                                required className='contract_form_field'
+                                            />
+                                        </div>
+                                        <div className="field">
+                                            <label htmlFor="consumer_company_name" className="required-field">Consumer Company Name</label>
+                                            <InputText
+                                                id="consumer_company_name"
+                                                value={formData.consumer_company_name ?? ''}
+                                                onChange={(e) => handleInputChange(e, 'consumer_company_name')}
+                                                required className='contract_form_field'
+                                            />
+                                        </div>
+                                        </div>
+                                        <div className='contract_form_subheader'>Shared Data</div>
+                                        <div className="contract_form_field_column">
+                                        <div className="field half-width-field">
+                                            <label htmlFor="interval" className="required-field">Interval</label>
+                                            <InputText
+                                                id="interval"
+                                                type="number"
+                                                value={formData.interval ?? ''}
+                                                onChange={(e) => handleInputChange(e, 'interval')}
+                                                required className='contract_form_field'
+                                            />
+                                        </div>
+                                        <div className="field half-width-field">
+                                            <label htmlFor="asset_properties" className="required-field">Asset Properties</label>
+                                            <MultiSelect
+                                                id="asset_properties"
+                                                value={selectedAssetProperties}
+                                                options={assetPropertiesOptions}
+                                                onChange={(e) => setSelectedAssetProperties(e.value)}
+                                                optionLabel="label"
+                                                filter
+                                                required className='contract_form_field'
+                                            />
+                                        </div>
+                                        </div>
+                                        {/* Data Consumer Company IFRIC ID */}
+                                        <div className="field half-width-field">
+                                            <label htmlFor="data_consumer_company_ifric_id" className="required-field">Data Consumer Company IFRIC ID</label>
+                                            <InputText
+                                                id="data_consumer_company_ifric_id"
+                                                value={formData.data_consumer_company_ifric_id ?? ''}
+                                                onChange={(e) => handleInputChange(e, 'data_consumer_company_ifric_id')}
+                                                required
+                                            />
+                                        </div>
+
+                                        {/* Consumer Company Certificate Data */}
+                                        <div className="field half-width-field">
+                                            <label>Consumer Company Certificate Data</label>
+                                            {formData.consumer_company_certificate_data ? (
+                                                <InputText
+                                                    value="************************"
+                                                    readOnly
+                                                    className="masked-input"
+                                                />
+                                            ) : (
+                                                <div className="no-certificate-message">No data found</div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                {renderContractClauses()}
+
+                                {renderSelectedAssetProperties()}
+
+                                <div className="form-btn-container">
+                                    <Button
+                                        type="button"
+                                        label="Cancel"
+                                        className="p-button-danger p-button-outlined custom-cancel-btn"
+                                        onClick={() => router.back()}
+                                        icon="pi pi-times"
+                                    />
+                                    <Button
+                                        type="reset"
+                                        label="Reset"
+                                        className="p-button-secondary p-button-outlined custom-reset-btn"
+                                        icon="pi pi-refresh"
+                                    />
+                                    <Button
+                                        type="submit"
+                                        label="Add Contract"
+                                        className="p-button-primary custom-add-btn"
+                                        icon="pi pi-check"
+                                    />
+                                </div>
+                            </form>
                         </div>
-                    </Card>
-
-                    {renderContractClauses()}
-
-                    {renderSelectedAssetProperties()}
-
-                    <div className="form-btn-container">
-                        <Button
-                            type="button"
-                            label="Cancel"
-                            className="p-button-danger p-button-outlined custom-cancel-btn"
-                            onClick={() => router.back()}
-                            icon="pi pi-times"
-                        />
-                        <Button
-                            type="reset"
-                            label="Reset"
-                            className="p-button-secondary p-button-outlined custom-reset-btn"
-                            icon="pi pi-refresh"
-                        />
-                        <Button
-                            type="submit"
-                            label="Add Contract"
-                            className="p-button-primary custom-add-btn"
-                            icon="pi pi-check"
-                        />
+                        <div className="asset-type-list-cover">
+                            {renderAssetTypeList()}
+                        </div>
                     </div>
-                </form>
-            </div>
-            <div className="asset-type-list-cover">
-                {renderAssetTypeList()}
-            </div>
+                </div>
             </div>
         </div>
-        </div>
-      </div>
     );
 };
 
