@@ -53,9 +53,13 @@ body {
   padding: 40px 15px;
   height: calc(100vh - 86px);
   overflow-y: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 10px;
 }
 .sidebar_link_wrapper {
   overflow: hidden;
+  min-width: 40px;
 }
 .sidebar_navlink {
   border: none;
