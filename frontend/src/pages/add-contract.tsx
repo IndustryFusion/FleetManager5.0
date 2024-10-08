@@ -367,8 +367,8 @@ const AddContractPage: React.FC = () => {
                                             <label htmlFor="consumer_company_name" className="required-field">Provider Company Name</label>
                                             <InputText
                                                 id="consumer_company_name"
-                                                value={formData.consumer_company_name ?? ''}
-                                                onChange={(e) => handleInputChange(e, 'consumer_company_name')}
+                                                value={formData.provider_company_name ?? ''}
+                                                onChange={(e) => handleInputChange(e, 'provider_company_name')}
                                                 required className='contract_form_field'
                                             />
                                         </div>
