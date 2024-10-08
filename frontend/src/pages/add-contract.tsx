@@ -8,6 +8,7 @@ import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import Image from 'next/image.js';
 import { Toast } from 'primereact/toast';
+import { Chips } from 'primereact/chips';
 import Sidebar from "@/components/sidebar";
 import Navbar from "@/components/navbar";
 import { getAccessGroup } from '../utility/indexed-db.ts';
@@ -52,15 +53,16 @@ const AddContractPage: React.FC = () => {
     const [certificateExpiry, setCertificateExpiry] = useState<Date | null>(null);
     const [editTitle, setEditTitle] = useState<Boolean>(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const [consumerAddress, setConsumerAddress] = useState('');
 
     useEffect(() => {
         fetchData();
     }, []);
     useEffect(() => {
         if (inputRef.current) {
-          inputRef.current.focus();
+            inputRef.current.focus();
         }
-      }, [editTitle]);
+    }, [editTitle]);
 
     const fetchData = async () => {
         try {
@@ -86,7 +88,7 @@ const AddContractPage: React.FC = () => {
                 setFormData(prevState => ({
                     ...prevState,
                     data_consumer_company_ifric_id: userData.company_ifric_id,
-                    contract_title : template?.title
+                    contract_title: template?.title
                 }));
 
                 // Fetch company certificate
@@ -136,7 +138,7 @@ const AddContractPage: React.FC = () => {
     const initializeFormData = (properties: { [key: string]: PropertyDefinition }) => {
         const initialData: { [key: string]: any } = {
             asset_type: 'laserCutter',
-            contract_title : templateData?.title
+            contract_title: templateData?.title
         };
         Object.entries(properties).forEach(([key, property]) => {
             if (property.app === 'creator') {
@@ -188,6 +190,8 @@ const AddContractPage: React.FC = () => {
                     ...prevState,
                     consumer_company_name: response.data[0].company_name
                 }));
+                console.log(response.data[0])
+                setConsumerAddress(`${response.data[0].address_1} ${response.data[0].address_2}`)
             }
         } catch (error) {
             console.error('Error fetching company details:', error);
@@ -287,54 +291,65 @@ const AddContractPage: React.FC = () => {
                     <div className="create-contract-form-grid">
                         <div className="create-contract-form-wrapper">
                             <form onSubmit={handleSubmit}>
-                                    <div className="form-grid">
-                                        <div className="contract_title_group">
-                                            <InputText ref={inputRef}
-                                                id="contract_title"
-                                                value={formData.contract_title ?? ''}
-                                                onChange={(e) => handleInputChange(e, 'contract_title')}
-                                                required
-                                                className="contract_form_field field_title"
-                                                onBlur={() =>{setTimeout(() => {
-                                                    setEditTitle(false)
-                                                }, 200);}}
-                                                disabled={!editTitle}
-                                            />
-                                            <button
-                                                onClick={(e) =>{
-                                                    e.preventDefault();
-                                                    setEditTitle(!editTitle);
-                                                }}
-                                                className="contract_field_button" 
-                                            >
-                                                {editTitle === false ? (<Image src="/add-contract/edit_icon.svg" width={22} height={22} alt='edit icon'></Image>): (
-                                                    <Image src="/add-contract/save_icon.svg" width={22} height={22} alt='save icon'></Image>
-                                                ) }
-                                            </button>
-                                        </div>
-                                        <div className="contract_form_field_column">
+                                <div className="form-grid">
+                                    <div className="contract_title_group">
+                                        <InputText
+                                            ref={inputRef}
+                                            id="contract_title"
+                                            value={formData.contract_title ?? ''}
+                                            onChange={(e) => handleInputChange(e, 'contract_title')}
+                                            required
+                                            className="contract_form_field field_title"
+                                            onBlur={() => {
+                                                setTimeout(() => {
+                                                    setEditTitle(false);
+                                                }, 200);
+                                            }}
+                                            disabled={!editTitle}
+                                        />
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                setEditTitle(!editTitle);
+                                            }}
+                                            className="contract_field_button"
+                                        >
+                                            {editTitle === false ? (<Image src="/add-contract/edit_icon.svg" width={22} height={22} alt='edit icon'></Image>) : (
+                                                <Image src="/add-contract/save_icon.svg" width={22} height={22} alt='save icon'></Image>
+                                            )}
+                                        </button>
+                                    </div>
+                                    <div className="contract_form_field_column">
                                         <div className="field">
                                             <label htmlFor="contract_type" className="required-field">Contract Type</label>
-                                            <InputText
-                                                id="contract_type"
-                                                value={formData.contract_type ?? ''}
-                                                onChange={(e) => handleInputChange(e, 'contract_type')}
-                                                required
-                                                className='contract_form_field'
-                                            />
+                                            {!!templateData?.properties.contract_type.readOnly ? (
+                                                <div className='text_large_bold'>{formData.contract_type ? formData.contract_type.split('/').pop() : ''}</div>
+                                            ) : (
+                                                <InputText
+                                                    id="contract_type"
+                                                    value={formData.contract_type ?? ''}
+                                                    onChange={(e) => handleInputChange(e, 'contract_type')}
+                                                    required
+                                                    className='contract_form_field'
+                                                />
+                                            )}
                                         </div>
                                         <div className="field half-width-field">
                                             <label htmlFor="asset_type" className="required-field">Asset Type</label>
-                                            <InputText
-                                                id="asset_type"
-                                                value={formData.asset_type ?? ''}
-                                                onChange={(e) => handleInputChange(e, 'asset_type')}
-                                                required className='contract_form_field'
-                                            />
+                                            {!!templateData?.properties.asset_type.readOnly ? (
+                                                <div className='text_large_bold'>{formData.asset_type ? formData.asset_type.split('/').pop() : ''}</div>
+                                            ) : (
+                                                <InputText
+                                                    id="asset_type"
+                                                    value={formData.asset_type ?? ''}
+                                                    onChange={(e) => handleInputChange(e, 'asset_type')}
+                                                    required className='contract_form_field'
+                                                />
+                                            )}
                                         </div>
-                                        </div>
-                                        <div className='contract_form_subheader'>Contract Time</div>
-                                        <div className="contract_form_field_column">
+                                    </div>
+                                    <div className='contract_form_subheader'>Contract Time</div>
+                                    <div className="contract_form_field_column">
                                         <div className="field">
                                             <label htmlFor="contract_start_date" className="required-field">Contract Start Date</label>
                                             <div className='text_large_bold margin_top_medium'>
@@ -346,7 +361,7 @@ const AddContractPage: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="field">
-                                            <label htmlFor="contract_end_date" className="required-field">Contract End Date</label>
+                                            <label htmlFor="contract_end_date" className="required-field">Contract End Date <span style={{ color: "red" }}>*</span></label>
                                             <Calendar
                                                 id="contract_end_date"
                                                 value={formData.contract_end_date ?? null}
@@ -355,36 +370,61 @@ const AddContractPage: React.FC = () => {
                                                 required
                                                 maxDate={certificateExpiry ? new Date(certificateExpiry.getTime() - 24 * 60 * 60 * 1000) : undefined} className='contract_form_field'
                                             />
-                                            {certificateExpiry && (
-                                                <small className="p-error">
-                                                    Contract end date must be before {new Date(certificateExpiry.getTime() - 24 * 60 * 60 * 1000).toLocaleDateString()}
-                                                </small> 
+                                            {certificateExpiry && formData.contract_end_date &&
+                                                new Date(formData.contract_end_date).getTime() >= certificateExpiry.getTime() && (
+                                                    <small className="p-error">
+                                                        Contract end date must be before {new Date(certificateExpiry.getTime() - 24 * 60 * 60 * 1000).toLocaleDateString()}
+                                                    </small>
+                                                )}
+                                        </div>
+                                    </div>
+                                    <div className='contract_form_subheader'>Parties</div>
+                                    <div className="contract_form_field_column">
+                                        <div className="field">
+                                            {!!templateData?.properties.consumer_company_name.readOnly ? (
+                                                <div className="consumer_details_wrapper">
+                                                <Image src="/add-contract/company_icon.svg" width={24} height={24} alt='company icon'></Image>
+                                                <div>
+                                                    <label htmlFor="provider_company_name" className="required-field">Data Consumer</label>
+                                                    <div style={{color: "#2b2b2bd6", lineHeight: "18px"}}><div className='text_large_bold'>{formData.consumer_company_name}</div>
+                                                    <div style={{ marginTop: "4px" }}>{consumerAddress}</div>
+                                                    <div style={{ marginTop: "4px" }}>{formData.data_consumer_company_ifric_id}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            ) : (
+                                                <div>
+                                                    <label htmlFor="consumer_company_name" className="required-field">Data Consumer</label>
+                                                    <InputText
+                                                    id="consumer_company_name"
+                                                    value={formData.consumer_company_name ?? ''}
+                                                    onChange={(e) => handleInputChange(e, 'consumer_company_name')}
+                                                    required className='contract_form_field'
+                                                />
+                                                </div>
                                             )}
                                         </div>
-                                        </div>
-                                        <div className='contract_form_subheader'>Parties</div>
-                                        <div className="contract_form_field_column">
                                         <div className="field">
-                                            <label htmlFor="consumer_company_name" className="required-field">Provider Company Name</label>
-                                            <InputText
-                                                id="consumer_company_name"
+                                            {/* <InputText
+                                                id="provider_company_name"
                                                 value={formData.provider_company_name ?? ''}
                                                 onChange={(e) => handleInputChange(e, 'provider_company_name')}
                                                 required className='contract_form_field'
-                                            />
+                                            /> */}
+                                            <div className="consumer_details_wrapper">
+                                                <Image src="/add-contract/company_icon.svg" width={24} height={24} alt='company icon'></Image>
+                                                <div>
+                                                    <label htmlFor="provider_company_name" className="required-field">Data Provider</label>
+                                                    <div style={{color: "#2b2b2bd6", lineHeight: "18px"}}><div className='text_large_bold'>XYZ Company Gmbh</div>
+                                                    <div style={{marginTop: "8px"}}>Street name, city, country</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="field">
-                                            <label htmlFor="consumer_company_name" className="required-field">Consumer Company Name</label>
-                                            <InputText
-                                                id="consumer_company_name"
-                                                value={formData.consumer_company_name ?? ''}
-                                                onChange={(e) => handleInputChange(e, 'consumer_company_name')}
-                                                required className='contract_form_field'
-                                            />
-                                        </div>
-                                        </div>
-                                        <div className='contract_form_subheader'>Shared Data</div>
-                                        <div className="contract_form_field_column">
+                                    </div>
+                                    <div className='contract_form_subheader'>Shared Data</div>
+                                    <div className="contract_form_field_column">
                                         <div className="field half-width-field">
                                             <label htmlFor="interval" className="required-field">Interval</label>
                                             <InputText
@@ -406,12 +446,13 @@ const AddContractPage: React.FC = () => {
                                                 onChange={(e) => setSelectedAssetProperties(e.value)}
                                                 optionLabel="label"
                                                 filter
-                                                required className='contract_form_field'
+                                                required className='contract_form_field' placeholder='Select Assets'
                                             />
+                                            <Chips value={selectedAssetProperties} className='asset_chips' onChange={(e) => setSelectedAssetProperties(e.value)} />
                                         </div>
-                                        </div>
-                                        {/* Data Consumer Company IFRIC ID */}
-                                        <div className="field half-width-field">
+                                    </div>
+                                    {/* Data Consumer Company IFRIC ID */}
+                                    {/* <div className="field half-width-field">
                                             <label htmlFor="data_consumer_company_ifric_id" className="required-field">Data Consumer Company IFRIC ID</label>
                                             <InputText
                                                 id="data_consumer_company_ifric_id"
@@ -422,7 +463,7 @@ const AddContractPage: React.FC = () => {
                                         </div>
 
                                         {/* Consumer Company Certificate Data */}
-                                        <div className="field half-width-field">
+                                    {/*<div className="field half-width-field">
                                             <label>Consumer Company Certificate Data</label>
                                             {formData.consumer_company_certificate_data ? (
                                                 <InputText
@@ -433,12 +474,12 @@ const AddContractPage: React.FC = () => {
                                             ) : (
                                                 <div className="no-certificate-message">No data found</div>
                                             )}
-                                        </div>
-                                    </div>
+                                        </div> */}
+                                </div>
 
                                 {renderContractClauses()}
 
-                                {renderSelectedAssetProperties()}
+                                {/* {renderSelectedAssetProperties()} */}
 
                                 <div className="form-btn-container">
                                     <Button
