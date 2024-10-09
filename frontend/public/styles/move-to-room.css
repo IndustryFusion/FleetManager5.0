@@ -318,7 +318,7 @@ display: none;
 .custom_steps_wrapper{
   display: flex;
   align-items: flex-start;
-  gap: 16px;
+  gap: 4rem;
   flex-direction: column;
 }
 .move-to-room-dialog .p-dialog-footer{
@@ -327,9 +327,9 @@ display: none;
 }
 .step_connector{
   width: 1.5px;
-  height: 32px;
+  height: 104px;
   position: absolute;
-  bottom: -26px;
+  bottom: -83px;
   left: 11.5px;
 }
 .owner_form{
