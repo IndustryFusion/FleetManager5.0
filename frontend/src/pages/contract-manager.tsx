@@ -126,12 +126,8 @@ const ContractManager = () => {
                   )
                 })
                  }
-                 
-                  
                   </div>
-               
-                </div>
-                
+                </div>    
             </div>
         </div>
         </div>
