@@ -577,7 +577,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
         <div className="owner_form_wrapper">
           <form className='owner_form'>
             <div className="form_field_group">
-              <h3 className='form_group_title'>Factory Owner</h3>
+              <h3 className='form_group_title'>Factory Owner <span style={{color:"#ff0000"}}>*</span></h3>
               <div className="form_field">
                 <div className="p-field p-float-label">
                   <Dropdown

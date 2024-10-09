@@ -17,6 +17,15 @@
   font-weight: bold;
   margin-right: 0.5rem;
 }
+.owner-company-id{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 25px;
+  width: 300px;
+  font-size: 16px;
+  margin-top: 14px !important;
+  text-wrap: nowrap
+}
 
 
 @media screen and (max-width: 768px) {
