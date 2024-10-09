@@ -100,7 +100,7 @@ function Sidebar() {
             }`}
             tooltip={!sidebarOpen ? "Data Twins" : undefined}
             tooltipOptions={{ position: "right", event: "both" }}
-            onClick={() => handleRoute("/asset-overview")}
+            onClick={() => handleRoute("asset-overview")}
           >
             <Image
               src="/sidebar/asset_series_icon.svg"
@@ -122,7 +122,7 @@ function Sidebar() {
               ? "is_active"
               : ""
           }`}
-            onClick={() => handleRoute("/contract-manager")}
+            onClick={() => handleRoute("contract-manager")}
             tooltip={!sidebarOpen ? "Contracts" : undefined}
             tooltipOptions={{ position: "right", event: "both" }}
           >
@@ -149,7 +149,7 @@ function Sidebar() {
             tooltip={!sidebarOpen ? "Certificates" : undefined}
             tooltipOptions={{ position: "right", event: "both" }}
             onClick={() =>
-              handleRoute("/certificates")
+              handleRoute("certificates")
             }
           >
             <Image
