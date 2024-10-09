@@ -65,7 +65,7 @@
   padding: 1.5rem 26px;
 }
 .contract-right-container {
-  flex: 0 70%;
+  flex: 0 78%;
 }
 .search-expand {
   position: absolute;
@@ -107,6 +107,9 @@
 }
 .contract-cards-container {
   font-family: "League Spartan", sans-serif;
+  height: calc(100vh - 150px);
+  overflow: auto;
+  padding-bottom: 6rem;
 }
 .contract-cards-container p {
   margin: 0;
@@ -115,6 +118,8 @@
   padding: 1.5rem;
   background-color: #fff;
   border-radius: 16px;
+  margin-right: 2rem;
+  cursor: pointer;
 }
 .card-label-grey {
   color: #95989a;

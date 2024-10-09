@@ -7,16 +7,54 @@ import { InputText } from 'primereact/inputtext';
 import { Tree } from 'primereact/tree';
 import { NodeService } from '@/service/NodeService';
 import ContractCards from '@/components/contractManager/contract-cards';
-import { Checkbox } from 'primereact/checkbox';
+import { Checkbox } from 'primereact/checkbox'
+import { getAccessGroup } from "@/utility/indexed-db";
+import { getContracts } from '@/utility/contracts';
+import ContractCard from '@/components/contractManager/contract-card';
+;
 
 const ContractManager = () => {
     const [nodes, setNodes] = useState([]); 
+    const [companyIfricId, setCompanyIfricId] = useState("");
     const [selectedKey, setSelectedKey] = useState('');
+    const [contractsData, setContractsData]= useState([]);
+    const [filterContracts, setFilterContracts]=useState(false);
 
 
     useEffect(() => {
         NodeService.getTreeNodes().then((data) => setNodes(data));
     }, []);
+
+    const getCompanyId = async()=>{
+      const details = await getAccessGroup();
+      setCompanyIfricId(details.company_ifric_id)
+    }
+    useEffect(() => {
+      getCompanyId();
+    })
+
+    const fetchContracts =async(ifricId:string)=>{
+     try{
+     const response = await getContracts(ifricId);
+     console.log("response in contracts page", response);
+     setContractsData(response)
+     }catch(error){
+      console.error(error)
+     }
+    }
+
+    useEffect(()=>{
+    fetchContracts(companyIfricId)
+    },[companyIfricId])
+
+
+    const filterContractsData = [...contractsData].filter(contract => contract?.contract_type?.trim() === "https://industry-fusion.org/contracts/v0.1/predictiveMaintenanceLaserCutter")
+    console.log("contractsData here", contractsData);
+    
+    console.log("filterContractsData", filterContractsData);
+    console.log("filterContracts", filterContracts);
+    
+    
 
   return (
     <>
@@ -46,7 +84,6 @@ const ContractManager = () => {
             </div>
             </div>
             <div className='mt-6'>
-            <h3 className='m-0 ml-1 folder-heading'>Simple Lawfirm Members</h3>
             <div className='flex gap-3'>
                 <p className='card-label-grey' style={{textDecoration:"underline"}}>Select All</p>
                 <p className='card-label-grey' style={{textDecoration:"underline"}}>Unselect All</p>
@@ -62,9 +99,39 @@ const ContractManager = () => {
             </div>
                 </div>
                 <div className='contract-right-container'>
-                 <ContractHeader />
-                 <ContractCards />
+                 <ContractHeader />               
+                 <div className="contract-cards-container">
+                 <ContractCards 
+                 setFilterContracts={setFilterContracts}
+                 />
+                 {filterContracts &&  filterContractsData.length ?
+                   filterContractsData.map(contract =>{
+                    return(
+                      <>
+                      <ContractCard 
+                      contract={contract}
+                      />
+                      </>
+                    )
+                  })
+                 :
+                 contractsData.length &&
+                 contractsData.map(contract =>{
+                  return(
+                    <div >
+                    <ContractCard 
+                    contract={contract}
+                    />
+                    </div>
+                  )
+                })
+                 }
+                 
+                  
+                  </div>
+               
                 </div>
+                
             </div>
         </div>
         </div>
