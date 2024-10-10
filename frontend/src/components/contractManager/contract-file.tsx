@@ -3,7 +3,7 @@ import React from "react";
 import { GiAlarmClock } from "react-icons/gi";
 import { MdLockOpen, MdLockOutline } from "react-icons/md";
 
-const ContractCard = ({ contract }) => {
+const ContractCard:React.FC<any> = ({ contract }) => {
     const formattedDate = moment(contract?.meta_data?.create_at).format("DD MMM YYYY");
 
   return (

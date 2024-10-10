@@ -214,3 +214,17 @@
 .contract-tabs.p-tabview .p-tabview-nav-content {
   border-bottom: 2px solid #e1e8ed;
 }
+.back-btn {
+  background-color: #2b2b2b;
+  color: #fff;
+  border-radius: 8px;
+  padding: 7px 11px 7px 5px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 10px 0;
+  cursor: pointer;
+  font-family: "League Spartan";
+}
+.not-found-text{
+  color: #95989a;
+}
