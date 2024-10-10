@@ -243,6 +243,14 @@ export const updateCompanyDetails = async(company_ifric_id: string, dataToSend: 
 
 export const updateCompanyTwin = async(dataToSend: Record<string, any>) => {
     try {
+        const ownerCertVerification = await verifyCompanyCertificate(dataToSend.owner_company_ifric_id);
+        if(!ownerCertVerification?.data.status) {
+            throw new Error('Owner Certificate is not verified');
+        }
+        const manufacturerCertVerification = await verifyCompanyCertificate(dataToSend.maufacturer_ifric_id);
+        if(!manufacturerCertVerification?.data.status) {
+            throw new Error('Manufacturer Certificate is not verified');
+        }
         return await api.patch(
             `${REGISTRY_API_URL}/auth/update-company-twin`,
             dataToSend
