@@ -24,9 +24,6 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import { storeAccessGroup } from "./indexed-db";
 
 const REGISTRY_API_URL =process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
-
-//Use one const - Issue
-const BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
 interface CustomJwtPayload extends JwtPayload {
@@ -243,6 +240,14 @@ export const updateCompanyDetails = async(company_ifric_id: string, dataToSend: 
 
 export const updateCompanyTwin = async(dataToSend: Record<string, any>) => {
     try {
+        const ownerCertVerification = await verifyCompanyCertificate(dataToSend.owner_company_ifric_id);
+        if(!ownerCertVerification?.data.status) {
+            throw new Error('Owner Certificate is not verified');
+        }
+        const manufacturerCertVerification = await verifyCompanyCertificate(dataToSend.maufacturer_ifric_id);
+        if(!manufacturerCertVerification?.data.status) {
+            throw new Error('Manufacturer Certificate is not verified');
+        }
         return await api.patch(
             `${REGISTRY_API_URL}/auth/update-company-twin`,
             dataToSend
@@ -276,7 +281,7 @@ export const getAccessGroupData = async(token: string) => {
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        const response = await axios.post(`${BACKEND_URL}/auth/get-indexed-db-data`, {token, product_name: "Fleet Manager"}, {
+        const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/get-indexed-db-data`, {token, product_name: "Fleet Manager"}, {
             headers: registryHeader
         });
         await storeAccessGroup(response.data.data);
