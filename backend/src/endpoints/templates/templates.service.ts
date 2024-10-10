@@ -163,7 +163,6 @@ export class TemplatesService {
           properties: parsedContent.properties,
         });
       }
-      console.log("templateDescriptions", templateDescriptions)
       return templateDescriptions;
     } catch (err) {
       throw new NotFoundException(
