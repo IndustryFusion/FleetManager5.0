@@ -289,31 +289,25 @@ const AddContractPage: React.FC = () => {
     
                 // Check if the company has certificates
                 if (response?.data && response?.data.length > 0) {
-                    const companyCert = response.data[0];
-    
-                    // Check if the certificate is not expired
-                    if (new Date(companyCert.expiry_on) > new Date()) {
-                        const response = await createContract(dataToSend);
-                        if(response?.statusText === "Created" && response?.data.status === 201){
-                            toast.current?.show({ severity: 'success', summary: 'Error', detail: 'Contract created.' });
-                        }
-                        else{
-                            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Error submitting the form',  }); 
-                        }
-                    } else {
-                        toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Company certificate has expired. Please create a new one' });
+                    const response = await createContract(dataToSend);
+                    
+                    if (response?.statusText === "Created" && response?.data.status === 201) {
+                        toast.current?.show({ severity: 'success', summary: 'Error', detail: 'Contract created.' });
+                    }
+                    else {
+                        toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Error submitting the form', });
                     }
                 } else {
                     toast.current?.show({ severity: 'error', summary: 'Error', detail: 'No company certificates found. Please create one before proceeding' });
                 }
             } else {
-                toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Company is not certified' });
-            }  
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Company certificate has expired. Please create a new certificate' });
+            }
         } catch (error) {
             console.error('Error submitting form:', error);
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to add contract' });
         }
-    };  
+    };
 
     const renderAssetTypeList = () => {
         const assetTypes = ['Laser Cutter']; //should be replaced with dynamic data
