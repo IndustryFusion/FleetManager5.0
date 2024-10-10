@@ -42,7 +42,7 @@ const Certificates = () => {
           <Sidebar  />
           <div className="main_content_wrapper">
         <div className="navbar_wrapper">
-            <Navbar navHeader="Certificates"/>
+            <Navbar navHeader="Certificate Manager"/>
             <div className="certificates-content-wrapper">
           <TabView
             className="certificates-tabview spaced-tabs"

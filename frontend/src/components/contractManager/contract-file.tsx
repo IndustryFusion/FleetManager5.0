@@ -1,14 +1,17 @@
 import moment from "moment";
+import { useRouter } from "next/router";
 import React from "react";
 import { GiAlarmClock } from "react-icons/gi";
 import { MdLockOpen, MdLockOutline } from "react-icons/md";
 
 const ContractCard:React.FC<any> = ({ contract }) => {
     const formattedDate = moment(contract?.meta_data?.create_at).format("DD MMM YYYY");
+    const router =useRouter();
 
+  
   return (
     <div 
-    
+   onClick={()=>router.push(`contract/${contract?.contract_ifric_id}`)}
     className="flex contract-card mt-4" style={{ gap: "3rem" }}>
       <div className="flex gap-2 folder-heading align-items-center">
         <i className="pi pi-file-import" style={{ fontSize: "22px" }}></i>

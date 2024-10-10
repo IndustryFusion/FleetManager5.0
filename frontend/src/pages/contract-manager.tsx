@@ -71,9 +71,6 @@ const ContractManager = () => {
     }
   }, [filterContracts, contractsData]);
 
-  console.log("filterContracts", filterContracts);
-  console.log("insu", insuranceFilterContracts);
-
   return (
     <>
       <div className="flex">
@@ -163,10 +160,12 @@ const ContractManager = () => {
                       {filterContracts &&
                         predictiveFilteredContractsData.length > 0 &&
                         predictiveFilteredContractsData.map((contract) => (
-                          <ContractCard
-                            key={contract._id}
+                          <div  key={contract._id}>
+                             <ContractCard
                             contract={contract}
                           />
+                          </div>
+                         
                         ))}
                       {insuranceFilterContracts && (
                         <div>
