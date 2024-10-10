@@ -464,8 +464,8 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-    }
-    .review-btn{
+}
+.review-btn{
       display: flex;
       justify-content: center;
       color: #fff;
@@ -474,4 +474,12 @@
       border-radius: 8px;
       margin:  10px ;
       font-size: 18px;
-    }
+      margin-top: 1.8rem;
+}
+.edit-contract-input{
+  background-color: #d1e5e1;
+}
+.contract_form_field.p-inputtext{
+    border:none;
+    font-weight: 600;
+}

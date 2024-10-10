@@ -16,9 +16,8 @@ import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "../../../public/styles/add-contract.css";
-import { getCompanyDetailsById, verifyCompanyCertificate } from '../../utility/auth';
-import { getTemplateByName, getCompanyCertificate, createContract, getTemplateByType, getContractDetails } from '../../utility/contracts'
-import { formatDateTime } from '../../utility/certificate'
+import { getCompanyDetailsById, verifyCompanyCertificate } from '../../utility/auth.ts';
+import { getTemplateByName, getCompanyCertificate, createContract, getTemplateByType, getContractDetails, updateContractDetails } from '../../utility/contracts.ts'
 import moment from 'moment';
 import { IoEyeOutline } from 'react-icons/io5';
 import { RiDeleteBinLine } from 'react-icons/ri';
@@ -64,6 +63,7 @@ const ContractDetails: React.FC = () => {
     const [companyIfricId, setCompanyIfricId] = useState('');
     const [consumerCompanyCertified, setConsumerCompanyCertified] = useState<Boolean | null>(null);
     const [contractData, setContractData] = useState({});
+    const [isEdit, setIsEdit]=useState(false);
     const { contractId } = router.query;
 
     const fetchContractDetails =async(contractIfricId:string)=>{
@@ -201,14 +201,9 @@ const ContractDetails: React.FC = () => {
     };
 
     const handleInputChange = (e: any, field: string) => {
-        const value = 'target' in e ? parseInt(e.target.value) : parseInt(e.value);
-        
-        console.log("wt's value here", typeof value);
-        console.log("wt's field here", field);
-        
+   
         if (field === 'interval') {
-            console.log("value here is ", value);
-            
+            const value = 'target' in e ? parseInt(e.target.value) : parseInt(e.value);
                 if (
                     value >= templateData?.properties[field]?.minimum &&
                     value <= templateData?.properties[field]?.maximum
@@ -226,7 +221,7 @@ const ContractDetails: React.FC = () => {
         }
 
 
-        setContractData({ ...formData, [field]: value });
+        setContractData({ ...formData, [field]: e.target.value });
     };
 
     const fetchConsumerCompanyName = async (companyId: string) => {
@@ -319,6 +314,8 @@ const ContractDetails: React.FC = () => {
         
     
         try {
+            const response = await updateContractDetails(contractData?.contract_ifric_id, dataToSend)
+           console.log("response from edit here", response);
            
         } catch (error) {
             console.error('Error submitting form:', error);
@@ -373,7 +370,7 @@ const ContractDetails: React.FC = () => {
                                                     setEditTitle(false);
                                                 }, 200);
                                             }}
-                                            disabled={!editTitle}
+                                            disabled={!editTitle || !isEdit}
                                         />
                                         <button
                                             onClick={(e) => {
@@ -427,6 +424,7 @@ const ContractDetails: React.FC = () => {
                                         <div className="field">
                                             <label htmlFor="contract_valid_till" className="required-field">Contract End Date <span style={{ color: "red" }}>*</span></label>
                                             <Calendar
+                                            className={`${isEdit ? "edit-contract-input" : ""} contract_form_field`}
                                                 id="contract_valid_till"
                                                 value={ endDate ?? null}
                                                 onChange={(e) => handleInputChange(e, 'contract_valid_till')}
@@ -506,7 +504,8 @@ const ContractDetails: React.FC = () => {
                                                 type="number"
                                                 value={contractData?.interval ?? ''}
                                                 onChange={(e) => handleInputChange(e, 'interval')}
-                                                required className='contract_form_field'
+                                                required 
+                                                className={`${isEdit ? "edit-contract-input" : ""} contract_form_field`}
                                             />
                                             <small>Realtime update interval for properties.</small>
                                             {templateData?.properties.data_type && (
@@ -525,7 +524,9 @@ const ContractDetails: React.FC = () => {
                                                 onChange={(e) => setSelectedAssetProperties(e.value)}
                                                 optionLabel="label"
                                                 filter
-                                                required className='contract_form_field' placeholder='Select Asset Properties'
+                                                required 
+                                                className={`${isEdit ? "edit-contract-input" : ""} contract_form_field`}
+                                                placeholder='Select Asset Properties'
                                             />
                                             <Chips value={selectedAssetProperties} className='asset_chips' onChange={(e) => setSelectedAssetProperties(e.value)} />
                                         </div>
@@ -557,7 +558,7 @@ const ContractDetails: React.FC = () => {
                                 </div>
 
                                 {renderContractClauses()}
-
+                                {isEdit &&
                                 <div className="form-btn-container">
                                     <Button
                                         type="button"
@@ -580,6 +581,7 @@ const ContractDetails: React.FC = () => {
                                         disabled={(consumerCompanyCertified !== null && consumerCompanyCertified === false)}
                                     />
                                 </div>
+                                }
                             </form>
                             {(consumerCompanyCertified !== null && consumerCompanyCertified === false) && (
                                 <div className='floating_error_group'>
@@ -592,8 +594,10 @@ const ContractDetails: React.FC = () => {
                             <p className='review-btn'>Review</p>
                             <ul className='review_lists'>
                                 <li ><i  className="pi pi-download mr-2"></i>Download</li>
-                                <li ><IoEyeOutline className='mr-2'/>Preview</li>
-                                <li><FiEdit3 className='mr-2'/>Edit</li>
+                                <li onClick={()=>setIsEdit(false)}><IoEyeOutline className='mr-2'/>Preview</li>
+                                <li
+                                onClick={()=>setIsEdit(true)}
+                                ><FiEdit3 className='mr-2'/>Edit</li>
                                 <li><RiDeleteBinLine className='mr-2'/>Delete</li>
                             </ul>
                         </div>

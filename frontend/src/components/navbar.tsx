@@ -46,6 +46,9 @@ const Navbar: React.FC<NavbarProps> = ({ navHeader }) => {
     if (fullPath.includes("/contract-manager")) {
       return [createLastItem("Contract Manager")];
     }
+    if (fullPath.includes("/contract")) {
+      return [createLastItem("Contract ")];
+    }
 
     let pathParts = fullPath.split("/").filter((part) => part);
     if (pathParts.length > 0) {

@@ -127,9 +127,14 @@ try{
   }
 }
 
-export const updateContractDetails = async(contractIfricId:string)=>{
+export const updateContractDetails = async(contractIfricId:string,dataToSend: Record<string,any>)=>{
     try{
-        const response = await api.patch(`${IFX_BACKEND_URL}/contract/${contractIfricId}`)
+        const response = await api.patch(`${IFX_BACKEND_URL}/contract/${contractIfricId}`,dataToSend,{
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },  
+        })
         return response.data
     }catch (error:any) {
         console.error("Error updating contracts:", error);
