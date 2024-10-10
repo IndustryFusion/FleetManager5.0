@@ -32,10 +32,10 @@ export class AssetController {
     }
   }
 
-  @Get('type=:type')
-  async getAssetByType(type: string) {
+  @Get('/type/:type')
+  async getAssetByType(@Param('type') type: string) {
     try {
-      return await this.assetService.getAssetByType(type);
+      return await this.assetService.getAssetByType(atob(type));
     } catch (err) {
       throw new NotFoundException();
     }
