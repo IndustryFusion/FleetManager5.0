@@ -24,9 +24,6 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import { storeAccessGroup } from "./indexed-db";
 
 const REGISTRY_API_URL =process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
-
-//Use one const - Issue
-const BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
 interface CustomJwtPayload extends JwtPayload {
@@ -276,7 +273,7 @@ export const getAccessGroupData = async(token: string) => {
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        const response = await axios.post(`${BACKEND_URL}/auth/get-indexed-db-data`, {token, product_name: "Fleet Manager"}, {
+        const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/get-indexed-db-data`, {token, product_name: "Fleet Manager"}, {
             headers: registryHeader
         });
         await storeAccessGroup(response.data.data);
