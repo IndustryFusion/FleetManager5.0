@@ -144,10 +144,6 @@ const AssetOverView: React.FC = () => {
   }
   }
   ]
-
-  console.log("selectedProduct here is", selectedProduct);
-  
-
   const setIndexedDb = async (token: string) => {
     try {
       await getAccessGroupData(token);
@@ -215,7 +211,6 @@ const AssetOverView: React.FC = () => {
   },[reduxAssets])
 
   useEffect(() => {
-    dispatch(fetchTemplates());
     if (Cookies.get("login_flag") === "false") {
       router.push("/login");
     } else {

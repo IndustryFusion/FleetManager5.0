@@ -105,9 +105,7 @@ const AssetTable: React.FC<any> = ({
     const endRow = Math.min(startRow + selectedRowsPerPage - 1, assetsData.length);
     setRangeDisplay(`${startRow}-${endRow}`);
   }, [currentPage, selectedRowsPerPage, assetsData]);
- console.log("selectedProduct in table", selectedProduct);
  
-
   return (
     <>   
       <DataTable

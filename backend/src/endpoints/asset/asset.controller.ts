@@ -63,7 +63,6 @@ export class AssetController {
   @Get('get-company-manufacturer-asset/:id')
   async getManufacturerCompanyAsset(@Param('id') id: string, @Req() req: Request) {
     try {
-      console.log("inside get manufacturer asset")
       return await this.assetService.getManufacturerCompanyAsset(id, req);
     } catch (err) {
       throw err;

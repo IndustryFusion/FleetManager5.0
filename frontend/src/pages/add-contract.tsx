@@ -292,7 +292,7 @@ const AddContractPage: React.FC = () => {
                     const response = await createContract(dataToSend);
                     
                     if (response?.statusText === "Created" && response?.data.status === 201) {
-                        toast.current?.show({ severity: 'success', summary: 'Error', detail: 'Contract created.' });
+                        toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Contract created.' });
                     }
                     else {
                         toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Error submitting the form', });

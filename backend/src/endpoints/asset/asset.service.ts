@@ -29,7 +29,7 @@ export class AssetService {
   private readonly context = process.env.CONTEXT;
   private readonly registryUrl = process.env.IFRIC_REGISTRY_BACKEND_URL;
 
-  async getAssetData(id: string, req: Request) {
+  async getAssetData(company_ifric_id: string, req: Request) {
     try {
       const assetData = [];
       const headers = {
@@ -41,7 +41,7 @@ export class AssetService {
         'Accept': 'application/json',
         'Authorization': req.headers['authorization']
       };
-      const assetIds = await axios.get(`${this.registryUrl}/auth/get-company-assets/${id}`, { headers: registryHeaders });
+      const assetIds = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${company_ifric_id}`, { headers: registryHeaders });
       if(assetIds.data.length > 0) {
         for (let i = assetIds.data.length - 1; i >= 0; i--) {
           let assetId = assetIds.data[i].asset_ifric_id;
@@ -134,10 +134,10 @@ export class AssetService {
       };
 
       const result = [];
-      const companyData = await axios.get(`${this.registryUrl}/auth/get-company-details/${id}`, { headers: registryHeaders });
+/*       const companyData = await axios.get(`${this.registryUrl}/auth/get-company-details/${id}`, { headers: registryHeaders });
       if (companyData.data.length === 0) {
         throw new Error("No company found with the provided ID");
-      }
+      } */
 
       const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${id}`, { headers: registryHeaders });  
       for(let i = 0; i < companyTwinData.data.length; i++) {
@@ -155,7 +155,7 @@ export class AssetService {
             }
           }
         } catch(err) {
-          console.log("Failed", err?.message);
+          console.log("Failed for few assets::", err?.message);
           continue;
         }
       }
