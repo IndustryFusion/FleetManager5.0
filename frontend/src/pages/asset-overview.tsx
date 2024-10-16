@@ -21,7 +21,6 @@ import AssetDetailsCard from "../components/assetOverview/asset-view";
 import Footer from "../components/footer";
 import { Toast, ToastMessage } from "primereact/toast";
 import { Asset } from "@/interfaces/assetTypes";
-import Cookies from "js-cookie";
 import {fetchAssets} from "@/utility/asset";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -144,35 +143,22 @@ const AssetOverView: React.FC = () => {
   }
   }
   ]
-  const setIndexedDb = async (token: string) => {
-    try {
-      await getAccessGroupData(token);
-    } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        console.error("Error response:", error.response?.data.message);
-        showToast("error", "Error", "Fetching assets");
-      } else {
-        console.error("Error:", error);
-        showToast("error", "Error", error);
-      }
-    }
-  }
+
+  console.log("selectedProduct here is", selectedProduct);
+  
   const getCompanyId = async()=>{
-    const details = await getAccessGroup();
-    setCompanyIfricId(details.company_ifric_id)
+    try {
+      const details = await getAccessGroup();
+      console.log("details ",details);
+      setCompanyIfricId(details.company_ifric_id)
+    } catch(error: any) {
+      console.log("error from catch ",error);
+      showToast("error", "Error", "Failed to fetch access group data");
+    }
   }
   useEffect(() => {
     getCompanyId();
-  })
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    
-    if (token) {
-      setIndexedDb(token);
-    }
-  }, []);
+  },[])
 
   const dataTableStyle: CSSProperties = {
     flexGrow: 1,
@@ -211,27 +197,23 @@ const AssetOverView: React.FC = () => {
   },[reduxAssets])
 
   useEffect(() => {
-    if (Cookies.get("login_flag") === "false") {
-      router.push("/login");
-    } else {
-      const storedValue = localStorage.getItem("selectedRowsPerPage");
-      if (storedValue) {
-        setSelectedRowsPerPage(storedValue);
-      } 
-      if(assets.length === 0){
-        fetchAsset();
-      }
-      const handleEsc = (event: KeyboardEvent) => {
-        if (event.key === "Escape" && activeTab === "Assets" ) {
-          setSelectedAssets([]);
-          setShowSelectedAsset(false);      
-          }
-      };
-      window.addEventListener("keydown", handleEsc);
-      return () => {
-        window.removeEventListener("keydown", handleEsc);
-      };
+    const storedValue = localStorage.getItem("selectedRowsPerPage");
+    if (storedValue) {
+      setSelectedRowsPerPage(storedValue);
+    } 
+    if(assets.length === 0){
+      fetchAsset();
     }
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && activeTab === "Assets" ) {
+        setSelectedAssets([]);
+        setShowSelectedAsset(false);      
+        }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
   }, []);
 
   useEffect(() => {

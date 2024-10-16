@@ -22,7 +22,6 @@ import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import { useState } from "react";
 import { CSSProperties } from "react";
 import { useRouter } from "next/router";
-import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { resetTimer, logout } from "@/redux/auth/authSlice";
 import ProfileDialog from "./profile-dialog";
@@ -90,7 +89,6 @@ const HorizontalNavbar: React.FC = () => {
   const navigateToIndustryFusion = "https://industry-fusion.org/de"
 
   const handleLogout = () => {
-    Cookies.set("login_flag", "false");
     router.push("/login", undefined, {locale: 'en'});
     dispatch(resetTimer());
     dispatch(logout());

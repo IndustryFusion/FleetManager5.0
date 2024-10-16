@@ -1,6 +1,6 @@
 import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../../public/styles/contract-manager.css";
 import ContractHeader from "@/components/contractManager/contract-header";
 import { InputText } from "primereact/inputtext";
@@ -12,6 +12,9 @@ import { getContracts } from "@/utility/contracts";
 import ContractCard from "@/components/contractManager/contract-file";
 import { IoArrowBack } from "react-icons/io5";
 import ContractFolders from "@/components/contractManager/contract-folders";
+import { Toast, ToastMessage } from "primereact/toast";
+import axios from "axios";
+
 const ContractManager = () => {
   const [nodes, setNodes] = useState([]);
   const [companyIfricId, setCompanyIfricId] = useState("");
@@ -24,14 +27,38 @@ const ContractManager = () => {
     useState(false);
   const [contractsOriginal, setContractsOriginal] = useState(true);
   const [loading, setLoading] = useState(false);
+  const toast = useRef<Toast>(null);
+
+  const showToast = (
+    severity: ToastMessage["severity"],
+    summary: string,
+    message: string
+  ) => {
+    toast.current?.show({
+      severity: severity,
+      summary: summary,
+      detail: message,
+      life: 8000,
+    });
+  };
 
   useEffect(() => {
     NodeService.getTreeNodes().then((data) => setNodes(data));
   }, []);
 
   const getCompanyId = async () => {
+    try {
     const details = await getAccessGroup();
     setCompanyIfricId(details.company_ifric_id);
+    } catch(error: any) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error response:", error.response?.data.message);
+        showToast("error", "Error", "Fetching assets");
+      } else {
+        console.error("Error:", error);
+        showToast("error", "Error", error);
+      }
+    }
   };
   useEffect(() => {
     getCompanyId();
@@ -74,6 +101,7 @@ const ContractManager = () => {
   return (
     <>
       <div className="flex">
+        <Toast ref={toast} />
         <Sidebar />
         <div className="main_content_wrapper">
           <div className="navbar_wrapper">

@@ -24,7 +24,6 @@ import axios from "axios";
 import HorizontalNavbar from "../components/horizontal-navbar";
 import { BlockUI } from "primereact/blockui";
 import "../../public/styles/templates.css";
-import Cookies from "js-cookie";
 import { Toast, ToastMessage } from "primereact/toast";
 import { InputText } from "primereact/inputtext";
 import Footer from "@/components/footer";
@@ -88,8 +87,8 @@ const GetListTemplate: React.FC = () => {
         }
       }
     };
-    if (Cookies.get("login_flag") === "false") { router.push("/login"); }
-    else { fetchTemplates(); }
+    
+    fetchTemplates(); 
   }, []);
 
   // Function to render templates grid based on filter
