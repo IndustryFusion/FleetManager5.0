@@ -20,7 +20,6 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
 import { login } from "@/auth/authService";
-import Cookies from "js-cookie";
 import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import "primeflex/primeflex.css";
 import { Password } from 'primereact/password';
@@ -40,17 +39,6 @@ const Login: React.FC = () => {
     const toast = useRef<Toast>(null);
     const router = useRouter();
     const submitButtonRef = useRef<HTMLButtonElement>(null);
-
-    useEffect(() => {
-        // Always do navigations after the first render
-        
-        if (Cookies.get("login_flag") === "true") {
-            router.push("/asset-overview");
-        } else {
-            router.push("/login");
-        }
-    }, []);
-
 
     // validate username, it should be  Alpha Numeric includes underscore _
     const validateUsername = (value: string): boolean => {
@@ -99,7 +87,6 @@ const Login: React.FC = () => {
                 if (response.data && response.data.status === 200 && response.data.data) {
                     const loginData = response.data.data;
                     await storeAccessGroup(loginData);
-                    Cookies.set("login_flag", "true", { expires: 7 });
                     showToast(toast, "success", "Success", "Login successful!");
                     setTimeout(() => {
                         router.push(`/asset-overview`);

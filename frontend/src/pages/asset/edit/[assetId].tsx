@@ -30,7 +30,6 @@ import { BlockUI } from 'primereact/blockui';
 import HorizontalNavbar from "../../../components/horizontal-navbar";
 import { useMountEffect } from 'primereact/hooks';
 import { Messages } from 'primereact/messages';
-import Cookies from "js-cookie";
 import { Toast, ToastMessage } from "primereact/toast";
 import { Calendar } from "primereact/calendar";
 import moment from "moment";
@@ -69,13 +68,10 @@ const AssetEdit = () => {
   const { t } = useTranslation(['button','asset']);
 
   useEffect(() => {
-    if (Cookies.get("login_flag") === "false") { router.push("/login"); }
-    else {
-      if (router.isReady) {
-        const { assetId } = router.query;
-        fetchData(assetId);
-        setLoading(false);
-      }
+    if (router.isReady) {
+      const { assetId } = router.query;
+      fetchData(assetId);
+      setLoading(false);
     }
   }, [router.isReady]);
 

@@ -29,7 +29,6 @@ import { Card } from "primereact/card";
 import { Toast, ToastMessage } from "primereact/toast";
 import { Property, Schema, RelationItem, DynamicFormSchema, FileLoadingState } from "@/interfaces/assetTypes";
 import { BlockUI } from 'primereact/blockui';
-import Cookies from "js-cookie";
 import { Calendar } from "primereact/calendar";
 import moment from "moment";
 import Footer from "@/components/footer";
@@ -151,14 +150,11 @@ const CreateAssetForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (Cookies.get("login_flag") === "false") { router.push("/login"); }
-    else {
-      if (router.isReady) {
-        const { templateId } = router.query;
-        fetchData(templateId);
-        setCurrentTemplateID(templateId);
-        setLoading(false);
-      }
+    if (router.isReady) {
+      const { templateId } = router.query;
+      fetchData(templateId);
+      setCurrentTemplateID(templateId);
+      setLoading(false);
     }
   }, [router.isReady]);
 
