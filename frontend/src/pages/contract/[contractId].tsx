@@ -22,6 +22,8 @@ import moment from 'moment';
 import { IoEyeOutline } from 'react-icons/io5';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { FiEdit3 } from 'react-icons/fi';
+import DeleteDialog from '@/components/delete-dialog';
+
 
 interface PropertyDefinition {
     type: string;
@@ -63,6 +65,8 @@ const ContractDetails: React.FC = () => {
     const [companyIfricId, setCompanyIfricId] = useState('');
     const [consumerCompanyCertified, setConsumerCompanyCertified] = useState<Boolean | null>(null);
     const [contractData, setContractData] = useState<Record<string, any>>({});
+    const [initialContractData, setInitialContractData] = useState<Record<string, any>>({});
+    const [contractDelete, setContractDelete] = useState(false);
     const [isEdit, setIsEdit]=useState(false);
     const { contractId } = router.query;
 
@@ -71,7 +75,14 @@ const ContractDetails: React.FC = () => {
          const response = await getContractDetails(contractIfricId)
          console.log("all values here", response);
          const [contract]=response;
-         setContractData(contract)
+         setContractData({
+            ...contract,
+            contract_valid_till: contract.contract_valid_till ? new Date(contract.contract_valid_till) : null
+        });
+        setInitialContractData({
+            ...contract,
+            contract_valid_till: contract.contract_valid_till ? new Date(contract.contract_valid_till) : null
+        });
          setSelectedAssetProperties(contract?.asset_properties)
         }catch(error){
             console.error(error)
@@ -80,10 +91,7 @@ const ContractDetails: React.FC = () => {
 
  
     const startDate = moment(contractData?.meta_data?.create_at).format(" MMMM DD, YYYY");
-    const endDate = contractData?.contract_valid_till ? new Date(contractData.contract_valid_till) : null;
-    
-   
-
+ 
     useEffect(() => {
         fetchData();
     }, []);
@@ -160,8 +168,7 @@ const ContractDetails: React.FC = () => {
             console.error('Error fetching data:', error);
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to load necessary data' });
         }
-    };
-    
+    };      
     const getCompanyVerification = async(company_ifric_id: string) => {
         try{
             const response = await verifyCompanyCertificate(company_ifric_id);
@@ -219,7 +226,7 @@ const ContractDetails: React.FC = () => {
             
             return;
         }
-        setContractData({ ...formData, [field]: e.target.value });
+        setContractData({ ...contractData, [field]: e.target.value });
     };
 
     const fetchConsumerCompanyName = async (companyId: string) => {
@@ -281,23 +288,15 @@ const ContractDetails: React.FC = () => {
         clause.replace(/\[consumer\]/g, contractData?.consumer_company_name || 'Company Name Not Available')
                     );
          const dataToSend = {
-            "asset_type": contractData?.asset_type,
-            "contract_name": contractData?.contract_name,
-            "consumer_company_name": contractData?.consumer_company_name,
-            "data_consumer_company_ifric_id": contractData?.data_consumer_company_ifric_id,
-            "contract_type": contractData?.contract_type,
-            "contract_clauses": formattedClauses,
-            "data_type": contractData?.data_type,
+            "contract_name":contractData.contract_name,
             "interval": contractData?.interval,
-            "contract_valid_till": moment(contractData?.contract_valid_till).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+            "contract_valid_till": moment(contractData?.contract_valid_till).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
             "asset_properties": selectedAssetProperties,
-            "consumer_company_certificate_data": contractData?.consumer_company_certificate_data,
             "meta_data": {
-                "create_at": moment(new Date()).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+                "created_at": contractData?.meta_data?.created_at,
                 "created_user": companyUser,
-                "last_updated_at": moment(new Date()).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+                "last_updated_at":moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
             },
-            "__v": 0
          }
         if(contractData?.contract_valid_till === '' || contractData?.contract_valid_till === null){
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Contract end date cannot be empty' });
@@ -313,11 +312,14 @@ const ContractDetails: React.FC = () => {
     
         try {
             const response = await updateContractDetails(contractData?.contract_ifric_id, dataToSend)
+            if(response){
+                toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Contract updated successfully' });
+            }
            console.log("response from edit here", response);
            
         } catch (error) {
             console.error('Error submitting form:', error);
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to add contract' });
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to edit contract' });
         }
     };  
 
@@ -333,12 +335,21 @@ const ContractDetails: React.FC = () => {
         )
     }
 
-    const handleAssetTypeClick = (assetType: string) => {
-        setFormData((prevState) => ({
-            ...prevState,
-            asset_type: assetType,
-        }));
+    const handleReset = () => {
+        const endDate = initialContractData.contract_valid_till ? new Date(initialContractData.contract_valid_till) : null;
+        setContractData({
+            ...initialContractData,
+            contract_valid_till: endDate
+        });
+        setSelectedAssetProperties(initialContractData?.asset_properties);
+       
+        
     };
+
+    const handleDelete =()=>{
+        router.back();
+    }
+  
 
     if (!contractData) return <div>Loading...</div>;
 
@@ -376,8 +387,9 @@ const ContractDetails: React.FC = () => {
                                                 setEditTitle(!editTitle);
                                             }}
                                             className="contract_field_button"
+                                            disabled={isEdit ?false: true}
                                         >
-                                            {editTitle === false ? (<Image src="/add-contract/edit_icon.svg" width={22} height={22} alt='edit icon'></Image>) : (
+                                            {editTitle === false || isEdit === false ? (<Image src="/add-contract/edit_icon.svg" width={22} height={22} alt='edit icon'></Image>) : (
                                                 <Image src="/add-contract/save_icon.svg" width={22} height={22} alt='save icon'></Image>
                                             )}
                                         </button>
@@ -424,12 +436,16 @@ const ContractDetails: React.FC = () => {
                                             <Calendar
                                             className={`${isEdit ? "edit-contract-input" : ""} contract_form_field`}
                                                 id="contract_valid_till"
-                                                value={ endDate ?? null}
+                                                value={contractData.contract_valid_till ?? ""} 
                                                 onChange={(e) => handleInputChange(e, 'contract_valid_till')}
                                                 showIcon
-                                                maxDate={certificateExpiry ? new Date(certificateExpiry) : undefined} className='contract_form_field' placeholder='Choose an end date' dateFormat="MM dd, yy"
+                                                maxDate={certificateExpiry ? new Date(certificateExpiry) : undefined} 
+                                                className='contract_form_field' 
+                                                disabled={isEdit ? false : true}
+                                               dateFormat="MM dd, yy"
+                                               placeholder={contractData.contract_valid_till && moment(contractData.contract_valid_till).format('MMMM D, YYYY')}
                                             />
-                                            {certificateExpiry && (
+                                            {certificateExpiry && isEdit && (
                                                 <small>
                                                     Contract end date must be before {new Date(certificateExpiry).toLocaleDateString('en-US', {
                                                         year: 'numeric',
@@ -476,12 +492,6 @@ const ContractDetails: React.FC = () => {
                                             )}
                                         </div>
                                         <div className="field">
-                                            {/* <InputText
-                                                id="provider_company_name"
-                                                value={formData.provider_company_name ?? ''}
-                                                onChange={(e) => handleInputChange(e, 'provider_company_name')}
-                                                required className='contract_form_field'
-                                            /> */}
                                             <div className="consumer_details_wrapper">
                                                 <Image src="/add-contract/company_icon.svg" width={24} height={24} alt='company icon'></Image>
                                                 <div>
@@ -503,7 +513,7 @@ const ContractDetails: React.FC = () => {
                                                 value={contractData?.interval ?? ''}
                                                 onChange={(e) => handleInputChange(e, 'interval')}
                                                 required 
-                                                readOnly
+                                                disabled={isEdit ? false : true}
                                                 className={`${isEdit ? "edit-contract-input" : ""} contract_form_field`}
                                             />
                                             <small>Realtime update interval for properties.</small>
@@ -523,12 +533,14 @@ const ContractDetails: React.FC = () => {
                                                 onChange={(e) => setSelectedAssetProperties(e.value)}
                                                 optionLabel="label"
                                                 filter
-                                                readOnly
+                                                disabled={isEdit ? false : true}
                                                 required 
                                                 className={`${isEdit ? "edit-contract-input" : ""} contract_form_field`}
                                                 placeholder='Select Asset Properties'
                                             />
-                                            <Chips value={selectedAssetProperties} className='asset_chips' onChange={(e) => setSelectedAssetProperties(e.value)} />
+                                            <Chips value={selectedAssetProperties} 
+                                            disabled={isEdit ? false : true} 
+                                            className='asset_chips' onChange={(e) => setSelectedAssetProperties(e.value)} />
                                         </div>
                                     </div>
                                     {/* Data Consumer Company IFRIC ID */}
@@ -572,6 +584,7 @@ const ContractDetails: React.FC = () => {
                                         label="Reset"
                                         className="p-button-secondary p-button-outlined custom-reset-btn"
                                         icon="pi pi-refresh"
+                                        onClick={()=>handleReset()}
                                     />
                                     <Button
                                         type="submit"
@@ -598,14 +611,26 @@ const ContractDetails: React.FC = () => {
                                 <li
                                 onClick={()=>setIsEdit(true)}
                                 ><FiEdit3 className='mr-2'/>Edit</li>
-                                <li><RiDeleteBinLine className='mr-2'/>Delete</li>
+                                <li
+                                onClick={()=>setContractDelete(true)}
+                                ><RiDeleteBinLine className='mr-2'/>Delete</li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
+            {contractDelete &&
+            <DeleteDialog
+            deleteDialog={contractDelete}
+            setDeleteDialog={setContractDelete}
+            handleDelete={handleDelete}
+            deleteItemName="Do you want to delete this contract"
+            />
+            }
         </div>
     );
 };
+
+
 
 export default ContractDetails;

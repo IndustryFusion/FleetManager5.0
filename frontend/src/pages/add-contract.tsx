@@ -261,13 +261,13 @@ const AddContractPage: React.FC = () => {
             "contract_clauses": formattedClauses,
             "data_type": formData.data_type,
             "interval": formData.interval,
-            "contract_valid_till": moment(formData.contract_valid_till).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+            "contract_valid_till": moment(formData.contract_valid_till).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
             "asset_properties": selectedAssetProperties,
             "consumer_company_certificate_data": formData.consumer_company_certificate_data,
             "meta_data": {
-                "create_at": moment(new Date()).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+                "create_at": moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
                 "created_user": companyUser,
-                "last_updated_at": moment(new Date()).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+                "last_updated_at": moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
             },
             "__v": 0
          }
