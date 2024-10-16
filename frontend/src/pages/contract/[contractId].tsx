@@ -219,8 +219,6 @@ const ContractDetails: React.FC = () => {
             
             return;
         }
-
-
         setContractData({ ...formData, [field]: e.target.value });
     };
 
@@ -505,6 +503,7 @@ const ContractDetails: React.FC = () => {
                                                 value={contractData?.interval ?? ''}
                                                 onChange={(e) => handleInputChange(e, 'interval')}
                                                 required 
+                                                readOnly
                                                 className={`${isEdit ? "edit-contract-input" : ""} contract_form_field`}
                                             />
                                             <small>Realtime update interval for properties.</small>
@@ -524,6 +523,7 @@ const ContractDetails: React.FC = () => {
                                                 onChange={(e) => setSelectedAssetProperties(e.value)}
                                                 optionLabel="label"
                                                 filter
+                                                readOnly
                                                 required 
                                                 className={`${isEdit ? "edit-contract-input" : ""} contract_form_field`}
                                                 placeholder='Select Asset Properties'
