@@ -25,14 +25,18 @@ import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import { appWithTranslation } from "next-i18next";
 import { UnauthorizedPopup } from '../utility/jwt';
+import withAuth from "@/app/withAuth";
 
 // Import your custom components or layout components
-function MyApp({ Component, pageProps }:AppProps) {
-  // Additional setup or global configurations can be added here
+function MyApp({ Component, pageProps, router }:AppProps) {
+  const AuthComponent =
+    ["/auth/login", "/auth/register", "/recover-password", "/auth/reset/update-password", "/privacy", "/terms-and-conditions"].includes(router.pathname)
+        ? Component
+        : withAuth(Component);
   return (
     <Provider store={store}>
     <div>
-      <Component {...pageProps} />
+      <AuthComponent {...pageProps} />
       <UnauthorizedPopup />
     </div>
     </Provider>
