@@ -11,13 +11,13 @@ import { Toast } from 'primereact/toast';
 import { Chips } from 'primereact/chips';
 import Sidebar from "@/components/sidebar";
 import Navbar from "@/components/navbar";
-import { getAccessGroup } from '../../utility/indexed-db.ts';
+import { getAccessGroup } from '../../utility/indexed-db';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "../../../public/styles/add-contract.css";
-import { getCompanyDetailsById, verifyCompanyCertificate } from '../../utility/auth.ts';
-import { getTemplateByName, getCompanyCertificate, createContract, getTemplateByType, getContractDetails, updateContractDetails } from '../../utility/contracts.ts'
+import { getCompanyDetailsById, verifyCompanyCertificate } from '../../utility/auth';
+import { getTemplateByName, getCompanyCertificate, createContract, getTemplateByType, getContractDetails, updateContractDetails } from '../../utility/contracts'
 import moment from 'moment';
 import { IoEyeOutline } from 'react-icons/io5';
 import { RiDeleteBinLine } from 'react-icons/ri';
@@ -62,7 +62,7 @@ const ContractDetails: React.FC = () => {
     const [companyUser, setCompanyUser] = useState('');
     const [companyIfricId, setCompanyIfricId] = useState('');
     const [consumerCompanyCertified, setConsumerCompanyCertified] = useState<Boolean | null>(null);
-    const [contractData, setContractData] = useState({});
+    const [contractData, setContractData] = useState<Record<string, any>>({});
     const [isEdit, setIsEdit]=useState(false);
     const { contractId } = router.query;
 

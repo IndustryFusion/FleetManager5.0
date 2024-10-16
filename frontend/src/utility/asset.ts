@@ -32,17 +32,18 @@ import { showToast } from "./toast";
 import { Toast } from "primereact/toast";
 import api from "./jwt";
 import { updatePopupVisible } from "./update-popup";
+import { getAccessGroup  } from "@/utility/indexed-db";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
-export const getCompanyIfricId = (): string => {
-  if (
-    typeof window !== "undefined" &&
-    localStorage.getItem("company_ifric_id")
-  ) {
-    return localStorage.getItem("company_ifric_id") as string;
+export const getCompanyIfricId = async (): Promise<string> => {
+  try {
+    const accessGroup = await getAccessGroup();
+    return accessGroup.company_ifric_id;
+  } catch (error) {
+    console.error("Error fetching company IFRIC ID:", error);
+    return "";
   }
-  return "";
 };
 
 // Function to map the backend data to the Asset structure
@@ -90,9 +91,10 @@ export const mapBackendDataOfAsset = (backendData: any[]) => {
 
 export const fetchAssets = async () => {
   try {
+    const companyid = await getCompanyIfricId();
     const response = await api.get(
       BACKEND_API_URL +
-        `/asset/get-company-manufacturer-asset/urn:ifric:ifx-eu-com-nap-6ab7cb06-bbe0-5610-878f-a9aa56a632ec`,
+        `/asset/get-company-manufacturer-asset/${companyid}`,
       {
         headers: {
           "Content-Type": "application/ld+json",
