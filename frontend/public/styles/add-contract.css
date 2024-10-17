@@ -329,13 +329,27 @@
     cursor: none;
 }
 .contract_field_button:hover, .contract_field_button:focus{
-    background-color: #e7e7e7;;
+    background-color: #e7e7e7;
 }
 .contract_title_group{
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 16px;
+}
+.edit-collapse{
+ flex: 0 35%;
+}
+.edit-expand{
+flex: 0 90%;
+}
+.contract-warn-msg{
+    text-align: left;
+    width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 8px;
+    font-family: "League Spartan", sans-serif;
 }
 .contract_form_field_column{
     display: flex;
@@ -398,7 +412,7 @@
     box-shadow: none;
 }
 .asset_chips .p-chips-token.p-highlight{
-    font-family: "League Spartan", sans-serif;;
+    font-family: "League Spartan", sans-serif;
     color: #2b2b2b;
     background-color: #e7e7e7;
     font-size: 14px;

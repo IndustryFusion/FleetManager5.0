@@ -9,6 +9,7 @@ interface DeleteDialogProps {
   setDeleteDialog: Dispatch<SetStateAction<boolean>>;
   handleDelete: () => void;
   deleteItemName?: string;
+  id: string
 }
 
 const DeleteDialog: React.FC<DeleteDialogProps> = ({
@@ -16,6 +17,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
   setDeleteDialog,
   handleDelete,
   deleteItemName,
+  id
 }) => {
   const { t } = useTranslation("overview");
   const header = () => <h4 className="m-0">Confirm Delete</h4>;
@@ -30,13 +32,12 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
         <div className="mb-6 mt-5">
           <h3 className="delete-text"> {deleteItemName}</h3>
         </div>
-
         <div className="flex justify-content-end">
           <Button
             label={t("yes")}
             icon="pi pi-check"
             className="mr-2 delete-action-buttons"
-            onClick={handleDelete}
+            onClick={()=>handleDelete(id)}
           ></Button>
           <Button
             label={t("no")}
