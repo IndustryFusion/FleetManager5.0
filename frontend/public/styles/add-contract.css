@@ -337,11 +337,43 @@
     gap: 1rem;
 }
 .edit-collapse{
- flex: 0 35%;
+    flex: 0 35%;
 }
 .edit-expand{
-flex: 0 90%;
+    flex: 0 90%;
 }
+.long-contract-name {
+    flex: 0 60%; 
+  }
+  
+  .short-contract-name {
+    flex: 0 35%;
+  }
+.cancel-btn {
+    text-align: center;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-top: 10px;
+    background-color: #c5c4c4;
+    color: rgb(5, 3, 3);
+    box-shadow: none;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .action-btn-save {
+    text-align: center;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-top: 10px;
+    background: #2b2b2b;
+    box-shadow: none;
+    color: white;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
 .contract-warn-msg{
     text-align: left;
     width: 400px;
@@ -474,10 +506,18 @@ flex: 0 90%;
     margin-top: 1.25rem;
 }
 .p-multiselect-item,
-.delete-text,
 .delete-action-buttons
 {
     font-family: "League Spartan", sans-serif;
+}
+.delete-text{
+    margin-bottom: 5px;
+    color: #2b2b2b;
+    font-family: League Spartan;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
 }
 
 .review_lists li{
