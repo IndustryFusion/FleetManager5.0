@@ -38,7 +38,7 @@ export default function WelcomePage() {
       console.log("error inside page ",error);
       if (axios.isAxiosError(error)) {
         if (error?.response && error?.response?.status === 401) {
-          window.location.href = `${ifxSuiteUrl}/login`;   
+          window.location.href = `${ifxSuiteUrl}/home`;   
         } else {
           console.error("Error response:", error.response?.data.message);
           showToast(toast, "error", "Error", "Error during login");
