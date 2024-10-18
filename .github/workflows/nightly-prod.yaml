@@ -48,4 +48,4 @@ jobs:
       HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
       USERNAME: ${{ secrets.USERNAME }}
       PASSWORD: ${{ secrets.PASSWORD }}
-      
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
