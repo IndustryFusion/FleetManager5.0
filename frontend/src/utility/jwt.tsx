@@ -60,7 +60,7 @@ export const UnauthorizedPopup: React.FC = () => {
   }, []);
 
   const handleLogin = () => {
-    window.location.href = `${ifxSuiteUrl}/login`;
+    window.location.href = `${ifxSuiteUrl}/home`;
     setVisible(false);
   }
 
