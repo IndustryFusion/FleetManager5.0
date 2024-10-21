@@ -22,6 +22,7 @@ import { Dialog } from 'primereact/dialog';
 import { useRouter } from 'next/router';
 import popupEventEmitter from './popupEventEmitter';
 import "../../public/styles/asset-overview.css";
+import { clearIndexedDbOnLogout } from "@/utility/indexed-db";
 
 const ifxSuiteUrl = process.env.NEXT_PUBLIC_IFX_SUITE_FRONTEND_URL;
 
@@ -59,8 +60,9 @@ export const UnauthorizedPopup: React.FC = () => {
     };
   }, []);
 
-  const handleLogin = () => {
-    window.location.href = `${ifxSuiteUrl}/login`;
+  const handleLogin = async () => {
+    await clearIndexedDbOnLogout();
+    window.location.href = `${ifxSuiteUrl}/home`;
     setVisible(false);
   }
 
