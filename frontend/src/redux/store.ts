@@ -18,12 +18,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./auth/authSlice";
 import templatesReducer from './templates/templatesSlice';
 import assetsSliceReducer from "./asset/assetsSlice";
+import contractsSliceReducer from "./contract/contractSlice"
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
         templates: templatesReducer,
         assetsSlice:assetsSliceReducer,
+        contracts: contractsSliceReducer
     }
 });
 

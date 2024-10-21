@@ -14,12 +14,14 @@ import { IoArrowBack } from "react-icons/io5";
 import ContractFolders from "@/components/contractManager/contract-folders";
 import { Toast, ToastMessage } from "primereact/toast";
 import axios from "axios";
+import { fetchContractsRedux } from "@/redux/contract/contractSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const ContractManager = () => {
   const [nodes, setNodes] = useState([]);
   const [companyIfricId, setCompanyIfricId] = useState("");
   const [selectedKey, setSelectedKey] = useState("");
-  const [contractsData, setContractsData] = useState([]);
+  // const [contractsData, setContractsData] = useState([]);
   const [predictiveFilteredContractsData, setpredictiveFilteredContractsData] =
     useState([]);
   const [filterContracts, setFilterContracts] = useState(false);
@@ -28,6 +30,10 @@ const ContractManager = () => {
   const [contractsOriginal, setContractsOriginal] = useState(true);
   const [loading, setLoading] = useState(false);
   const toast = useRef<Toast>(null);
+  const dispatch = useDispatch();
+
+  // Access the contracts data from Redux
+  const contractsData = useSelector((state: any) => state.contracts.contracts);
 
   const showToast = (
     severity: ToastMessage["severity"],
@@ -50,6 +56,7 @@ const ContractManager = () => {
     try {
     const details = await getAccessGroup();
     setCompanyIfricId(details.company_ifric_id);
+    dispatch(fetchContractsRedux(companyIfricId));
     } catch(error: any) {
       if (axios.isAxiosError(error)) {
         console.error("Error response:", error.response?.data.message);
@@ -64,19 +71,7 @@ const ContractManager = () => {
     getCompanyId();
   });
 
-  const fetchContracts = async (ifricId: string) => {
-    try {
-      const response = await getContracts(ifricId);
-      console.log("response in contracts page", response);
-      setContractsData(response);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
-  useEffect(() => {
-    fetchContracts(companyIfricId);
-  }, [companyIfricId]);
 
   const handleFilterContracts = () => {
     setLoading(true);
@@ -96,7 +91,7 @@ const ContractManager = () => {
     if (filterContracts) {
       handleFilterContracts();
     }
-  }, [filterContracts, contractsData]);
+  }, [filterContracts]);
 
   return (
     <>
@@ -192,8 +187,7 @@ const ContractManager = () => {
                              <ContractCard
                             contract={contract}
                           />
-                          </div>
-                         
+                          </div> 
                         ))}
                       {insuranceFilterContracts && (
                         <div>
