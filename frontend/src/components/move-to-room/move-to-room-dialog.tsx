@@ -176,7 +176,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
       const dataToSend = {
         owner_company_ifric_id: factoryOwner.companyIfricId,
         // owner_company_ifric_id: "urn:ifric:ifx-eur-nld-ast-b28fa8b9-5027-58e2-b06f-1eef75e62d0d",
-        maufacturer_ifric_id: company_ifric_id,
+        manufacturer_ifric_id: company_ifric_id,
         asset_ifric_id: assetIfricId
       };
 
