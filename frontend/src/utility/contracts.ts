@@ -145,3 +145,17 @@ export const updateContractDetails = async(contractIfricId:string,dataToSend: Re
         }
       }
     }
+
+export const deleteContract = async(contractIfricId:string)=>{
+  try{
+    const response = await api.delete(`${IFX_BACKEND_URL}/contract/${contractIfricId}`);
+    return response.data;
+  }catch (error:any) {
+        console.error("Error updating contracts:", error);
+        if (error?.response && error?.response?.status === 401) {
+          updatePopupVisible(true);
+        } else {
+          throw new Error(error.response?.data?.message || "Error deleteing contracts");
+        }
+      }
+    }

@@ -329,13 +329,59 @@
     cursor: none;
 }
 .contract_field_button:hover, .contract_field_button:focus{
-    background-color: #e7e7e7;;
+    background-color: #e7e7e7;
 }
 .contract_title_group{
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 16px;
+}
+.edit-collapse{
+    flex: 0 35%;
+}
+.edit-expand{
+    flex: 0 90%;
+}
+.long-contract-name {
+    flex: 0 60%; 
+  }
+  
+  .short-contract-name {
+    flex: 0 35%;
+  }
+.cancel-btn {
+    text-align: center;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-top: 10px;
+    background-color: #c5c4c4;
+    color: rgb(5, 3, 3);
+    box-shadow: none;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .action-btn-save {
+    text-align: center;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-top: 10px;
+    background: #2b2b2b;
+    box-shadow: none;
+    color: white;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+.contract-warn-msg{
+    text-align: left;
+    width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 8px;
+    font-family: "League Spartan", sans-serif;
 }
 .contract_form_field_column{
     display: flex;
@@ -398,7 +444,7 @@
     box-shadow: none;
 }
 .asset_chips .p-chips-token.p-highlight{
-    font-family: "League Spartan", sans-serif;;
+    font-family: "League Spartan", sans-serif;
     color: #2b2b2b;
     background-color: #e7e7e7;
     font-size: 14px;
@@ -460,10 +506,18 @@
     margin-top: 1.25rem;
 }
 .p-multiselect-item,
-.delete-text,
 .delete-action-buttons
 {
     font-family: "League Spartan", sans-serif;
+}
+.delete-text{
+    margin-bottom: 5px;
+    color: #2b2b2b;
+    font-family: League Spartan;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
 }
 
 .review_lists li{

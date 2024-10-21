@@ -135,9 +135,10 @@
   color: #2b2b2b;
 }
 .folder-heading {
-  width: 250px;
+  width: 270px;
   text-align: left;
-  text-wrap: wrap;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 .share-content {
   width: 38px;
