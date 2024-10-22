@@ -70,6 +70,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const [companyIfricId, setCompanyIfricId] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [showUploadMessage, setShowUploadMessage] = useState(false);
 
   const certificateOptions: Certificate[] = [
     { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
@@ -528,6 +529,12 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                         onUpload={(e) => {
                           toast.current?.show({ severity: 'success', summary: 'Success', detail: 'File uploaded successfully' });
                         }}
+                        onSelect={(e) => {
+                          setShowUploadMessage(true); // Show message when file is selected
+                        }}
+                        onClear={() => {
+                          setShowUploadMessage(false); // Hide message when file is removed
+                        }}
                         onError={(e) => {
                           toast.current?.show({ severity: 'error', summary: 'Error', detail: 'File upload failed' });
                         }}
@@ -562,15 +569,29 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                                 type="button"
                                 icon="pi pi-times"
                                 className="p-button-outlined p-button-rounded p-button-danger ml-auto"
-                                onClick={(e) => props.onRemove(e)}
+                                onClick={(e) => {
+                                  props.onRemove(e);
+                                  setShowUploadMessage(false); // Hide Warning message when file is removed
+                                }}
                               />
                             </div>
                           );
                         }}
                       />
-                    </div>
-                    <div className="mt-2 text-blue-600">
-                      Please Click Upload Button after choosing file
+                      {showUploadMessage && (
+                        <div className="mt-2">
+                          <Message 
+                            severity="warn" 
+                            text="Please click Upload button to upload the file" 
+                            style={{ 
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              borderRadius: '6px'
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
