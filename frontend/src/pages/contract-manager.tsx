@@ -55,8 +55,7 @@ const ContractManager = () => {
   const getCompanyId = async () => {
     try {
     const details = await getAccessGroup();
-    setCompanyIfricId(details.company_ifric_id);
-    dispatch(fetchContractsRedux(companyIfricId));
+    dispatch(fetchContractsRedux(details?.company_ifric_id));
     } catch(error: any) {
       if (axios.isAxiosError(error)) {
         console.error("Error response:", error.response?.data.message);
@@ -69,7 +68,7 @@ const ContractManager = () => {
   };
   useEffect(() => {
     getCompanyId();
-  });
+  },[]);
 
 
 

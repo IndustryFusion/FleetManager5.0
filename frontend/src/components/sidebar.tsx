@@ -64,7 +64,7 @@ function Sidebar() {
         <div className="sidebar_logo_wrapper">
           <Image
             src="/sidebar/logo_expanded.svg"
-            width={200}
+            width={184}
             height={0}
             alt="fleet logo"
             onClick={() => handleRoute("dashboard")}
