@@ -281,6 +281,7 @@
     border: none;
     box-shadow: none;
     font-family: inherit;
+    border-radius: 8px;
 }
 .contract_form_field .p-datepicker-trigger{
     margin: -2px -2px -2px 0px;
@@ -296,7 +297,7 @@
     border-width: 0px;
     padding-left: 0px;
     font-weight: 600;
-    font-size: 24px;
+    font-size: 23px;
     flex-grow: 1;
     opacity:1;
     box-shadow: none;
@@ -334,7 +335,6 @@
 .contract_title_group{
     display: flex;
     align-items: center;
-    gap: 1rem;
 }
 .edit-collapse{
     flex: 0 35%;
@@ -550,5 +550,14 @@
 .contract_form_field.p-inputtext{
     border:none;
     font-weight: 600;
+    background-color: #ffffff;   
+}
+.contract_form_field.editable.p-inputtext {
     background-color: #eeeff0a6;
+    padding: 6px 1rem;
+    border-radius: 8px;
+    border: 3px solid #ced4da;
+    outline: none;
+    background-color: #ffffff; 
+    font-size: 21px;
 }

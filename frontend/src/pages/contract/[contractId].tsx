@@ -25,7 +25,8 @@ import { FiEdit3 } from 'react-icons/fi';
 import DeleteDialog from '@/components/delete-dialog';
 import { InputNumber } from 'primereact/inputnumber';
 import { Message } from 'primereact/message';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchContractsRedux } from '@/redux/contract/contractSlice';
 
 
 interface PropertyDefinition {
@@ -77,13 +78,51 @@ const ContractDetails: React.FC = () => {
     const contractsData = useSelector((state: any) => state.contracts.contracts);
     const [allContracts, setAllContracts] = useState([]);
     const { contractId } = router.query;
+    const [inputWidth, setInputWidth] = useState(0);
+    const dispatch = useDispatch();
+  
+    useEffect(() => {
+          if (inputRef.current) {
+            const span = document.createElement("span");
+            const computedStyle = window.getComputedStyle(inputRef.current);
+            span.style.font = computedStyle.font;
+            span.style.padding = computedStyle.padding;
+            span.style.border = computedStyle.border;
+            span.style.visibility = "hidden";
+            span.style.position = "absolute";
+            span.style.whiteSpace = "pre";
+            span.textContent = contractData?.contract_name || "";
+            document.body.appendChild(span);
+      
+            const width = span.offsetWidth;
+            setInputWidth(width + 20); 
+            
+            document.body.removeChild(span);
+          }
+        }, [contractData?.contract_name]);
 
     useEffect(() => {
         setAllContracts(contractsData);
     }, [contractsData])
 
-    console.log("contractsData here outside", contractsData);
-    
+    const getCompanyId = async () => {
+      try {
+      const details = await getAccessGroup()
+      dispatch(fetchContractsRedux(details?.company_ifric_id));
+      } catch(error: any) {
+        if (axios.isAxiosError(error)) {
+          console.error("Error response:", error.response?.data.message);
+          toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Fetching assets' });
+        } else {
+          console.error("Error:", error);
+          toast.current?.show({ severity: 'error', summary: 'Error', detail: error });
+        }
+      }
+    };
+    useEffect(() => {
+      getCompanyId();
+    },[]);
+
     const fetchContractDetails =async(contractIfricId:string)=>{
         try{
          const response = await getContractDetails(contractIfricId);
@@ -102,7 +141,6 @@ const ContractDetails: React.FC = () => {
         }
     }
 
- 
     const startDate = moment(contractData?.meta_data?.create_at).format("MMMM DD, YYYY");
  
     useEffect(() => {
@@ -115,11 +153,13 @@ const ContractDetails: React.FC = () => {
     }, [editTitle]);
     useEffect(() => {
         if (contractId ) {
-          console.log("Contract ID:", contractId );
           fetchContractDetails(contractId)
         }
       }, [contractId ]);
 
+
+      console.log("contractsData here", contractsData);
+      
 
     const fetchData = async () => {
         try {
@@ -238,11 +278,8 @@ const ContractDetails: React.FC = () => {
             const max = templateData?.properties[field]?.maximum ?? Infinity;
 
             if (value >= min && value <= max) {
-                console.log("is going here");
-                
-                setContractData({ ...contractData, [field]: value.toString() });
+                setContractData({ ...contractData, [field]: value });
             } else {
-                console.log("is going here in else");
                 toast.current?.show({
                     severity: 'warn',
                     summary: 'Warning',
@@ -254,11 +291,6 @@ const ContractDetails: React.FC = () => {
         }
         if(field === 'contract_name'){
             const value = e.target.value;
-            console.log("value here in contractName", value);
-            console.log("contractsData before checking existence:", contractsData);
-            console.log("state value here", allContracts);
-            
-            
             const isExist = allContracts.some(contract => contract?.contract_name.toLowerCase() === value.toLowerCase());
             if (isExist) {
                 setContractNameExists(true); 
@@ -348,10 +380,7 @@ const ContractDetails: React.FC = () => {
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Asset properties cannot be empty' });
             return;
         }
-
-        console.log("dataToSend on edit", dataToSend);
         
-    
         try {
             const response = await updateContractDetails(contractData?.contract_ifric_id, dataToSend)
             if(response){
@@ -359,10 +388,15 @@ const ContractDetails: React.FC = () => {
             }
            console.log("response from edit here", response);
            
-        } catch (error) {
-            console.error('Error submitting form:', error);
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to edit contract' });
-        }
+        }catch (error) {
+          if (axios.isAxiosError(error)) {
+              console.error("Error response:", error.response?.data.message);
+              toast.current?.show({ severity: 'error', summary: 'Error', detail:  error?.message });
+            } else {
+              console.error("Error:", error);
+              toast.current?.show({ severity: 'error', summary: 'Error', detail:  error?.message });
+            };
+      }
     };  
   
     const renderDataTypeList = ()=> {
@@ -416,29 +450,26 @@ const ContractDetails: React.FC = () => {
                 <form onSubmit={handleSubmit}>
                   <div className="form-grid">
                     <div className="contract_title_group">
-                      <div
-                         className={`${editTitle ? "edit-expand" : "edit-collapse"} ${
-                            contractData?.contract_name?.length > 50 ? "long-contract-name" : "short-contract-name"
-                          }`}
-                      >
+                    <div >
                         <InputText
-                          id="contract_title"
-                          value={contractData?.contract_name ?? ""}
-                          onChange={(e) =>
-                            handleInputChange(e, "contract_name")
-                          }
-                          required
-                          className="contract_form_field field_title"
-                          onBlur={() => {
-                            setTimeout(() => {
-                              setEditTitle(false);
-                            }, 200);
-                          }}
-                          disabled={!editTitle || !isEdit}
-                         
-                        />
+                        id="contract_title"
+                        ref={inputRef}
+                        value={contractData?.contract_name ?? ""}
+                        onChange={(e) => handleInputChange(e, "contract_name")}
+                        required
+                        className={`contract_form_field field_title ${
+                          editTitle ? "editable" : ""
+                        }`}
+                        onBlur={() => {
+                          setTimeout(() => {
+                            setEditTitle(false);
+                          }, 200);
+                        }}
+                        disabled={!editTitle || !isEdit}
+                        style={{ width: inputWidth + "px" }}
+                      />
                       </div>
-                      <div style={{ flex: "0 10%" }}>
+                      <div>
                         <button
                           onClick={(e) => {
                             e.preventDefault();
@@ -566,7 +597,7 @@ const ContractDetails: React.FC = () => {
                           }
                         />
                         {certificateExpiry && isEdit && (
-                          <small>
+                          <small className="ml-3 mt-2">
                             Contract end date must be before{" "}
                             {new Date(certificateExpiry).toLocaleDateString(
                               "en-US",
@@ -701,10 +732,10 @@ const ContractDetails: React.FC = () => {
                           className={`${
                             isEdit ? "edit-contract-input" : ""
                           } contract_form_field`}
-                          min={10}
-                          max={60}
+                          min={templateData?.properties["interval"]?.minimum}
+                          max={templateData?.properties["interval"]?.maximum}
                         />
-                        <small>Realtime update interval for properties.</small>
+                        <small className="ml-3 mt-2">Realtime update interval for properties.</small>
                         {templateData?.properties.data_type && (
                           <div className="data_types_field_wrapper">
                             <label htmlFor="" className="required-field">
