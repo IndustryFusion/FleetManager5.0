@@ -548,3 +548,14 @@ cursor: not-allowed;
 .owner_details_card .p-card{
   box-shadow: 0px 0px 2px 0px #00000015;
 }
+
+.p-fileupload .p-button {
+  border-radius: 18px !important;
+  border: none !important;
+  font-family: "League Spartan", sans-serif !important;
+  padding: 8px 16px !important;
+}
+
+.p-fileupload .p-button:hover {
+  background-color: #3e3d3dac !important;
+}
