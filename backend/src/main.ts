@@ -24,11 +24,16 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // Using NestJS built-in CORS support with corrected origin format
+
+  // Split CORS_ORIGIN values by comma to handle multiple origins
+  const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [];
+
+  // Using NestJS built-in CORS support with multiple origins from CORS_ORIGIN env
   app.use(cors({
-    origin: [process.env.CORS_ORIGIN],
+    origin: allowedOrigins,
     credentials: true,
   }));
+
   app.use(cookieParser());
   await app.listen(4001);
 }
