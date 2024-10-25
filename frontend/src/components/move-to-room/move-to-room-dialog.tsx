@@ -70,6 +70,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const [companyIfricId, setCompanyIfricId] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [showUploadMessage, setShowUploadMessage] = useState(false);
 
   const certificateOptions: Certificate[] = [
     { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
@@ -309,7 +310,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
         label="Save"
         icon="pi pi-check"
         onClick={handleSave}
-        disabled={!completedSteps.every(step => step)}
+        disabled={!factoryOwner}
         style={{ backgroundColor: "#E6E6E6", color: "black" }} // Set text color to black
         autoFocus
       />
@@ -343,173 +344,6 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
       draggable={false}
     >
       <Toast ref={toast} />
-      {/* <div className="dialog-content" style={{ display: 'flex', height: '100%' }}>
-        <div className="timeline-container" style={{ width: '30%', height: '100%', overflowY: 'auto' }}>
-          <Timeline
-            value={timelineEvents}
-            marker={customizedMarker}
-            content={customizedContent}
-            className={`custom-timeline ${completedSteps.map((step, index) => step ? `step-${index}-completed` : '').join(' ')}`}
-          />
-        </div>
-        <div className="content-container" style={{ width: '70%', height: '100%', overflowY: 'auto', padding: '0 20px' }}>
-          <div className={`step-section ${completedSteps[0] ? 'completed' : ''}`}>
-            <h3>Step 1: Select Factory Owner</h3>
-            <div style={{ display: 'flex', gap: '20px' }}>
-              <div style={{ flex: 1 }}>
-                <div className="field">
-                  <label htmlFor="factoryOwner">Factory Owner</label>
-                  <Dropdown
-                    id="factoryOwner"
-                    value={factoryOwner}
-                    options={factoryOwners}
-                    onChange={handleFactoryOwnerChange}
-                    optionLabel="name"
-                    placeholder="Select a factory owner"
-                    className="w-full input-text-dropdown"
-                  />
-                  <img
-                    className="dropdown-icon-img "
-                    src="/dropdown-icon.svg"
-                    alt="dropdown-icon"
-                  />
-                </div>
-                <div className="field-checkbox">
-                  <Checkbox inputId="preCertifyAsset" checked={preCertifyAsset} onChange={e => setPreCertifyAsset(e.checked as boolean)} />
-                  <label htmlFor="preCertifyAsset">Pre Certify Asset</label>
-                </div>
-                {preCertifyAsset && (
-                  <div className="field">
-                    <label>Product Name</label>
-                    <InputText value={assetName} disabled className="w-full input-text" />
-                  </div>
-                )}
-              </div>
-              <div style={{ flex: 1 }}>
-                {factoryOwner && (
-                  <OwnerDetailsCard owner={factoryOwner} />
-                )}
-              </div>
-            </div>
-          </div>
-          <div className={`step-section ${completedSteps[1] ? 'completed' : ''}`}>
-            <h3>Step 2: Upload Contract</h3>
-            <div className="field-checkbox">
-              <Checkbox inputId="salesAgreement" checked={salesAgreement} onChange={e => setSalesAgreement(e.checked as boolean)} />
-              <label htmlFor="salesAgreement">Sales Agreement</label>
-            </div>
-
-            {salesAgreement && (
-              <div className="field">
-                <label htmlFor="contract">{salesAgreement ? 'Sales Agreement' : 'Contract'}</label>
-                <div className="p-inputgroup">
-                  <InputText
-                    id="contract"
-                    value={salesAgreement ? salesAgreementFile : contract}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => salesAgreement ? setSalesAgreementFile(e.target.value) : setContract(e.target.value)}
-                    placeholder="S3 link or file path"
-                    className='input-text'
-                  />
-
-                </div>
-                <div className="mt-2">
-                  <label>Attach {salesAgreement ? 'Sales Agreement' : 'Contract'}</label>
-                  <FileUpload
-                    ref={salesAgreement ? salesAgreementFileUploadRef : fileUploadRef}
-                    name={salesAgreement ? "salesAgreement" : "contract"}
-                    url={BACKEND_API_URL + '/file'}
-                    accept="application/pdf"
-                    maxFileSize={4000000}
-                    customUpload
-                    uploadHandler={handleFileUpload}
-                    onUpload={(e) => {
-                      toast.current?.show({ severity: 'success', summary: 'Success', detail: 'File uploaded successfully' });
-                    }}
-                    onError={(e) => {
-                      toast.current?.show({ severity: 'error', summary: 'Error', detail: 'File upload failed' });
-                    }}
-                    emptyTemplate={
-                      <div className="flex align-items-center flex-column">
-                        <i className="pi pi-image mt-3 p-5" style={{ fontSize: '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>
-                        <span style={{ fontSize: '1.2em', color: 'var(--text-color-secondary)' }} className="my-5">Drag and Drop Here</span>
-                      </div>
-                    }
-                    headerTemplate={(options) => {
-                      const { className, chooseButton, uploadButton, cancelButton } = options;
-                      return (
-                        <div className={className} style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
-                          {chooseButton}
-                          {uploadButton}
-                          {cancelButton}
-                          <div style={{ marginLeft: 'auto' }}>0 B / 3 MB</div>
-                        </div>
-                      );
-                    }}
-                    itemTemplate={(file: any, props) => {
-                      return (
-                        <div className="flex align-items-center flex-wrap">
-                          <div className="flex align-items-center" style={{ width: '40%' }}>
-                            <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
-                            <span className="flex flex-column text-left ml-3">
-                              {file.name}
-                              <small>{new Date().toLocaleDateString()}</small>
-                            </span>
-                          </div>
-                          <Button
-                            type="button"
-                            icon="pi pi-times"
-                            className="p-button-outlined p-button-rounded p-button-danger ml-auto"
-                            onClick={(e) => props.onRemove(e)}
-                          />
-                        </div>
-                      );
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className={`step-section ${completedSteps[2] ? 'completed' : ''}`}>
-            <h3>Step 3: Select Certificate</h3>
-            <div className="field">
-              <label htmlFor="certificate">Certificate</label>
-              <Dropdown
-                id="certificate"
-                value={certificate ? certificate.value : null} // Ensure certificate.value is used
-                options={certificateOptions}
-                onChange={(e: DropdownChangeEvent) => {
-                  const selectedCertificate = certificateOptions.find(cert => cert.value === e.value);
-                  setCertificate(selectedCertificate || null);  // Set the entire certificate object
-                }}
-                optionLabel="label"
-                placeholder="Select a certificate"
-                className="w-full input-text-dropdown"
-              />
-              <img
-                className="dropdown-icon-img"
-                src="/dropdown-icon.svg"
-                alt="dropdown-icon"
-              />
-            </div>
-          </div>
-
-          <div className={`step-section ${completedSteps[3] ? 'completed' : ''}`}>
-            <h3>Step 4: Confirm Asset Assignment</h3>
-            <p>Please review the details below:</p>
-            <ul>
-              <li className='mb-1'>Asset: {assetName}</li>
-              <li className='mb-1'>Factory Owner: {factoryOwner ? factoryOwner.name : 'Not selected'}</li>
-              <li className='mb-1'>Pre Certify Asset: {preCertifyAsset ? 'Yes' : 'No'}</li>
-              <li className='mb-1'>{salesAgreement ? 'Sales Agreement' : 'Contract'}: {salesAgreement ? (salesAgreementFile || 'Not uploaded') : (contract || 'Not uploaded')}</li>
-              <li className='mb-1'>Certificate: {certificate ? certificate.label : 'Not selected'}</li>
-            </ul>
-          </div>
-
-          <Message severity="info" text="Need assistance? Contact the facility management team for help." />
-        </div>
-      </div> */}
-
       <div className='owner_dialog_wrapper'>
         <div className="owner_form_steps">
           <div className="custom_steps_wrapper">
@@ -695,6 +529,12 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                         onUpload={(e) => {
                           toast.current?.show({ severity: 'success', summary: 'Success', detail: 'File uploaded successfully' });
                         }}
+                        onSelect={(e) => {
+                          setShowUploadMessage(true); // Show message when file is selected
+                        }}
+                        onClear={() => {
+                          setShowUploadMessage(false); // Hide message when file is removed
+                        }}
                         onError={(e) => {
                           toast.current?.show({ severity: 'error', summary: 'Error', detail: 'File upload failed' });
                         }}
@@ -719,7 +559,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                           return (
                             <div className="flex align-items-center flex-wrap">
                               <div className="flex align-items-center" style={{ width: '40%' }}>
-                                <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
+                                <i className="pi pi-file-edit mr-2" style={{ fontSize: '1.2rem' }}></i>
                                 <span className="flex flex-column text-left ml-3">
                                   {file.name}
                                   <small>{new Date().toLocaleDateString()}</small>
@@ -729,12 +569,29 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                                 type="button"
                                 icon="pi pi-times"
                                 className="p-button-outlined p-button-rounded p-button-danger ml-auto"
-                                onClick={(e) => props.onRemove(e)}
+                                onClick={(e) => {
+                                  props.onRemove(e);
+                                  setShowUploadMessage(false); // Hide Warning message when file is removed
+                                }}
                               />
                             </div>
                           );
                         }}
                       />
+                      {showUploadMessage && (
+                        <div className="mt-2">
+                          <Message 
+                            severity="warn" 
+                            text="Please click Upload button to upload the file" 
+                            style={{ 
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              borderRadius: '6px'
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
