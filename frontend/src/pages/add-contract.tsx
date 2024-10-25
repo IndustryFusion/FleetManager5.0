@@ -20,6 +20,10 @@ import { getCompanyDetailsById, verifyCompanyCertificate } from '../utility/auth
 import { getTemplateByName, getCompanyCertificate, createContract, getTemplateByType } from '../utility/contracts'
 import { formatDateTime } from '../utility/certificate'
 import moment from 'moment';
+import { InputNumber } from 'primereact/inputnumber';
+import { useDispatch, useSelector } from 'react-redux';
+import { Message } from 'primereact/message';
+import { fetchContractsRedux } from '@/redux/contract/contractSlice';
 
 interface PropertyDefinition {
     type: string;
@@ -60,6 +64,31 @@ const AddContractPage: React.FC = () => {
     const [companyUser, setCompanyUser] = useState('');
     const [companyIfricId, setCompanyIfricId] = useState('');
     const [consumerCompanyCertified, setConsumerCompanyCertified] = useState<Boolean | null>(null);
+    const [inputWidth, setInputWidth] = useState(0);
+    const [contractNameExists, setContractNameExists] = useState(false);
+    const contractsData = useSelector((state: any) => state.contracts.contracts);
+    const [allContracts, setAllContracts] = useState([]);
+    const dispatch = useDispatch();
+  
+    useEffect(() => {
+          if (inputRef.current) {
+            const span = document.createElement("span");
+            const computedStyle = window.getComputedStyle(inputRef.current);
+            span.style.font = computedStyle.font;
+            span.style.padding = computedStyle.padding;
+            span.style.border = computedStyle.border;
+            span.style.visibility = "hidden";
+            span.style.position = "absolute";
+            span.style.whiteSpace = "pre";
+            span.textContent = formData?.contract_name || "";
+            document.body.appendChild(span);
+      
+            const width = span.offsetWidth;
+            setInputWidth(width + 20); 
+            
+            document.body.removeChild(span);
+          }
+        }, [formData?.contract_name]);
 
     useEffect(() => {
         fetchData();
@@ -69,6 +98,33 @@ const AddContractPage: React.FC = () => {
             inputRef.current.focus();
         }
     }, [editTitle]);
+
+    useEffect(() => {
+        setAllContracts(contractsData);
+    }, [contractsData])
+
+
+    const getCompanyId = async () => {
+        try {
+        const details = await getAccessGroup();
+        dispatch(fetchContractsRedux(details?.company_ifric_id));
+        } catch(error: any) {
+          if (axios.isAxiosError(error)) {
+            console.error("Error response:", error.response?.data.message);
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Fetching assets' });
+          } else {
+            console.error("Error:", error);
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: error });
+          }
+        }
+      };
+      useEffect(() => {
+        getCompanyId();
+      },[]);
+
+    console.log("contractsData in add contract", contractsData);
+    
+    
 
     const fetchData = async () => {
         try {
@@ -170,28 +226,48 @@ const AddContractPage: React.FC = () => {
         setFormData(initialData);
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | { value: any }, field: string) => {
-        const value = 'target' in e ? e.target.value : e.value;
-
+    const handleInputChange = (e: any , field: string) => {
         if (field === 'interval') {
-            if (value === '' || !isNaN(parseInt(value, 10))) {
-                if (
-                    value >= templateData?.properties[field]?.minimum &&
-                    value <= templateData?.properties[field]?.maximum
-                ) {
-                    setFormData({ ...formData, [field]: value });
-                } else {
-                    toast.current?.show({
-                        severity: 'warn',
-                        summary: 'Warning',
-                        detail: `Value must be between ${templateData?.properties[field]?.minimum} and ${templateData?.properties[field]?.maximum}.`
-                    });
-                }
+            const value =  e.value;
+            
+            // Ensure value is a valid number
+            if (isNaN(value)) {
+                toast.current?.show({
+                    severity: 'warn',
+                    summary: 'Warning',
+                    detail: 'Please enter a valid number.'
+                });
+                return;
             }
+            
+    
+            const min = templateData?.properties[field]?.minimum ?? 0;
+            const max = templateData?.properties[field]?.maximum ?? Infinity;
+
+            if (value >= min && value <= max) {
+                setFormData({ ...formData, [field]: value });
+            } else {
+                toast.current?.show({
+                    severity: 'warn',
+                    summary: 'Warning',
+                    detail: `Value must be between ${min} and ${max}.`
+                });
+            }
+            
             return;
         }
-
-        setFormData({ ...formData, [field]: value });
+        if(field === 'contract_name'){
+            const value = e.target.value;
+            const isExist = allContracts.some(contract => contract?.contract_name.toLowerCase() === value.toLowerCase());
+    
+            if (isExist) {
+                setContractNameExists(true); 
+            } else {
+                setContractNameExists(false);
+            }
+                     
+        }
+        setFormData({ ...formData, [field]: e.target.value });
     };
 
     const fetchConsumerCompanyName = async (companyId: string) => {
@@ -304,8 +380,13 @@ const AddContractPage: React.FC = () => {
                 toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Company certificate has expired. Please create a new certificate' });
             }
         } catch (error) {
-            console.error('Error submitting form:', error);
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to add contract' });
+            if (axios.isAxiosError(error)) {
+                console.error("Error response:", error.response?.data.message);
+                toast.current?.show({ severity: 'error', summary: 'Error', detail:  error?.response?.data.message });
+              } else {
+                console.error("Error:", error);
+                toast.current?.show({ severity: 'error', summary: 'Error', detail:  error?.response?.data.message });
+              };
         }
     };
 
@@ -348,6 +429,9 @@ const AddContractPage: React.FC = () => {
 
     if (!templateData) return <div>Loading...</div>;
 
+
+    
+
     return (
         <div className="flex">
             <Sidebar />
@@ -362,20 +446,25 @@ const AddContractPage: React.FC = () => {
                             <form onSubmit={handleSubmit}>
                                 <div className="form-grid">
                                     <div className="contract_title_group">
+                                    <div>
                                         <InputText
-                                            ref={inputRef}
-                                            id="contract_title"
-                                            value={formData.contract_name ?? ''}
-                                            onChange={(e) => handleInputChange(e, 'contract_name')}
-                                            required
-                                            className="contract_form_field field_title"
-                                            onBlur={() => {
-                                                setTimeout(() => {
-                                                    setEditTitle(false);
-                                                }, 200);
-                                            }}
-                                            disabled={!editTitle}
-                                        />
+                                        id="contract_title"
+                                        ref={inputRef}
+                                        value={formData?.contract_name ?? ""}
+                                        onChange={(e) => handleInputChange(e, "contract_name")}
+                                        required
+                                        className={`contract_form_field field_title ${
+                                        editTitle ? "editable" : ""
+                                        }`}
+                                        onBlur={() => {
+                                        setTimeout(() => {
+                                            setEditTitle(false);
+                                        }, 200);
+                                        }}
+                                        disabled={!editTitle }
+                                        style={{ width: inputWidth + "px" }}
+                                      />
+                                    </div>
                                         <button
                                             onClick={(e) => {
                                                 e.preventDefault();
@@ -388,6 +477,13 @@ const AddContractPage: React.FC = () => {
                                             )}
                                         </button>
                                     </div>
+                                    { contractNameExists && (
+                                   <Message
+                                   severity="warn"
+                                   text="Contract name already exists"
+                                   className="contract-warn-msg"
+                                   />
+                                   )}
                                     <div className="contract_form_field_column">
                                         <div className="field">
                                             <label htmlFor="contract_type" className="required-field">Contract Type</label>
@@ -439,7 +535,7 @@ const AddContractPage: React.FC = () => {
                                                 maxDate={certificateExpiry ? new Date(certificateExpiry) : undefined} className='contract_form_field' placeholder='Choose an end date' dateFormat="MM dd, yy"
                                             />
                                             {certificateExpiry && (
-                                                <small>
+                                                <small className="ml-3 mt-2">
                                                     Contract end date must be before {new Date(certificateExpiry).toLocaleDateString('en-US', {
                                                         year: 'numeric',
                                                         month: 'short',
@@ -506,14 +602,15 @@ const AddContractPage: React.FC = () => {
                                     <div className="contract_form_field_column">
                                         <div className="field half-width-field">
                                             <label htmlFor="interval" className="required-field">Interval</label>
-                                            <InputText
+                                            <InputNumber
                                                 id="interval"
-                                                type="number"
                                                 value={formData.interval ?? ''}
                                                 onChange={(e) => handleInputChange(e, 'interval')}
                                                 required className='contract_form_field'
+                                                min={templateData?.properties["interval"]?.minimum ?? 0}
+                                                max={templateData?.properties["interval"]?.maximum ??  Infinity}
                                             />
-                                            <small>Realtime update interval for properties.</small>
+                                            <small className="ml-3 mt-2">Realtime update interval for properties.</small>
                                             {templateData?.properties.data_type && (
                                                 <div className='data_types_field_wrapper'>
                                                     <label htmlFor="" className='required-field'>Data type</label>
