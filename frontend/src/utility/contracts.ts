@@ -159,3 +159,95 @@ export const deleteContract = async(contractIfricId:string)=>{
         }
       }
     }
+
+    
+    export const getContractTemplatesById = async (id: string) => {
+      try {
+          return await api.get(
+              `${BACKEND_API_URL}/templates/contract/${id}`, {
+              headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              },
+          });
+      } catch (error: any) {
+        if (error?.response && error?.response?.status === 401) {
+          updatePopupVisible(true);
+          return null;
+        } else {
+          throw error;
+        }
+      }
+    };
+
+    export const getContractByType = async (type: string) => {
+      try {
+        console.log("type ",type);
+        return await api.get(`${IFX_BACKEND_URL}/contract/get-contract-by-type/${type}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+          },
+        });
+      } catch (error: any) {
+        if (error?.response && error?.response?.status === 401) {
+          updatePopupVisible(true);
+          return null;
+        } else {
+          throw error;
+        }
+      }
+  };
+  export const getAssetByType = async (type: string) => {
+    try {
+      return await api.get(`${BACKEND_API_URL}/asset/type/${type}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+      });
+    } catch (error: any) {
+      if (error?.response && error?.response?.status === 401) {
+        updatePopupVisible(true);
+        return null;
+      } else {
+        throw error;
+      }
+    }
+};
+
+export const getAssetCertificateById = async (asset_ifric_id: string, company_ifric_id: string) => {
+  try {
+    return await api.get(
+      `${BACKEND_API_URL}/certificate/get-asset-certificates`,
+      {
+        params: {
+          asset_ifric_id,
+          company_ifric_id
+        }
+      }
+    );
+  } catch (error: any) {
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+      return null;
+    } else {
+      throw error;
+    }
+  }
+};
+export const createBinding = async (data: Record<string, any>) => {
+  try {
+    return await api.post(
+      `${IFX_BACKEND_URL}/binding`,
+      data
+    );
+  } catch (error: any) {
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+      return null;
+    } else {
+      throw error;
+    }
+  }
+};

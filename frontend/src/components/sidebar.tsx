@@ -166,6 +166,50 @@ function Sidebar() {
               Certificates
             </div>
           </Button>
+          <Button
+            className={`sidebar_navlink ${
+              router.pathname === "/binding-manager" ? "is_active" : ""
+            }`}
+            onClick={() => handleRoute("binding-manager")}
+            tooltip={!sidebarOpen ? "Binding Manager" : undefined}
+            tooltipOptions={{ position: "right", event: "both" }}
+          >
+            <Image
+              src="/sidebar/contract_icon.svg"
+              width={18}
+              height={18}
+              alt="dashboard_icon"
+            />
+            <div
+              className={`sidebar_navlink_text ${
+                !sidebarOpen ? "sidebar_collapse_fade" : ""
+              }`}
+            >
+              Binding Manager
+            </div>
+          </Button>
+          <Button
+            className={`sidebar_navlink ${
+              router.pathname === "/binding-request" ? "is_active" : ""
+            }`}
+            onClick={() => handleRoute("binding-request")}
+            tooltip={!sidebarOpen ? "Binding Request" : undefined}
+            tooltipOptions={{ position: "right", event: "both" }}
+          >
+            <Image
+              src="/sidebar/contract_icon.svg"
+              width={18}
+              height={18}
+              alt="dashboard_icon"
+            />
+            <div
+              className={`sidebar_navlink_text ${
+                !sidebarOpen ? "sidebar_collapse_fade" : ""
+              }`}
+            >
+              Binding Request
+            </div>
+          </Button>
          <div style={{marginTop:"22rem"}}>
          <Button
             tooltip={!sidebarOpen ? "Help Center" : undefined}

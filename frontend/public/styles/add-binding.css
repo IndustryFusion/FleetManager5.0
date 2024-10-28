@@ -83,7 +83,7 @@
     height: 100%;
     width: 250px;
     position: sticky;
-    top: 5px;
+    top: 0;
     left:0;
     right:0;
     background-color: #f9fafb;
@@ -94,6 +94,7 @@
     overflow-y: auto;
     height: 100%;
     max-height: calc(100vh - 72px);
+    
 }
 
 .asset-type-list h2 {
@@ -396,6 +397,7 @@
 .contract_title_group{
     display: flex;
     align-items: center;
+    gap: 1rem;
 }
 .edit-collapse{
     flex: 0 35%;
@@ -611,36 +613,75 @@
 .contract_form_field.p-inputtext{
     border:none;
     font-weight: 600;
-    background-color: #ffffff;  
-}
-.contract_form_field.editable.p-inputtext {
     background-color: #eeeff0a6;
-    padding: 6px 1rem;
-    border-radius: 8px;
-    border: 3px solid #ced4da;
-    outline: none;
-    background-color: #ffffff; 
-    font-size: 21px;
-  }
-  .representative-container{
+}
+
+.asset_verified_group {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-top: 10px;
+    gap: 0.2rem;
+}
+
+.asset_certify {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.2rem;
+    margin-bottom: 20px;
+}
+
+.contract_form_field.p-focus {
+    box-shadow: none;
+}
+
+.sidebar-container {
+    flex: 0 15%;
+    padding: 0px 12px 27px;
+    border-right: 1px solid #e6e6e6;
+    background-color: var(--white);
+    transition: flex 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0px;
+    height: 100vh;
+    overflow-y: hidden;
+}
+  
+.collapse-sidebar {
+flex: 0 3%;
+padding: 23px 16px 27px 12px;
+border-right: 1px solid #e6e6e6;
+background-color: var(--white);
+transition: flex 0.3s ease;
+position: fixed;
+top: 0;
+left: 0px;
+height: 100vh;
+overflow: hidden;
+}
+
+.contract_dialog_company_details {
+    display: flex;
+    gap: 4rem;
+    font-family: League Spartan;
+    margin-left: 1rem;
+}
+.contract_dialog_heading{
+    font-family: League Spartan;
+}
+.representative-container{
     border: 3px solid #ced4da;
     border-radius: 8px;
     padding: 0.7rem 1rem; 
     margin-top: 1.5rem;
-  }
-  .p-dialog .p-dialog-header {
+}
+.p-dialog .p-dialog-header {
 	border-top-right-radius: 10px;
     border-top-left-radius: 10px;
-   }
-   .p-dialog .p-dialog-footer {
+}
+.p-dialog .p-dialog-footer {
    border-bottom-right-radius: 10px;
    border-bottom-left-radius: 10px;
-   }
-   .contract_dialog_company_details {
-    display: flex;
-    gap: 12rem;
-    font-family: League Spartan;
-}
-.contract_dialog_heading{
-    font-family: League Spartan;
 }

@@ -1,21 +1,21 @@
 import Navbar from "@/components/navbar";
-import Sidebar from "@/components/sidebar";
 import React, { useEffect, useState, useRef } from "react";
-import "../../public/styles/contract-manager.css";
-import ContractHeader from "@/components/contractManager/contract-header";
+import "../../public/styles/binding-request.css";
+import ContractHeader from "@/components/bindingRequest/binding-header";
 import { InputText } from "primereact/inputtext";
 import { Tree } from "primereact/tree";
 import { NodeService } from "@/service/NodeService";
 import { Checkbox } from "primereact/checkbox";
 import { getAccessGroup } from "@/utility/indexed-db";
 import { getContracts } from "@/utility/contracts";
-import ContractCard from "@/components/contractManager/contract-file";
+import ContractCard from "@/components/bindingRequest/binding-file";
 import { IoArrowBack } from "react-icons/io5";
-import ContractFolders from "@/components/contractManager/contract-folders";
+import ContractFolders from "@/components/bindingRequest/binding-folders";
 import { Toast, ToastMessage } from "primereact/toast";
 import axios from "axios";
 import { fetchContractsRedux } from "@/redux/contract/contractSlice";
 import { useDispatch, useSelector } from "react-redux";
+import Sidebar from '@/components/sidebar';
 
 const ContractManager = () => {
   const [nodes, setNodes] = useState([]);
@@ -29,7 +29,6 @@ const ContractManager = () => {
     useState(false);
   const [contractsOriginal, setContractsOriginal] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [showAll,setShowAll] = useState(true);
   const toast = useRef<Toast>(null);
   const dispatch = useDispatch();
 
@@ -56,7 +55,8 @@ const ContractManager = () => {
   const getCompanyId = async () => {
     try {
     const details = await getAccessGroup();
-    dispatch(fetchContractsRedux(details?.company_ifric_id));
+    setCompanyIfricId(details.company_ifric_id);
+    dispatch(fetchContractsRedux(companyIfricId));
     } catch(error: any) {
       if (axios.isAxiosError(error)) {
         console.error("Error response:", error.response?.data.message);
@@ -69,7 +69,7 @@ const ContractManager = () => {
   };
   useEffect(() => {
     getCompanyId();
-  },[]);
+  });
 
 
 
@@ -97,10 +97,10 @@ const ContractManager = () => {
     <>
       <div className="flex">
         <Toast ref={toast} />
-        <Sidebar />
+          <Sidebar />
         <div className="main_content_wrapper">
           <div className="navbar_wrapper">
-            <Navbar navHeader="Contracts Manager" />
+            <Navbar navHeader="Binding Request" />
             <div className="flex gap-4 contract-container">
               <div className="contract-left-container">
                 <div className="contract-search-container">
@@ -160,7 +160,6 @@ const ContractManager = () => {
                     setInsuranceFilterContracts={setInsuranceFilterContracts}
                     setContractsOriginal={setContractsOriginal}
                     contractsOriginal={contractsOriginal}
-                    setShowAll={setShowAll}
                   />
                   {loading ? (
                     <div></div>

@@ -7,24 +7,20 @@ interface ContractCardsProps {
   setInsuranceFilterContracts:Dispatch<SetStateAction<boolean>>;
   setContractsOriginal:Dispatch<SetStateAction<boolean>>;
   contractsOriginal:boolean;
-  setShowAll:Dispatch<SetStateAction<boolean>>;
 }
 
-const ContractFolders: React.FC<ContractCardsProps> = ({ setFilterContracts, setInsuranceFilterContracts,setContractsOriginal, contractsOriginal,setShowAll}) => {
+const ContractFolders: React.FC<ContractCardsProps> = ({ setFilterContracts, setInsuranceFilterContracts,setContractsOriginal, contractsOriginal}) => {
     
   return (
     <>
       {contractsOriginal && (
         <>
           <div
-            className="flex contract-card mr-5"
+            className="flex contract-card"
             style={{ gap: "3rem", marginTop: "2rem" }}
             onClick={() => {
                 setContractsOriginal(false)
-                setFilterContracts(true)
-                setShowAll(false)
-              }}
-                
+                setFilterContracts(true)}}
           >
             <div className="flex gap-2 folder-heading align-items-center">
               <i className="pi pi-folder"></i>
@@ -51,12 +47,11 @@ const ContractFolders: React.FC<ContractCardsProps> = ({ setFilterContracts, set
           </div>
 
           <div
-            className="flex contract-card mt-4 mr-5"
+            className="flex contract-card mt-4"
             style={{ gap: "3rem" }}
             onClick={() =>{
                 setContractsOriginal(false)
                 setInsuranceFilterContracts(true)
-                setShowAll(false)
             } }
           >
             <div className="flex gap-2 folder-heading align-items-center">

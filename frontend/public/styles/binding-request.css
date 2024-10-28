@@ -1,0 +1,273 @@
+.sort-dropdown .p-dropdown-panel {
+    border-radius: 8px;
+    background: var(--White, #fff);
+    box-shadow: 0px 0px 8px 3px rgba(0, 0, 0, 0.25);
+    left: -9px !important;
+  }
+  .sort-dropdown .p-dropdown-items{
+    padding: 5px ;
+  }
+  
+  .sort-dropdown .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    padding: 0.5rem 0.7rem;
+    /* color: #495057; */
+  }
+  .custom-option{
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .custom-option span{
+    margin-top: 5px;
+  }
+  .contract-container {
+  padding-top: 10px;
+  width: 100%;
+  background-color: #f9f9fa;
+  height: 100vh;
+  }
+  .contract-container-collpase {
+  padding-top: 10px;
+  width: 97%;
+  background-color: #f9f9fa;
+  height: 100vh;
+  }
+  .contract-btn {
+  background-color: #2b2b2b;
+  color: #fff;
+  border-radius: 8px;
+  padding: 7px 7px 7px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 10px 0;
+  cursor: pointer;
+  font-family: "League Spartan";
+  }
+  .black_button_hover,
+  .grey_button_hover {
+  transition: background-color 100ms ease;
+  }
+  .hover_state_group {
+  background-color: transparent;
+  padding: 3px 2px 3px 11px;
+  border-radius: 8px;
+  transition: background-color 100ms ease;
+  }
+  .hover_state_group:hover {
+  background-color: #f3f3f5;
+  }
+  .hover_state_group .p-dropdown {
+  background-color: transparent;
+  }
+  .contract-left-container {
+  font-family: "League Spartan", sans-serif;
+  flex: 0 20%;
+  padding: 1.5rem 26px;
+  }
+  .contract-right-container {
+    flex: 0 77%;
+  }
+  .search-expand {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.9rem;
+  }
+  .search-collapse {
+  position: absolute;
+  top: 0.7rem;
+  right: 2.3rem;
+  }
+  .contract-search-input {
+  background: transparent;
+  font-size: 16px;
+  width: 290px;
+  border: 2px solid #cfcdcd;
+  border-radius: 8px;
+  padding: 10px;
+  font-family: "League Spartan", sans-serif;
+  }
+  .contract-search-container {
+  position: relative;
+  width: 290px;
+  }
+  .contracts-tree .p-tree {
+  border: none;
+  padding: 0;
+  background-color: transparent;
+  font-family: "League Spartan", sans-serif;
+  }
+  .contracts-tree .p-treenode-label {
+  color: #2b2b2b;
+  font-weight: 500;
+  font-size: 17.5px;
+  }
+  .folder-heading {
+  color: #95989a;
+  font-weight: 500;
+  }
+  .contract-cards-container {
+  font-family: "League Spartan", sans-serif;
+  height: calc(100vh - 150px);
+  overflow: auto;
+  padding-bottom: 6rem;
+  }
+  .contract-cards-container p {
+  margin: 0;
+  }
+  .contract-card {
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 16px;
+    cursor: pointer;
+  }
+  .card-label-grey {
+  color: #95989a;
+  }
+  .card-label-black {
+  font-weight: 600;
+  font-size: 17px;
+  color: #2b2b2b;
+  }
+  .contract-card-heading {
+    font-weight: 500;
+    font-size: 20px;
+    color: #2b2b2b;
+  }
+  .binding-card-heading {
+    font-weight: 500;
+    font-size: 16px;
+    color: #2b2b2b;
+  }
+  .folder-heading {
+  width: 270px;
+  text-align: left;
+  word-wrap: break-word;
+  word-break: break-word;
+  }
+  .share-content {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #eae7e7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  margin-left: -0.5rem;
+  overflow: hidden;
+  color: #fff;
+  }
+  .user-1 {
+  background-color: #2b2b2b;
+  }
+  .user-2 {
+  background-color: #015001;
+  }
+  .user-3 {
+  background-color: #040448;
+  }
+  .contract-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  }
+  .folder-heading .pi-folder {
+  font-size: 22px;
+  }
+  .reminder-btn {
+  border: 2px solid #d1d6d9;
+  outline: none;
+  border-radius: 20px;
+  background: #fff;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 17px;
+  cursor: pointer;
+  font-family: "League Spartan", sans-serif;
+  display: flex;
+  align-items: center;
+  }
+  .filter-heading {
+  font-family: "League Spartan";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  color: #95989a;
+  }
+  .contract-sort-dropdown.p-dropdown .p-dropdown-label {
+  color: #2b2b2b;
+  font-family: "League Spartan";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  padding-left: 10px !important;
+  }
+  .contract-tabs.p-tabview .p-tabview-nav {
+    margin-bottom: 0 !important;
+  }
+  .contract-tabs.p-tabview .p-tabview-nav li{
+    padding: 5px 5px 0 5px !important;
+  }
+  .contract-tabs.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  padding: 0;
+  margin-right: 2rem;
+  }
+  .contract-tabs.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  border-color: #478fb7;
+  color: #2b2b2b;
+  border-width: 0 0 5px 0;
+  width: 80%;
+  }
+  .contract-tabs.p-tabview .p-tabview-nav-content {
+  border-bottom: 2px solid #e1e8ed;
+  }
+  .main_content_wrapper {
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+  .back-btn {
+    background-color: #2b2b2b;
+    color: #fff;
+    border-radius: 8px;
+    padding: 7px 11px 7px 5px;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 10px 0;
+    cursor: pointer;
+    font-family: "League Spartan";
+  }
+  .not-found-text{
+    color: #95989a;
+  }
+  
+  .sidebar-container {
+    flex: 0 15%;
+    padding: 0px 12px 27px;
+    border-right: 1px solid #e6e6e6;
+    background-color: var(--white);
+    transition: flex 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0px;
+    height: 100vh;
+    overflow-y: hidden;
+  }
+  
+  .collapse-sidebar {
+    flex: 0 3%;
+    padding: 23px 16px 27px 12px;
+    border-right: 1px solid #e6e6e6;
+    background-color: var(--white);
+    transition: flex 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0px;
+    height: 100vh;
+    overflow: hidden;
+  }
