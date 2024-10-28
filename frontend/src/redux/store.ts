@@ -19,13 +19,15 @@ import authReducer from "./auth/authSlice";
 import templatesReducer from './templates/templatesSlice';
 import assetsSliceReducer from "./asset/assetsSlice";
 import contractsSliceReducer from "./contract/contractSlice"
+import bindingsSliceReducer from "./binding/bindingsSlice"
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
         templates: templatesReducer,
         assetsSlice:assetsSliceReducer,
-        contracts: contractsSliceReducer
+        contracts: contractsSliceReducer,
+        bindings: bindingsSliceReducer,
     }
 });
 
