@@ -170,4 +170,52 @@ export class TemplatesService {
       );
     }
   }
+
+  async getContractTemplateById(id: string) {
+    try {
+      const decodedId = Buffer.from(id, 'base64').toString('ascii');
+      console.log("decodedId ",decodedId);
+      const templateDescriptions: TemplateDescriptionDto[] = [];
+      const headers = {
+        Authorization: 'Bearer ' + this.token,
+        'Content-Type': 'application/json',
+      };
+      
+      const response = await axios.get(this.baseUrl, {
+        headers,
+      });
+      console.log("response ",response.data);
+      if (response.data.length) {
+        for(let i = 0; i < response.data.length; i++) {
+          const name = response.data[i].name;
+          const url = `${this.baseUrl}/${name}`;
+          const value = await axios.get(url, {
+            headers,
+          });
+          if (value.data.encoding === 'base64' && value.data.content) {
+            // Decode Base64 content to UTF-8 string
+            const decodedContent = Buffer.from(
+              value.data.content,
+              'base64',
+            ).toString('utf-8');
+            const parsedContent = JSON.parse(decodedContent);
+            if(parsedContent.$id === decodedId) {
+              templateDescriptions.push({
+                type: parsedContent.$id,
+                title: parsedContent.title,
+                description: parsedContent.description,
+                properties: parsedContent.properties,
+              });
+              break;
+            }
+          }
+        }
+      }
+      return templateDescriptions;
+    } catch (err) {
+      throw new NotFoundException(
+        `Failed to fetch repository data: ${err.message}`,
+      );
+    }
+  }
 }
