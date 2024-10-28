@@ -41,6 +41,16 @@ export class TemplatesController {
     }
   }
 
+  @Get('/contract/:id')
+  getContractTemplateById(@Param('id') id: string): Promise<TemplateDescriptionDto[]> {
+    try {
+      console.log("id ",id);
+      return this.templatesService.getContractTemplateById(id);
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
   @Get(':id')
   getTemplateById(@Param('id') id: string): Promise<TemplateDescriptionDto[]> {
     try {
