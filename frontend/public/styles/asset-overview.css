@@ -717,7 +717,7 @@ line-height: normal;
 .p-dialog-header{
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    border-bottom: 1px solid #e6e6e6;
+    /* border-bottom: 1px solid #e6e6e6; */
 }
 .p-dialog .p-dialog-content:last-of-type,
 .p-dialog .p-dialog-footer  {

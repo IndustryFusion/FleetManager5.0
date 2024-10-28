@@ -1,7 +1,7 @@
 import axios from "axios";
 import api from "./jwt";
 import { updatePopupVisible } from "./update-popup";
-import { Asset } from "@/types/asset-types";
+
 
 const IFX_BACKEND_URL = process.env.NEXT_PUBLIC_IFX_BACKEND_URL;
 const IFRIC_REGISTRY_BACKEND_URL = process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL

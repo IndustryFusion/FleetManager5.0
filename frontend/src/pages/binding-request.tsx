@@ -191,7 +191,7 @@ const ContractManager = () => {
                         ))}
                       {insuranceFilterContracts && (
                         <div>
-                          <h3 className="not-found-text">
+                          <h3 className="not-found-text ml-4">
                             Insurance contract files not found
                           </h3>
                         </div>

@@ -407,7 +407,7 @@ const CreateBinding: React.FC = () => {
     const renderDialogHeader = () => {
         return (
             <div className="flex align-items-center justify-content-between">
-                <h3 className='contract_dialog_heading'>Signing Contract</h3>
+                <h3 className='contract_dialog_heading m-0'>Signing Contract</h3>
             </div>
         );
     };

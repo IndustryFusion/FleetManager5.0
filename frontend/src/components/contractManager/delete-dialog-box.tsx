@@ -46,6 +46,8 @@ const DeleteDialogBox:React.FC<DeleteDialogProps> = ({
           onHide={() => setDeleteDialog(false)}
           header={header}
           footer={footerContent}
+          draggable={false}
+          resizable={false}
         >
           <div className="mb-4 mt-5">
             {deleteItemName}

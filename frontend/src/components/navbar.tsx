@@ -46,6 +46,12 @@ const Navbar: React.FC<NavbarProps> = ({ navHeader }) => {
     if (fullPath.includes("/contract-manager")) {
       return [createLastItem("Contract Manager")];
     }
+    if (fullPath.includes("/binding-manager")) {
+      return [createLastItem("Binding Manager")];
+    }
+    if (fullPath.includes("/binding-request")) {
+      return [createLastItem("Binding Request")];
+    }
     if (fullPath.includes("/contract")) {
       return [createLastItem("Contract ")];
     }

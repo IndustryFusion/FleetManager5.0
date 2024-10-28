@@ -29,6 +29,7 @@ const ContractManager = () => {
     useState(false);
   const [contractsOriginal, setContractsOriginal] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [showAll,setShowAll] = useState(true);
   const toast = useRef<Toast>(null);
   const dispatch = useDispatch();
 
@@ -159,6 +160,7 @@ const ContractManager = () => {
                     setInsuranceFilterContracts={setInsuranceFilterContracts}
                     setContractsOriginal={setContractsOriginal}
                     contractsOriginal={contractsOriginal}
+                    setShowAll={setShowAll}
                   />
                   {loading ? (
                     <div></div>
@@ -190,7 +192,7 @@ const ContractManager = () => {
                         ))}
                       {insuranceFilterContracts && (
                         <div>
-                          <h3 className="not-found-text">
+                          <h3 className="not-found-text ml-4">
                             Insurance contract files not found
                           </h3>
                         </div>

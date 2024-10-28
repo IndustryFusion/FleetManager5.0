@@ -664,7 +664,7 @@ overflow: hidden;
 
 .contract_dialog_company_details {
     display: flex;
-    gap: 9rem;
+    gap: 4rem;
     font-family: League Spartan;
     margin-left: 1rem;
 }

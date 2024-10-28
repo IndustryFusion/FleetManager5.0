@@ -470,6 +470,8 @@ const ContractDetails: React.FC = () => {
                       />
                       </div>
                       <div>
+                      {
+                          isEdit && 
                         <button
                           onClick={(e) => {
                             e.preventDefault();
@@ -494,6 +496,7 @@ const ContractDetails: React.FC = () => {
                             ></Image>
                           )}
                         </button>
+                        }
                       </div>
                     </div>
                     {contractNameExists && (
