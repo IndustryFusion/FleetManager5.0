@@ -501,7 +501,7 @@ const CreateBinding: React.FC = () => {
                                         <div className='contract_form_subheader'>Parties</div>
                                             <div className="contract_form_field_column">
                                             <div className="field">
-                                            <div className="consumer_details_wrapper">
+                                            <div className="consumer_details_wrapper" >
                                                 <Image src="/company_icon.svg" width={24} height={24} alt='company icon'></Image>
                                                 <div>
                                                     <label htmlFor="provider_company_name">Data Consumer</label>
@@ -633,7 +633,7 @@ const CreateBinding: React.FC = () => {
                             <Dialog header={renderDialogHeader} visible={visible} style={{width:"100%", maxWidth: '30vw' }}  draggable={false} footer={renderDialogFooter} onHide={() => {if (!visible) return; setVisible(false); }} className='contract_dialog_cover'>
                                 <div className='contract_dialog_content'>
                                     <div className="contract_dialog_company_details">
-                                        <div className="consumer_details_wrapper">
+                                        <div className="consumer_details_wrapper" style={{flex:"0 54%"}}>
                                             <Image src="/company_icon.svg" width={24} height={24} alt='company icon'></Image>
                                             <div>
                                                 <label htmlFor="provider_company_name">Data Consumer</label>
@@ -643,7 +643,7 @@ const CreateBinding: React.FC = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="consumer_details_wrapper">
+                                        <div className="consumer_details_wrapper" style={{flex:"0 42%"}}>
                                             <Image src="/company_icon.svg" width={24} height={24} alt='company icon'></Image>
                                             <div>
                                                 <label htmlFor="provider_company_name">Data Provider</label>

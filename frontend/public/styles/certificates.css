@@ -138,8 +138,8 @@
     justify-content: center;
     min-width: 220px;
     border: none;
-    margin-top: 1.3rem;
-    margin-left: 7rem;
+    margin-top: 1.5rem;
+    margin-left: 13rem;
   }
   
   .arrow-button {
@@ -217,4 +217,12 @@
   input::placeholder {
     color: #6c757d;
   }
-  
+  .certificate-header-container{
+    gap: 6rem;
+  }
+  @media (max-width: 1440px) {
+    .certificate-header-container{
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+}

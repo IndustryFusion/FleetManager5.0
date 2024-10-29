@@ -497,6 +497,7 @@
 }
 .asset_chips .p-inputtext.p-chips-multiple-container{
     border: none;
+    margin-top: 0.5rem;
 }
 .contract_form_field .p-multiselect-label.p-placeholder{
     padding-left: 0px;
@@ -509,6 +510,7 @@
     color: #2b2b2b;
     background-color: #e7e7e7;
     font-size: 14px;
+    padding: 8px 15px 8px 15px;
 }
 .consumer_details_wrapper{
     display: flex;
@@ -636,11 +638,7 @@
    border-bottom-right-radius: 10px;
    border-bottom-left-radius: 10px;
    }
-   .contract_dialog_company_details {
-    display: flex;
-    gap: 12rem;
-    font-family: League Spartan;
-}
+
 .contract_dialog_heading{
     font-family: League Spartan;
 }
