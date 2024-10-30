@@ -666,6 +666,7 @@ overflow: hidden;
     display: flex;
     /* gap: 4rem; */
     font-family: League Spartan;
+    margin-top: 2rem;
     /* margin-left: 1rem; */
 }
 .contract_dialog_heading{
