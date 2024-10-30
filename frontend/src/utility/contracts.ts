@@ -251,3 +251,22 @@ export const createBinding = async (data: Record<string, any>) => {
     }
   }
 };
+
+export const getContractByTemplates = async () => {
+  try {
+      return await api.get(
+          `${BACKEND_API_URL}/templates/get-contract-by-template`, {
+          headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          },
+      });
+  } catch (error: any) {
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+      return null;
+    } else {
+      throw error;
+    }
+  }
+};

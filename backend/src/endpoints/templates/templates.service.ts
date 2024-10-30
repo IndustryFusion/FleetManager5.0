@@ -14,7 +14,7 @@
 // limitations under the License. 
 // 
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { TemplateDto } from './dto/template.dto';
 import { TemplateDescriptionDto } from './dto/templateDescription.dto';
 import axios from 'axios';
@@ -216,6 +216,59 @@ export class TemplatesService {
       throw new NotFoundException(
         `Failed to fetch repository data: ${err.message}`,
       );
+    }
+  }
+
+  async findContractByTemplates() {
+    try {
+      const headers = {
+        Authorization: 'Bearer ' + this.token,
+        'Content-Type': 'application/json',
+      };
+      const result = [];
+      const response = await axios.get(this.baseUrl, {
+        headers,
+      });
+      if (response.data.length) {
+        for(let i = 0; i < response.data.length; i++) {
+          const name = response.data[i].name;
+          const url = `${this.baseUrl}/${name}`;
+          const value = await axios.get(url, {
+            headers,
+          });
+          if (value.data.encoding === 'base64' && value.data.content) {
+            // Decode Base64 content to UTF-8 string
+            const decodedContent = Buffer.from(
+              value.data.content,
+              'base64',
+            ).toString('utf-8');
+            const parsedContent = JSON.parse(decodedContent);
+            try {
+              // const contractData = await this.contractModel.find({asset_type: parsedContent.properties.asset_type.default});
+              let flag = false;
+
+              // check whether the asset type already exists, if yes then add contract name with it.
+              result.forEach(value => {
+                const key = Object.keys(value)[0];
+                const assetType = parsedContent.properties.asset_type.default.split("/").pop();
+                if (key === assetType) {
+                  value[key] = [...value[key], name.split(".")[0]];
+                  flag = true;
+                }
+              })
+
+              if(!flag) {
+                result.push({[parsedContent.properties.asset_type.default.split("/").pop()]: [name.split(".")[0]]});
+              }
+            } catch(err) {
+              throw new InternalServerErrorException(err.message);
+            }
+          }
+        }
+      }
+      return result;
+    } catch(err) {
+      throw new NotFoundException(`Failed to fetch contract by templates: ${err.message}`);
     }
   }
 }
