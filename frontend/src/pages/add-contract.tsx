@@ -470,7 +470,7 @@ const AddContractPage: React.FC = () => {
         return (
             <div className="card">
                 <h2>Contract Templates</h2>
-                <Tree value={assetTemplateTree} selectionMode="single" selectionKeys={selectedKey} onSelect={handleSelect} className="w-full md:w-30rem" />
+                <Tree value={assetTemplateTree} selectionMode="single" selectionKeys={selectedKey} onSelect={handleSelect} />
             </div>
         );
     };
