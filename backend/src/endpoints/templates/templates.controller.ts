@@ -51,6 +51,11 @@ export class TemplatesController {
     }
   }
 
+  @Get('get-contract-by-template')
+  findContractByTemplates() {
+    return this.templatesService.findContractByTemplates();
+  }
+
   @Get(':id')
   getTemplateById(@Param('id') id: string): Promise<TemplateDescriptionDto[]> {
     try {
