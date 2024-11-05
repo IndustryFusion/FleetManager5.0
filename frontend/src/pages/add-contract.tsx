@@ -469,8 +469,8 @@ const AddContractPage: React.FC = () => {
     const renderAssetTypeList = () => {
         return (
             <div className="card">
-                <h2>Asset Types</h2>
-                <Tree value={assetTemplateTree} selectionMode="single" selectionKeys={selectedKey} onSelect={handleSelect} className="w-full md:w-30rem" />
+                <h2>Contract Templates</h2>
+                <Tree value={assetTemplateTree} selectionMode="single" selectionKeys={selectedKey} onSelect={handleSelect} />
             </div>
         );
     };

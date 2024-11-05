@@ -223,10 +223,12 @@ const CreateBinding: React.FC = () => {
                         }
                     }
                 } else {
-                    toast.current?.show({ severity: 'warn', summary: 'Warn', detail: assetCertificateResponse?.data.message });
+                    setAssetVerified(null);
+                    toast.current?.show({ severity: 'warn', summary: 'Warn', detail: "Asset Certificate not found" });
                 }
             }
         } catch (error) {
+            setAssetVerified(null);
             console.error('Error fetching data:', error);
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to load necessary data' });
         }

@@ -81,7 +81,7 @@
 /* Asset Type List Styling */
 .asset-type-list-cover {
     height: 100%;
-    width: 300px;
+    width: calc(100% - 72%);
     position: sticky;
     top: 6px;
     left:0;
@@ -114,7 +114,9 @@
 }
 
 .card ul li {
-    font-size: 1.2rem;
+    font-size: 18px;
+    font-weight: 500;
+    font-family: inherit;
 }
 
 /* Form Container Styling */
