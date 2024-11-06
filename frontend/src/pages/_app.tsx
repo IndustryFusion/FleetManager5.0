@@ -26,6 +26,7 @@ import { store } from "@/redux/store";
 import { appWithTranslation } from "next-i18next";
 import { UnauthorizedPopup } from '../utility/jwt';
 import withAuth from "@/app/withAuth";
+import Head from "next/head";
 
 // Import your custom components or layout components
 function MyApp({ Component, pageProps, router }:AppProps) {
@@ -35,6 +36,9 @@ function MyApp({ Component, pageProps, router }:AppProps) {
         : withAuth(Component);
   return (
     <Provider store={store}>
+      <Head>
+        <link rel="icon" type="image/x-icon" href="favicon.ico"></link>
+      </Head>
     <div>
       <AuthComponent {...pageProps} />
       <UnauthorizedPopup />

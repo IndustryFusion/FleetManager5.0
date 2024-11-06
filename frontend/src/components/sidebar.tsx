@@ -61,11 +61,11 @@ function Sidebar() {
       //onMouseEnter={handleSidebarOpen}
     >
       <div className="sidebar_header">
-        <div className="sidebar_logo_wrapper">
+        <div className={`sidebar_logo_wrapper ${!sidebarOpen ? "logo_small" : ""}`}>
           <Image
             src="/sidebar/logo_expanded.svg"
-            width={184}
-            height={0}
+            width={195}
+            height={41}
             alt="fleet logo"
             onClick={() => handleRoute("dashboard")}
             style={{ cursor: "pointer",height:"auto" }}
@@ -232,7 +232,7 @@ function Sidebar() {
               Binding Request
             </div>
           </Button>
-         <div style={{marginTop:"22rem"}}>
+         <div style= {{marginTop:"auto", paddingBlock: "30px"}}>
          <Button
             tooltip={!sidebarOpen ? "Help Center" : undefined}
             tooltipOptions={{ position: "right", event: "both" }}

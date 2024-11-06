@@ -37,7 +37,7 @@ body {
   left: 30px;
 }
 .sidebar_header {
-  padding: 22px 14px 22px 29px;
+  padding: 18px 15px 30px 15px;
   position: sticky;
   top: 0;
   right: 0;
@@ -48,10 +48,16 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 6px;
+  margin-left: -1px;
+}
+
+.sidebar_logo_wrapper.logo_small{
+  width: 41px;
+  overflow: hidden;
 }
 .sidebar_content {
-  padding: 40px 15px;
-  height: calc(100vh - 86px);
+  padding: 20px 15px 20px 15px;
+  height: calc(100vh - 99px);
   overflow-y: auto;
   overflow-y: auto;
   overflow-x: hidden;
@@ -60,6 +66,10 @@ body {
 .sidebar_link_wrapper {
   overflow: hidden;
   min-width: 40px;
+  background-color: white;
+  min-height: calc(100vh - 139px);
+  display: flex;
+  flex-direction: column;
 }
 .sidebar_navlink {
   border: none;
@@ -80,6 +90,7 @@ body {
   transition: background-color 100ms ease;
   user-select: none;
   margin-bottom: 3px;
+  flex-shrink: 0;
 }
 .sidebar_navlink.is_active,
 .sidebar_navlink:hover,
