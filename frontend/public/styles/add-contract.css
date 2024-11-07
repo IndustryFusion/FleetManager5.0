@@ -81,7 +81,6 @@
 /* Asset Type List Styling */
 .asset-type-list-cover {
     height: 100%;
-    width: calc(100% - 72%);
     position: sticky;
     top: 6px;
     left:0;
