@@ -435,7 +435,7 @@ const AddContractPage: React.FC = () => {
                 // Check if the company has certificates
                 if (response?.data && response?.data.length > 0) {
                     const response = await createContract(dataToSend);
-                    if (response?.statusText === "Created" && response?.data.status === 201) {
+                    if (response?.data.status === 201) {
                         toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Contract created.' });
                     }
                     else {
@@ -757,7 +757,7 @@ const AddContractPage: React.FC = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="asset-type-list-cover">
+                        <div className="asset-type-list-cover" style={{width: "calc(100% - 72%)"}}>
                             {renderAssetTypeList()}
                         </div>
                     </div>
