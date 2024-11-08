@@ -1,11 +1,6 @@
 name: Nigthly
 
 on:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -65,9 +60,9 @@ jobs:
           docker rmi ${DOCKER_PREFIX}/fleet50-frontend:${NIGHTLY_DOCKER_TAG}
           echo "NIGHTLY_DOCKER_TAG=${NIGHTLY_DOCKER_TAG}" >> "${GITHUB_OUTPUT}"
       
-        - name: Cleanup .env.development
-          run: |
-            rm frontend/.env.development
+      - name: Cleanup .env.development
+        run: |
+          rm frontend/.env.development
 
   deploy:
     needs: build
