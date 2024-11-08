@@ -1,0 +1,27 @@
+version: '3.9'
+
+networks:
+  shared-network:
+    external: true
+
+services:
+  pp-backend:
+    image: ${DOCKER_PREFIX:-ibn40}/fleet50-backend:${DOCKER_TAG:-latest}
+    build:
+      context: ./backend
+      args:
+        ENV: prod
+    ports:
+    - "4001:4001"
+    networks:
+      - shared-network
+  pp-frontend:
+    image: ${DOCKER_PREFIX:-ibn40}/fleet50-frontend:${DOCKER_TAG:-latest}
+    build:
+      context: ./frontend
+      args:
+        ENV: prod
+    ports:
+    - "3001:3001"
+    networks:
+      - shared-network
