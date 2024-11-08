@@ -15,12 +15,36 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       DOCKER_PREFIX: ${{ secrets.DOCKER_PREFIX }}
+      IONOS_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+
+      IONOS_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+
+      IONOS_BUCKET: iff-env
+
+      IONOS_FILE_KEY: fleet50/dev/.env.development
+
+      IONOS_ENDPOINT: https://s3-eu-central-1.ionoscloud.com      
     outputs:
       DOCKER_TAG: ${{ steps.build.outputs.NIGHTLY_DOCKER_TAG }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          ref: ${{ github.ref }}
+          python-version: '3.9'  # Use the version of Python you need
+
+      - name: Install boto3
+        run: pip install boto3
+
+      - name: Fetch .env.development from IONOS S3
+        run: python utils/fetch_env.py
+
+      - name: Verify .env.development
+        run: |
+          cat frontend/.env.development
+
       - id: build
         name: Build & Push Image
         shell: bash
@@ -40,6 +64,11 @@ jobs:
           docker rmi ${DOCKER_PREFIX}/fleet50-frontend:${DOCKER_TAG}
           docker rmi ${DOCKER_PREFIX}/fleet50-frontend:${NIGHTLY_DOCKER_TAG}
           echo "NIGHTLY_DOCKER_TAG=${NIGHTLY_DOCKER_TAG}" >> "${GITHUB_OUTPUT}"
+      
+        - name: Cleanup .env.development
+          run: |
+            rm frontend/.env.development
+
   deploy:
     needs: build
     uses: IndustryFusion/GitOpsRepo/.github/workflows/deploy.yaml@main
