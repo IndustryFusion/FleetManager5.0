@@ -31,7 +31,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
       />
       <Button
       className="action-btn-save"
-      label="Save" onClick={() => handleDelete(id)} autoFocus />
+      label="Yes" onClick={() => handleDelete(id)} autoFocus />
     </div>
   );
 
