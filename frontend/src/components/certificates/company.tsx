@@ -151,7 +151,7 @@ const CompanyCertificates: React.FC<any> = ({isSidebarExpand}) => {
     <>
       <div className="mt-4 certificate-container">
         <div className="flex align-items-center">
-          <div className="flex" style={{ gap: "4rem" }}>
+          <div className="flex certificate-header-container">
             <div className="flex flex-column certificate-input-container -mt-1">
               <label className="certificate-label-text" htmlFor="companyID">
                 Company ID

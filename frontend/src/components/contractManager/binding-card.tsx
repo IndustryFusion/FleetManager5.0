@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { GiAlarmClock } from "react-icons/gi";
 import { MdLockOpen, MdLockOutline } from "react-icons/md";
 import SharedWithCompanies from "./shared-with-companies";
+import { getAssetById } from "@/utility/asset";
 
 interface MetaData {
   created_at: string;
@@ -36,6 +37,7 @@ interface BindingCardProps {
 const BindingCard: React.FC<BindingCardProps> = ({ binding }) => {
   const [contractData, setContractData] = useState<ContractData>({});
   const [sharedCompanies, setSharedCompanies] = useState<Company>([]);
+  const [productName, setProductName] = useState<string>("");
   const formattedDate = moment(binding?.meta_data?.created_at).format(
     "DD MMM YYYY"
   );
@@ -53,17 +55,30 @@ const BindingCard: React.FC<BindingCardProps> = ({ binding }) => {
     }
   };
 
+  const fetchAssetDetails = async(assetId:string)=>{
+    try {
+        const asset = await getAssetById(assetId);
+        if (asset && asset?.product_name) {
+          setProductName(asset?.product_name);
+        } else {
+          setProductName("N/A");
+        }
+      } catch (error) {
+        console.error("Error fetching asset details:", error);
+        setProductName("Error");
+      }
+  }
  
 
   const fetchSharedCompanies =async(bindingIfricId:string)=>{
     const response = await getSharedWithBindingCompanies(bindingIfricId);
-    setSharedCompanies(response);
-    
+    setSharedCompanies(response);  
   }
   
   useEffect(() => {
     fetchContractData(binding?.contract_id);
-    fetchSharedCompanies(binding?.contract_binding_ifric_id)
+    fetchSharedCompanies(binding?.contract_binding_ifric_id);
+    fetchAssetDetails(binding?.asset_ifric_id)
   }, [binding?.contract_id]);
 
  
@@ -77,9 +92,13 @@ const BindingCard: React.FC<BindingCardProps> = ({ binding }) => {
     >
       <div className="flex gap-2 folder-heading align-items-center">
         <i className="pi pi-file-import" style={{ fontSize: "22px" }}></i>
+        <div>
         <h3 className="m-0 binding-card-heading">
           {contractData?.contract_name}
         </h3>
+        <p>{productName}</p>
+        </div>
+        
       </div>
       <div>
         <div>

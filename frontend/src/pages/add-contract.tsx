@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Children } from 'react';
 import { useRouter } from 'next/router';
 import axios, { AxiosInstance } from 'axios';
 import { InputText } from 'primereact/inputtext';
@@ -11,19 +11,21 @@ import { Toast } from 'primereact/toast';
 import { Chips } from 'primereact/chips';
 import Sidebar from "@/components/sidebar";
 import Navbar from "@/components/navbar";
-import { getAccessGroup } from '../utility/indexed-db.ts';
+import { getAccessGroup } from '../utility/indexed-db';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import "../../public/styles/add-contract.css";
 import { getCompanyDetailsById, verifyCompanyCertificate } from '../utility/auth';
-import { getTemplateByName, getCompanyCertificate, createContract, getTemplateByType } from '../utility/contracts'
+import { getTemplateByName, getCompanyCertificate, createContract, getTemplateByType, getContractByTemplates } from '../utility/contracts'
 import { formatDateTime } from '../utility/certificate'
 import moment from 'moment';
 import { InputNumber } from 'primereact/inputnumber';
 import { useDispatch, useSelector } from 'react-redux';
 import { Message } from 'primereact/message';
 import { fetchContractsRedux } from '@/redux/contract/contractSlice';
+import { Tree, TreeProps, TreeNodeTemplateOptions } from 'primereact/tree';
+import { TreeNode } from 'primereact/treenode';
 
 interface PropertyDefinition {
     type: string;
@@ -50,9 +52,8 @@ interface TemplateData {
 const AddContractPage: React.FC = () => {
     const router = useRouter();
     const [templateData, setTemplateData] = useState<TemplateData | null>(null);
-    const [formData, setFormData] = useState<{ [key: string]: any }>({
-        asset_type: 'laserCutter'
-    });
+    const [formData, setFormData] = useState<{ [key: string]: any }>({});
+    const [consumerAddress, setConsumerAddress] = useState<{ [key: string]: any }>({});
     const [assetPropertiesOptions, setAssetPropertiesOptions] = useState<{ label: string; value: string }[]>([]);
     const [selectedAssetProperties, setSelectedAssetProperties] = useState<string[]>([]);
     const toast = useRef<Toast>(null);
@@ -60,7 +61,6 @@ const AddContractPage: React.FC = () => {
     const [certificateExpiry, setCertificateExpiry] = useState<Date | null>(null);
     const [editTitle, setEditTitle] = useState<Boolean>(false);
     const inputRef = useRef<HTMLInputElement>(null);
-    const [consumerAddress, setConsumerAddress] = useState('');
     const [companyUser, setCompanyUser] = useState('');
     const [companyIfricId, setCompanyIfricId] = useState('');
     const [consumerCompanyCertified, setConsumerCompanyCertified] = useState<Boolean | null>(null);
@@ -68,8 +68,11 @@ const AddContractPage: React.FC = () => {
     const [contractNameExists, setContractNameExists] = useState(false);
     const contractsData = useSelector((state: any) => state.contracts.contracts);
     const [allContracts, setAllContracts] = useState([]);
+    const [assetTemplateTree, setAssetTemplateTree] = useState<TreeNode[]>([]);
+    const [selectedKey, setSelectedKey] = useState<string>('');
+    const [selectedAssetType, setSelectedAssetType] = useState<string>('');
     const dispatch = useDispatch();
-  
+    
     useEffect(() => {
           if (inputRef.current) {
             const span = document.createElement("span");
@@ -80,6 +83,7 @@ const AddContractPage: React.FC = () => {
             span.style.visibility = "hidden";
             span.style.position = "absolute";
             span.style.whiteSpace = "pre";
+            span.style.fontSize = '23px'
             span.textContent = formData?.contract_name || "";
             document.body.appendChild(span);
       
@@ -92,7 +96,12 @@ const AddContractPage: React.FC = () => {
 
     useEffect(() => {
         fetchData();
+    },[selectedAssetType])
+
+    useEffect(() => {
+        fetchData();
     }, []);
+
     useEffect(() => {
         if (editTitle && inputRef.current) {
             inputRef.current.focus();
@@ -103,47 +112,38 @@ const AddContractPage: React.FC = () => {
         setAllContracts(contractsData);
     }, [contractsData])
 
-
-    const getCompanyId = async () => {
-        try {
-        const details = await getAccessGroup();
-        dispatch(fetchContractsRedux(details?.company_ifric_id));
-        } catch(error: any) {
-          if (axios.isAxiosError(error)) {
-            console.error("Error response:", error.response?.data.message);
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Fetching assets' });
-          } else {
-            console.error("Error:", error);
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: error });
-          }
-        }
-      };
-      useEffect(() => {
-        getCompanyId();
-      },[]);
-
-    console.log("contractsData in add contract", contractsData);
-    
-    
+   
 
     const fetchData = async () => {
         try {
             const userData = await getAccessGroup();
+            dispatch(fetchContractsRedux(userData?.company_ifric_id));
             if (userData && userData.jwt_token) {
 
-                // Fetch template data (from backend)
-                const templateResponse =  await getTemplateByName("predictiveMaintenance_laserCutter");
-                const template = templateResponse?.data[0];
-                setTemplateData(template);
-                initializeFormData(template.properties);
+                // set User Data
                 setCompanyUser(userData.user_name);
                 setCompanyIfricId(userData.company_ifric_id);
-                setFormData(prevState => ({
-                    ...prevState,
-                    data_consumer_company_ifric_id: userData.company_ifric_id,
-                    contract_name: template?.title,
-                    interval: template.properties.interval.default
-                }));
+
+                // Fetch template data (from backend)
+                if(!assetTemplateTree.length) {
+                    const assetTemplates = await getContractByTemplates();
+                    if(assetTemplates?.data.length) {
+                        const templateTree = await initializeTreeStructure(assetTemplates?.data);
+                        if(templateTree.length) {
+                            setAssetTemplateTree(templateTree);
+                            const firstChild = templateTree.find(value => value.children.length > 0)?.children[0];
+                            if(firstChild) {
+                                await initializeTemplate(firstChild.label);
+                                setSelectedKey(firstChild?.key);
+                                setSelectedAssetType(firstChild?.label);
+                            }
+                        }
+                    }
+                } else {
+                    // if selected asset type exist
+                    await initializeTemplate(selectedAssetType);
+                }
+                
 
                 // Fetch company certificate
                 const companyCertResponse = await getCompanyCertificate(userData.company_ifric_id);
@@ -151,15 +151,43 @@ const AddContractPage: React.FC = () => {
                     const companyCert = companyCertResponse.data[0];
                     setFormData(prevState => ({
                         ...prevState,
+                        data_consumer_company_ifric_id: userData.company_ifric_id,
                         consumer_company_certificate_data: companyCert.certificate_data,
                         contract_valid_till: new Date(companyCert.expiry_on)
                     }));
                     await getCompanyVerification(userData.company_ifric_id);
                     setCertificateExpiry(new Date(companyCert.expiry_on));
+
+                    // Fetch consumer company name
+                    if (userData.company_ifric_id) {
+                        await fetchConsumerCompanyName(userData.company_ifric_id);
+                    }
                 }
+            } else {
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: 'User data or JWT not found' });
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to load necessary data' });
+        }
+    };
+
+    const initializeTemplate = async (templateName: string) => {
+        try {
+            if(templateName.length) {
+                const templateResponse =  await getTemplateByName(templateName);
+                const template = templateResponse?.data[0];
+                setTemplateData(template);
+                initializeFormData(template.properties);
+                setFormData(prevState => ({
+                    ...prevState,
+                    contract_name: template?.title,
+                    interval: template.properties.interval.default,
+                    asset_type: template.properties.asset_type.default
+                }));
 
                 // Fetch asset properties (from MongoDB, sandbox backend)
-                const assetTypeBase64 = btoa(`https://industry-fusion.org/base/v0.1/${formData.asset_type}`);
+                const assetTypeBase64 = btoa(template.properties.asset_type.default);
                 const assetPropertiesResponse = await getTemplateByType(assetTypeBase64);
                 const mongoProperties = assetPropertiesResponse?.data.properties;
 
@@ -173,20 +201,47 @@ const AddContractPage: React.FC = () => {
 
                 // Setting options from MongoDB
                 setAssetPropertiesOptions(realtimeProps);
-
-                // Fetch consumer company name
-                if (userData.company_ifric_id) {
-                    await fetchConsumerCompanyName(userData.company_ifric_id);
-                }
-
-            } else {
-                toast.current?.show({ severity: 'error', summary: 'Error', detail: 'User data or JWT not found' });
             }
         } catch (error) {
-            console.error('Error fetching data:', error);
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to load necessary data' });
+            console.error('Error fetching templates:', error);
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to fetch template data' });
         }
-    };
+    }
+
+    const initializeTreeStructure = (assetTypeData : Record<string,any>[]) => {
+        const result = [];
+        for(let i = 0; i < assetTypeData.length; i++) {
+            const key = Object.keys(assetTypeData[i])[0];
+            const value = assetTypeData[i][key];
+            let obj = {
+                key: "",
+                label: "",
+                data: "",
+                select: false,
+                children: []
+            };
+            obj.key = i.toString();
+            obj.label = key;
+            obj.data = key;
+            if(value.length > 0) {
+                for(let j = 0; j < value.length; j++) {
+                    let obj2 = {
+                        key: "",
+                        label: "",
+                        data: "",
+                        select: true,
+                        children: []
+                    };
+                    obj2.key = `${i.toString()}-${j.toString()}`;
+                    obj2.label = value[j];
+                    obj2.data = value[j];
+                    obj.children.push(obj2);
+                }
+            }
+            result.push(obj);
+        }
+        return result;
+    }
     
     const getCompanyVerification = async(company_ifric_id: string) => {
         try{
@@ -205,7 +260,6 @@ const AddContractPage: React.FC = () => {
 
     const initializeFormData = (properties: { [key: string]: PropertyDefinition }) => {
         const initialData: { [key: string]: any } = {
-            asset_type: 'laserCutter',
             contract_name: templateData?.title
         };
         Object.entries(properties).forEach(([key, property]) => {
@@ -228,8 +282,7 @@ const AddContractPage: React.FC = () => {
 
     const handleInputChange = (e: any , field: string) => {
         if (field === 'interval') {
-            const value =  e.value;
-            
+            let value =  e.target.value;
             // Ensure value is a valid number
             if (isNaN(value)) {
                 toast.current?.show({
@@ -243,17 +296,15 @@ const AddContractPage: React.FC = () => {
     
             const min = templateData?.properties[field]?.minimum ?? 0;
             const max = templateData?.properties[field]?.maximum ?? Infinity;
-
-            if (value >= min && value <= max) {
-                setFormData({ ...formData, [field]: value });
-            } else {
+            
+            setFormData({ ...formData, [field]: value });
+            if (value <= min || value >= max) {
                 toast.current?.show({
                     severity: 'warn',
                     summary: 'Warning',
                     detail: `Value must be between ${min} and ${max}.`
                 });
             }
-            
             return;
         }
         if(field === 'contract_name'){
@@ -276,9 +327,15 @@ const AddContractPage: React.FC = () => {
             if (response?.data) {
                 setFormData(prevState => ({
                     ...prevState,
-                    consumer_company_name: response.data[0].company_name
+                    consumer_company_name: response.data[0].company_name,
                 }));
-                setConsumerAddress(`${response.data[0].address_1} ${response.data[0].address_2}`)
+                setConsumerAddress({
+                    consumer_company_name: response.data[0].company_name,
+                    consumer_company_address: response.data[0].address_1,
+                    consumer_company_city: response.data[0].city ? response.data[0].city : response.data[0].address_2,
+                    consumer_company_country: response.data[0].country,
+                    consumer_company_zip: response.data[0].zip,
+                })
             }
         } catch (error) {
             console.error('Error fetching company details:', error);
@@ -300,7 +357,7 @@ const AddContractPage: React.FC = () => {
                                     <React.Fragment key={`part-${index}-${partIndex}`}>
                                         {part}
                                         {partIndex < parts.length - 1 && (
-                                            <strong>{formData.consumer_company_name || 'Company Name Not Available'}</strong>
+                                            <strong>{consumerAddress.consumer_company_name || 'Company Name Not Available'}</strong>
                                         )}
                                     </React.Fragment>
                                 ))}
@@ -324,6 +381,17 @@ const AddContractPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const min = templateData?.properties.interval?.minimum ?? 0;
+        const max = templateData?.properties.interval?.maximum ?? Infinity;
+        if (formData.interval <= min || formData.interval >= max) {
+            toast.current?.show({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: `Value must be between ${min} and ${max}.`
+            });
+            return;
+        }
         const clauses = templateData?.properties.contract_clauses.enums || [];
         const formattedClauses = clauses.map((clause: string) =>
         clause.replace(/\[consumer\]/g, formData.consumer_company_name || 'Company Name Not Available')
@@ -332,7 +400,7 @@ const AddContractPage: React.FC = () => {
             "asset_type": formData.asset_type,
             "contract_name": formData.contract_name,
             "consumer_company_name": formData.consumer_company_name,
-            "data_consumer_company_ifric_id": formData.data_consumer_company_ifric_id,
+            "data_consumer_company_ifric_id": companyIfricId,
             "contract_type": formData.contract_type,
             "contract_clauses": formattedClauses,
             "data_type": formData.data_type,
@@ -347,6 +415,7 @@ const AddContractPage: React.FC = () => {
             },
             "__v": 0
          }
+         console.log("data to submit ",dataToSend);
         if(formData.contract_valid_till === '' || formData.contract_valid_till === null){
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Contract end date cannot be empty' });
             return;
@@ -366,8 +435,7 @@ const AddContractPage: React.FC = () => {
                 // Check if the company has certificates
                 if (response?.data && response?.data.length > 0) {
                     const response = await createContract(dataToSend);
-                    
-                    if (response?.statusText === "Created" && response?.data.status === 201) {
+                    if (response?.data.status === 201) {
                         toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Contract created.' });
                     }
                     else {
@@ -390,25 +458,23 @@ const AddContractPage: React.FC = () => {
         }
     };
 
+    const handleSelect: TreeProps["onSelect"] = (event:any) => {
+        const node = event.node;
+        if (node && node.select) {
+          setSelectedAssetType(node.label);
+          setSelectedKey(node.key);
+        }
+    };
+
     const renderAssetTypeList = () => {
-        const assetTypes = ['Laser Cutter']; //should be replaced with dynamic data
         return (
-            <div className="asset-type-list">
-                <h2>Asset Types</h2>
-                <ul>
-                    {assetTypes.map((assetType, index) => (
-                        <li key={`assetType-${index}`}>
-                            <Button
-                                label={assetType}
-                                onClick={() => handleAssetTypeClick(assetType)}
-                                className={formData.asset_type === assetType ? 'p-button-primary' : 'p-button-outlined'}
-                            />
-                        </li>
-                    ))}
-                </ul>
+            <div className="card">
+                <h2>Contract Templates</h2>
+                <Tree value={assetTemplateTree} selectionMode="single" selectionKeys={selectedKey} onSelect={handleSelect} />
             </div>
         );
     };
+    
     const renderDataTypeList = ()=> {
         const dataTypes = templateData?.properties.data_type.default
         return(
@@ -429,12 +495,9 @@ const AddContractPage: React.FC = () => {
 
     if (!templateData) return <div>Loading...</div>;
 
-
-    
-
     return (
         <div className="flex">
-            <Sidebar />
+            <Sidebar/>
             <div className="main_content_wrapper">
                 <div className="navbar_wrapper">
                     <Navbar navHeader={"Add Contract"} />
@@ -445,25 +508,25 @@ const AddContractPage: React.FC = () => {
                         <div className="create-contract-form-wrapper">
                             <form onSubmit={handleSubmit}>
                                 <div className="form-grid">
-                                    <div className="contract_title_group">
+                                 <div className="contract_title_group ml-3">
                                     <div>
-                                        <InputText
-                                        id="contract_title"
-                                        ref={inputRef}
-                                        value={formData?.contract_name ?? ""}
-                                        onChange={(e) => handleInputChange(e, "contract_name")}
-                                        required
-                                        className={`contract_form_field field_title ${
-                                        editTitle ? "editable" : ""
-                                        }`}
-                                        onBlur={() => {
-                                        setTimeout(() => {
-                                            setEditTitle(false);
-                                        }, 200);
-                                        }}
-                                        disabled={!editTitle }
-                                        style={{ width: inputWidth + "px" }}
-                                      />
+                                   <InputText
+                                    id="contract_title"
+                                    ref={inputRef}
+                                    value={formData.contract_name ?? ""}
+                                    onChange={(e) => handleInputChange(e, "contract_name")}
+                                    required
+                                    className={`contract_form_field field_title ${
+                                    editTitle ? "editable" : ""
+                                    }`}
+                                    onBlur={() => {
+                                    setTimeout(() => {
+                                        setEditTitle(false);
+                                    }, 200);
+                                    }}
+                                    disabled={!editTitle}
+                                    style={{ width: inputWidth + "px" }}
+                                        />
                                     </div>
                                         <button
                                             onClick={(e) => {
@@ -554,7 +617,7 @@ const AddContractPage: React.FC = () => {
                                                     <div>
                                                         <label htmlFor="provider_company_name" className="required-field">Data Consumer</label>
                                                         <div style={{ color: "#2b2b2bd6", lineHeight: "18px" }}><div className='company_verified_group'>
-                                                            <div className='text_large_bold'>{formData.consumer_company_name}</div>
+                                                            <div className='text_large_bold'>{consumerAddress.consumer_company_name}</div>
                                                             {(consumerCompanyCertified !== null && consumerCompanyCertified === true) && (
                                                                 <Image src="/verified_icon.svg" width={16} height={16} alt='company verified icon' />
                                                             )}
@@ -562,8 +625,11 @@ const AddContractPage: React.FC = () => {
                                                                 <Image src="/warning.svg" width={16} height={16} alt='company not verified icon' />
                                                             )}
                                                         </div>
-                                                            <div style={{ marginTop: "4px" }}>{consumerAddress}</div>
-                                                            <div style={{ marginTop: "4px" }}>{formData.data_consumer_company_ifric_id}</div>
+                                                            <div style={{ marginTop: "4px" }}>{companyIfricId ?? ''}</div>
+                                                            <div style={{ marginTop: "4px" }}>{consumerAddress.consumer_company_address ?? ''}</div>
+                                                            <div style={{ marginTop: "4px" }}>{consumerAddress.consumer_company_city ?? ''}</div>
+                                                            <div style={{ marginTop: "4px" }}>{consumerAddress.consumer_company_country ?? ''}</div>
+                                                            <div style={{ marginTop: "4px" }}>{consumerAddress.consumer_company_zip ?? ''}</div>
                                                         </div>
                                                     </div>
                                             </div>
@@ -573,7 +639,7 @@ const AddContractPage: React.FC = () => {
                                                     <label htmlFor="consumer_company_name" className="required-field">Data Consumer</label>
                                                     <InputText
                                                     id="consumer_company_name"
-                                                    value={formData.consumer_company_name ?? ''}
+                                                    value={consumerAddress.consumer_company_name ?? ''}
                                                     onChange={(e) => handleInputChange(e, 'consumer_company_name')}
                                                     required className='contract_form_field'
                                                 />
@@ -602,13 +668,12 @@ const AddContractPage: React.FC = () => {
                                     <div className="contract_form_field_column">
                                         <div className="field half-width-field">
                                             <label htmlFor="interval" className="required-field">Interval</label>
-                                            <InputNumber
+                                            <InputText
                                                 id="interval"
+                                                // type="number"
                                                 value={formData.interval ?? ''}
                                                 onChange={(e) => handleInputChange(e, 'interval')}
                                                 required className='contract_form_field'
-                                                min={templateData?.properties["interval"]?.minimum ?? 0}
-                                                max={templateData?.properties["interval"]?.maximum ??  Infinity}
                                             />
                                             <small className="ml-3 mt-2">Realtime update interval for properties.</small>
                                             {templateData?.properties.data_type && (
@@ -692,7 +757,7 @@ const AddContractPage: React.FC = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="asset-type-list-cover">
+                        <div className="asset-type-list-cover" style={{width: "calc(100% - 72%)"}}>
                             {renderAssetTypeList()}
                         </div>
                     </div>

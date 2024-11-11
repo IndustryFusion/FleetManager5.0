@@ -19,17 +19,17 @@ import { useDispatch, useSelector } from "react-redux";
 
 const ContractManager = () => {
   const [nodes, setNodes] = useState([]);
-  const [companyIfricId, setCompanyIfricId] = useState("");
   const [selectedKey, setSelectedKey] = useState("");
   // const [contractsData, setContractsData] = useState([]);
-  const [predictiveFilteredContractsData, setpredictiveFilteredContractsData] =
-    useState([]);
+  const [predictiveFilteredContractsData, setpredictiveFilteredContractsData] =useState([]);
+  const [iotAnalyticsContractsData, setIotAnalyticsContractsData] = useState([]);
+  const [iotFinanceContractsData, setIotFinanceContractsData] = useState([]);
   const [filterContracts, setFilterContracts] = useState(false);
-  const [insuranceFilterContracts, setInsuranceFilterContracts] =
-    useState(false);
+  const [iotAnalyticsFilterContracts, setIotAnalyticsFilterContracts] = useState(false);
+  const [iotFinanceFilterContracts, setIotFinanceFilterContracts] = useState(false);
   const [contractsOriginal, setContractsOriginal] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [showAll,setShowAll] = useState(true);
+  const [showAll, setShowAll] = useState(true);
   const toast = useRef<Toast>(null);
   const dispatch = useDispatch();
 
@@ -55,9 +55,9 @@ const ContractManager = () => {
 
   const getCompanyId = async () => {
     try {
-    const details = await getAccessGroup();
-    dispatch(fetchContractsRedux(details?.company_ifric_id));
-    } catch(error: any) {
+      const details = await getAccessGroup();
+      dispatch(fetchContractsRedux(details?.company_ifric_id));
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         console.error("Error response:", error.response?.data.message);
         showToast("error", "Error", "Fetching assets");
@@ -69,9 +69,7 @@ const ContractManager = () => {
   };
   useEffect(() => {
     getCompanyId();
-  },[]);
-
-
+  }, []);
 
   const handleFilterContracts = () => {
     setLoading(true);
@@ -82,16 +80,33 @@ const ContractManager = () => {
           contract?.contract_type?.trim() ===
           "https://industry-fusion.org/contracts/v0.1/predictiveMaintenanceLaserCutter"
       );
+      const iotAnalyticsFilteredData = contractsData.filter(
+        (contract) =>
+          contract?.contract_type?.trim() ===
+          "https://industry-fusion.org/contracts/v0.1/iotAnalyticsLaserCutter"
+      );
+
+      const iotFinanceFilteredData = contractsData.filter(
+        (contract) =>
+          contract?.contract_type?.trim() ===
+          "https://industry-fusion.org/contracts/v0.1/iotFinancePlasmaCutter"
+      );
       setpredictiveFilteredContractsData(filteredData);
+      setIotAnalyticsContractsData(iotAnalyticsFilteredData);
+      setIotFinanceContractsData(iotFinanceFilteredData);
       setLoading(false);
-    }, 2000); // Adjust the delay time in milliseconds (e.g., 1000 = 1 second)
+    }, 2000);
   };
 
   useEffect(() => {
-    if (filterContracts) {
+    if (
+      filterContracts ||
+      iotAnalyticsFilterContracts ||
+      iotFinanceFilterContracts
+    ) {
       handleFilterContracts();
     }
-  }, [filterContracts]);
+  }, [filterContracts, iotAnalyticsFilterContracts, iotFinanceFilterContracts]);
 
   return (
     <>
@@ -155,9 +170,13 @@ const ContractManager = () => {
               <div className="contract-right-container">
                 <ContractHeader />
                 <div className="contract-cards-container">
+                <h2 className="ml-5 mb-0">{showAll ? "Folders " : ""}</h2>
                   <ContractFolders
                     setFilterContracts={setFilterContracts}
-                    setInsuranceFilterContracts={setInsuranceFilterContracts}
+                    setIotAnalyticsFilterContracts={
+                      setIotAnalyticsFilterContracts
+                    }
+                    setIotFinanceFilterContracts={setIotFinanceFilterContracts}
                     setContractsOriginal={setContractsOriginal}
                     contractsOriginal={contractsOriginal}
                     setShowAll={setShowAll}
@@ -167,13 +186,15 @@ const ContractManager = () => {
                   ) : (
                     <>
                       {!contractsOriginal && (
-                        <div className="ml-1">
+                        <div className="ml-5">
                           <button
                             className="back-btn flex justify-content-center align-items-center border-none black_button_hover "
                             onClick={() => {
-                              setInsuranceFilterContracts(false);
+                              setIotAnalyticsFilterContracts(false);
+                              setIotFinanceFilterContracts(false);
                               setFilterContracts(false);
                               setContractsOriginal(true);
+                              setShowAll(true);
                             }}
                           >
                             <IoArrowBack className="mr-1" />
@@ -182,27 +203,58 @@ const ContractManager = () => {
                         </div>
                       )}
                       {filterContracts &&
-                        predictiveFilteredContractsData.length > 0 &&
-                        predictiveFilteredContractsData.map((contract) => (
-                          <div  key={contract._id}>
-                             <ContractCard
-                            contract={contract}
-                          />
-                          </div> 
-                        ))}
-                      {insuranceFilterContracts && (
-                        <div>
-                          <h3 className="not-found-text ml-4">
-                            Insurance contract files not found
-                          </h3>
-                        </div>
-                      )}
-                      {contractsOriginal &&
+                      predictiveFilteredContractsData.length > 0
+                        ? predictiveFilteredContractsData.map((contract) => (
+                            <div key={contract._id}>
+                              <ContractCard contract={contract} />
+                            </div>
+                          ))
+                        : filterContracts && (
+                            <div>
+                              <h3 className="not-found-text ml-4">
+                                Predictive Maintenance contract files not found
+                              </h3>
+                            </div>
+                          )}
+                      {iotAnalyticsFilterContracts &&
+                      iotAnalyticsContractsData.length > 0
+                        ? iotAnalyticsContractsData.map((contract) => (
+                            <div key={contract._id}>
+                              <ContractCard contract={contract} />
+                            </div>
+                          ))
+                        : iotAnalyticsFilterContracts && (
+                            <div>
+                              <h3 className="not-found-text ml-4">
+                                Iot Analytics contract files not found
+                              </h3>
+                            </div>
+                          )}
+
+                      {iotFinanceFilterContracts &&
+                        (iotFinanceContractsData.length > 0
+                          ? iotFinanceContractsData.map((contract) => (
+                              <div key={contract._id}>
+                                <ContractCard contract={contract} />
+                              </div>
+                            ))
+                          : iotFinanceFilterContracts && (
+                              <h3 className="not-found-text ml-4">
+                                Iot Finance contract files not found
+                              </h3>
+                            ))}
+                      <div>
+                      <h2 className="ml-5 mt-7 heading-file-text">
+                          {showAll ? "Files" : ""}
+                        </h2>
+                        {contractsOriginal &&
                         contractsData.map((contract) => (
                           <div key={contract._id}>
                             <ContractCard contract={contract} />
                           </div>
                         ))}
+                      </div>
+                      
                     </>
                   )}
                 </div>
