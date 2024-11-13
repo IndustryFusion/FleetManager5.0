@@ -175,10 +175,15 @@ const CreateBinding: React.FC = () => {
                     // fetch assets of template type
                     const assetResponse = await getAssetByType(btoa(template.properties.asset_type.default));
                     if(assetResponse?.data) {
-                        const options = assetResponse.data.map((value: { id: string }) => ({
-                            label: value.id,
-                            value: value.id
-                        }));
+                        const options = assetResponse.data.map((value: Record<string,any>) => {
+                            const productKey = Object.keys(value).find(key => key.includes('product_name'));
+                            if(productKey && value[productKey]) {
+                                return {
+                                    label: value[productKey].value,
+                                    value: value.id
+                                }
+                            }
+                        });
                         setAssetOptions(options);
                     }
                 }
@@ -223,12 +228,12 @@ const CreateBinding: React.FC = () => {
                         }
                     }
                 } else {
-                    setAssetVerified(null);
+                    setAssetVerified(false);
                     toast.current?.show({ severity: 'warn', summary: 'Warn', detail: "Asset Certificate not found" });
                 }
             }
         } catch (error) {
-            setAssetVerified(null);
+            setAssetVerified(false);
             console.error('Error fetching data:', error);
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to load necessary data' });
         }
