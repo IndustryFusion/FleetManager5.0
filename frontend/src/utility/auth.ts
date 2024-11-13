@@ -331,3 +331,40 @@ export const generateAssetCertificate = async(dataToSend: Record<string, any>) =
         }
     }
 }
+
+export const fetchCompanyProduct = async (dataCompanyIfricId: string) => {
+    try {
+        return await api.get(`${REGISTRY_API_URL}/auth/get-company-products/${dataCompanyIfricId}`,{
+            headers: {
+              "Content-Type": "application/json",
+            },
+        });
+    
+    } catch (error: any) {
+        console.log('err from fetch company product ',error);
+        if (error?.response && error?.response?.status === 401) {
+          updatePopupVisible(true);
+        } else {
+          throw error;
+        }
+    }
+};
+
+export const getUserDetailsByEmail = async (dataToSend: Record<string, string>) => {
+    try {
+        return await api.get(`${REGISTRY_API_URL}/auth/get-user-details`, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            params: dataToSend,
+        });
+
+    } catch (error: any) {
+        console.log('err from updating company user ',error);
+        if (error?.response && error?.response?.status === 401) {
+          updatePopupVisible(true);
+        } else {
+          throw error;
+        }
+    }
+};

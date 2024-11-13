@@ -1,0 +1,176 @@
+.profile_menu_wrapper {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #2b2b2b;
+    padding: 0px;
+    margin: 0px;
+    box-shadow: none;
+    border: none;
+    transition: filter 100ms ease-in-out;
+    font-family: "League Spartan";
+}
+
+.profile_menu_wrapper:focus,
+.profile_menu_wrapper:hover {
+    filter: brightness(80%)
+}
+
+.user_avatar_circle {
+    display: grid;
+    place-items: center;
+    width: 45px;
+    height: 45px;
+    font-size: 28px;
+    font-weight: 500;
+    color: white;
+    border-radius: 50%;
+}
+
+.user_avatar_image_circle {
+    border-radius: 50%;
+}
+
+.profile_menu_modal {
+    padding: 0px 0px 10px 0px;
+    box-shadow: 0px 0px 0px 1px #00000010, 0px 4px 16px 0px #00000015;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 360px;
+    font-family: inherit;
+    margin-top: 4px;
+    border: none;
+}
+
+.menu_modal_title {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #2b2b2b;
+    text-transform: uppercase;
+}
+
+.profile_bg {
+    height: 55px;
+    background-color: #efefef;
+    padding: 16px 84px 16px 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.title_company_name {
+    font-size: 15px;
+    color: #000;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.profile_avatar_circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #2b2b2b;
+    color: white;
+    display: grid;
+    place-items: center;
+    font-size: 34px;
+    font-weight: 400;
+    padding-bottom: 3px;
+    margin: -30px 16px 0px 16px;
+    border: 2px solid #fff;
+}
+
+.profile_avatar_circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.menu_modal_text_wrapper {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 16px 6px 16px;
+}
+
+.menu_modal_name {
+    color: #2b2b2b;
+    font-weight: 600;
+    font-size: 20px;
+    text-transform: capitalize;
+}
+
+.menu_modal_role {
+    color: #2b2b2b;
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+.menu_modal_email {
+    color: #888888;
+    font-size: 14px;
+    padding: 0px 16px;
+}
+
+.profile_menu_divider {
+    height: 1px;
+    width: calc(100% - 32px);
+    margin: 14px auto 10px auto;
+    background-color: #e7e7e7;
+}
+
+.profile_menu_link_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.profile_menu_link {
+    padding: 10px 16px;
+    color: #2b2b2b;
+    text-decoration: none;
+    background-color: white;
+    display: inline-block;
+    outline: none;
+    box-shadow: none;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border: none;
+    font-family: inherit;
+    border-radius: 0px;
+}
+
+.profile_menu_link.logout {
+    color: #DE350B
+}
+
+.profile_menu_link:focus,
+.profile_menu_link:hover {
+    background-color: #f3f3f5;
+}
+
+.menu_title {
+    color: #4e4e4e;
+    font-weight: 500;
+    font-size: 14px;
+    margin: 16px 16px 0px
+}
+
+.profile_menu_products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 16px 6px;
+}
+
+.profile_menu_product_chip {
+    padding: 5px 8px;
+    color: #2b2b2b;
+    border: 1px solid #e0e0e0;
+    background-color: white;
+    border-radius: 6px;
+    font-size: 13px;
+}
