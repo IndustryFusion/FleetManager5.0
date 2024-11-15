@@ -2,12 +2,12 @@ import { useTranslation } from "next-i18next";
 import { BreadCrumb } from "primereact/breadcrumb";
 import "../../public/styles/horizontal-navbar.css";
 import "../../public/styles/asset-overview.css";
-import ProfileDialog from "./profile-dialog";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "primereact/button";
+import ProfileMenu from "./profile-menu";
 
 type NavbarProps = {
   navHeader?: string;
@@ -140,19 +140,9 @@ const Navbar: React.FC<NavbarProps> = ({ navHeader }) => {
         <div className="flex gap-4 nav-items">
           <button className="nav_icon_button"><img src="/notification-icon.svg" alt="notification-icon" /></button>
           <button className="nav_icon_button"><img src="/app-icon.svg" alt="app-icon" /></button>
-          <img
-            src="/profile-icon.jpg"
-            alt="profile-icon"
-            onClick={() => setProfileDetail(true)}
-          />
+          <ProfileMenu />
         </div>
       </div>
-      {profileDetail && (
-        <ProfileDialog
-          profileDetailProp={profileDetail}
-          setProfileDetailProp={setProfileDetail}
-        />
-      )}
     </>
   );
 };
