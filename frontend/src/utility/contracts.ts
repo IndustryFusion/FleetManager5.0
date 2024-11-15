@@ -270,3 +270,34 @@ export const getContractByTemplates = async () => {
     }
   }
 };
+
+export const getManufacturerAssets = async (company_ifric_id: string, type: string) => {
+  try {
+    const result: Record<string,any> = [];
+    const response = await api.get(
+      BACKEND_API_URL +
+        `/asset/get-company-manufacturer-asset/${company_ifric_id}`,
+      {
+        headers: {
+          "Content-Type": "application/ld+json",
+          Accept: "application/ld+json",
+        },
+      }
+    );
+    if(response.data) {
+      response.data.forEach((value: Record<string,any>) => {
+        if(value.assetData.type === type) {
+          result.push(value.assetData);
+        }
+      })
+    }
+    return result;
+  } catch (error: any) {
+    console.log("err from fetch asset ", error);
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+    } else {
+      throw error;
+    }
+  }
+};
