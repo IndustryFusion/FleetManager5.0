@@ -1,6 +1,13 @@
-
-@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap");
-
+/* @import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap"); */
+ 
+@font-face {
+  font-family: 'League Spartan';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/leaguespartan/v11/kJEqBuEW6A0lliaV_m88ja5TwvZwLZk.woff2) format('woff2');
+}
+ 
 .footer-container {
   text-align: center;
   position: fixed;
