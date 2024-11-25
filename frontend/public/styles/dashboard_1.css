@@ -1,0 +1,885 @@
+:root {
+    --dashboard-accent-color: #D72e59;
+    --dashboard-accent-light: #fefbfc;
+    --dashboard-grey: #c5c5c5;
+    --dashboard-black: #2b2b2b;
+    --dashboard-light-grey: #f3f3f5
+}
+
+.dashboard_content {
+    background-color: var(--dashboard-light-grey);
+    height: calc(100vh - 72px);
+    display: flex;
+    align-items: stretch;
+    font-family: "League Spartan"
+}
+
+.navbar_wrapper.position_static .asset-overview-header {
+    margin-top: 0px;
+}
+
+.tree_wrapper {
+    width: 255px;
+    background-color: var(--dashboard-light-grey);
+    height: calc(100vh - 75px);
+    overflow-y: auto;
+    padding-top: 10px;
+}
+
+.tree_wrapper::-webkit-scrollbar {
+    width: 4px;
+}
+
+.tree_wrapper::-webkit-scrollbar-track {
+    background-color: var(--dashboard-light-grey);
+}
+
+.tree_wrapper::-webkit-scrollbar-thumb {
+    background-color: #7d7d7d;
+}
+
+.dashboard_grid {
+    height: 100%;
+    flex-grow: 1;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.dashboard_grid_content {
+    background-color: #fff;
+    border-radius: 20px;
+    min-height: 100vh;
+    padding: 24px;
+}
+
+.dashboard_actions_card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dashboard_action_button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #e5e5e5;
+    background-color: white;
+    box-shadow: none;
+    outline: none;
+    display: grid;
+    place-items: center;
+    padding: 0;
+}
+
+.user_actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user_card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.add_user_dropdown {
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 50%;
+    outline: none;
+    box-shadow: none;
+    padding: 0px;
+    overflow: hidden;
+}
+
+.add_user_dropdown .p-multiselect-label-container {
+    display: none;
+}
+
+.add_user_dropdown .p-multiselect-trigger {
+    padding: 0px;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+}
+
+.add_user_dropdown .add_user_dropdown_icon {
+    width: 20px;
+    height: 20px;
+    background-image: url('/dashboard/add_icon.svg');
+    object-fit: contain;
+    background-position: center;
+}
+
+.add_user_dropdown_panel {
+    border-radius: 8px;
+    background-color: white;
+    padding: 0px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0px 0px 0px 1px #00000015, 0px 4px 12px 0px #00000010;
+}
+
+.add_user_dropdown_panel .p-checkbox.p-highlight .p-checkbox-box {
+    border: none;
+}
+
+.add_user_dropdown_panel .p-multiselect-item {
+    padding: 8px 12px;
+    font-family: "League Spartan";
+    box-shadow: none;
+    background-color: white;
+}
+
+.add_user_dropdown_panel .p-checkbox-box.p-highlight {
+    background-color: var(--dashboard-black) !important;
+}
+
+.add_user_dropdown_panel .p-highlight .p-checkbox .p-checkbox-box {
+    border-color: var(--dashboard-black)
+}
+
+.add_user_dropdown_panel .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover {
+    border-color: var(--dashboard-black);
+    background: var(--dashboard-black);
+    color: #ffffff;
+}
+
+.add_user_dropdown_panel.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight.p-focus {
+    background-color: #f3f3f5;
+    color: var(--dashboard-black)
+}
+
+.add_user_dropdown_panel.p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled).p-focus {
+    background-color: transparent;
+    color: var(--dashboard-black);
+}
+
+.add_user_dropdown_panel .p-multiselect-header {
+    display: none;
+}
+
+.add_user_dropdown_panel .p-multiselect-items.p-component {
+    padding: 0px;
+}
+
+.dashboard_action_button:focus,
+.dashboard_action_button:hover {
+    background-color: var(--dashboard-light-grey);
+}
+
+/**/
+.custom-tree.p-tree {
+    border: none;
+    background: transparent;
+    color: var(--dashboard-black);
+    padding: 12px 0px 12px 24px;
+    border-radius: 0px;
+    font-family: "League Spartan"
+}
+
+.custom-tree .p-tree-container {
+    position: relative;
+}
+
+.custom-tree .p-treenode {
+    position: relative;
+    padding: 0px;
+}
+
+.custom-tree .p-treenode-content {
+    position: relative;
+    padding-left: 16px;
+    box-shadow: none;
+}
+
+.p-tree .p-tree-container .p-treenode:focus>.p-treenode-content {
+    background-color: transparent;
+}
+
+.p-treenode[aria-expanded]>.p-treenode-content:has(button) {
+    color: #3774c9;
+}
+
+.p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler {
+    width: 25px;
+    height: 25px;
+}
+
+.custom-tree .p-treenode-children {
+    position: relative;
+}
+
+.custom-tree .p-treenode-children::before {
+    content: '';
+    position: absolute;
+    left: 17px;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background-color: #e4e4e4;
+}
+
+.custom-tree .p-treenode-children .p-treenode-content::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    height: 2px;
+    width: 10px;
+    background-color: #e4e4e4;
+}
+
+.custom-tree .p-tree-toggler {
+    order: 2;
+    margin-left: auto;
+    margin-right: 0px;
+    color: inherit;
+}
+
+.custom-tree .p-tree-node-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.custom-tree .p-treenode-content button {
+    display: none;
+}
+
+.user_chips_wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.user_chip {
+    background-color: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 50px;
+    padding: 4px 12px 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px
+}
+
+.user_chip img,
+.user_percentage_chip img {
+    padding-top: 0px;
+}
+
+.user_chip_avatar {
+    background-color: var(--dashboard-black);
+    color: white;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    padding-top: 2px;
+}
+
+.dashboard_title_wrapper {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 35px 0px 20px 0px;
+}
+
+.dashboard_title_wrapper h1 {
+    margin: 0;
+    color: #c4c4c4;
+    font-weight: 500;
+}
+
+.dashboard_calendar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.revenue_wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 25px 0px;
+}
+
+.revenue_price {
+    color: var(--dashboard-black);
+    font-weight: 600;
+    font-size: 36px;
+    line-height: 46px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.revenue_chip {
+    background-color: var(--dashboard-accent-color);
+    font-size: 14px;
+    line-height: 14px;
+    color: white;
+    border-radius: 50px;
+    padding: 4px 8px;
+    display: flex;
+    font-weight: 400;
+    margin: -4px 8px 0px 8px;
+    align-items: center;
+    width: fit-content
+}
+
+.revenue_chip.grey {
+    background-color: #7d7d7d;
+}
+
+.revenue_sub_wrapper {
+    display: flex;
+    align-items: center;
+    ;
+    gap: 10px;
+    color: var(--dashboard-black)
+}
+
+.time_switch_wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px
+}
+
+.time_switch_wrapper label {
+    font-weight: 500;
+    color: var(--dashboard-black);
+}
+
+.time_switch {
+    width: 38px;
+    height: 21px;
+}
+
+.time_switch .p-inputswitch-slider {
+    border-radius: 50px;
+    background-color: #e5e5e5;
+    box-shadow: none;
+}
+
+.time_switch .p-inputswitch-slider:before {
+    border-radius: 50px;
+    width: 17px;
+    height: 17px;
+    left: 2px;
+    top: 11px;
+    transition: all 200ms ease-in-out;
+}
+
+.time_switch.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+    background-color: var(--dashboard-black);
+
+}
+
+.time_switch.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider:before {
+    background: #ffffff;
+    transform: translateX(15.5px);
+}
+
+.dashboard_calendar_wrapper {
+    background-color: #e5e5e5;
+    border-radius: 50px;
+    position: relative;
+}
+
+.dashboard_calendar_wrapper:before {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    top: 8px;
+    right: 10px;
+    background-image: url(/dashboard/arrow_down.svg);
+    background-position: center;
+    object-fit: contain;
+}
+
+.dashboard_calendar .p-inputtext {
+    border: none;
+    box-shadow: none;
+    outline: none;
+    background-color: transparent;
+    padding: 7px 10px;
+    color: var(--dashboard-black);
+    min-width: 202px;
+    padding-top: 9px;
+    padding-right: 30px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.dashboard_calendar {
+    font-family: "League Spartan";
+    display: block;
+}
+
+.dashboard_calendar_group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.revenue_sub_calendar .p-inputtext {
+    border: none;
+    box-shadow: none;
+    outline: none;
+    background-color: transparent;
+    padding: 7px 10px;
+    color: var(--dashboard-black);
+    min-width: 215px;
+    padding-right: 30px;
+    padding-left: 0px;
+    font-size: 16px;
+    font-family: "League Spartan";
+}
+
+.revenue_sub_calendar:before {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    top: 7px;
+    right: 10px;
+    background-image: url(/dashboard/arrow_down.svg);
+    background-position: center;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.revenue_card_grid {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.revenue_card {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0px 0px 0px 2px #00000010, 0px 10px 0px -3px #00000010, 0px -10px 0px -3px #00000010;
+    min-width: 150px;
+    color: var(--dashboard-black);
+    background-color: white;
+}
+
+.revenue_card.dark {
+    background-color: var(--dashboard-black);
+    color: #fff;
+    box-shadow: 0px 10px 0px -3px #00000010, 0px -10px 0px -3px #00000010;
+}
+
+.revenue_card.small {
+    display: flex;
+    justify-content: stretch;
+    align-items: center;
+    min-width: -moz-fit-content;
+    width: 80px;
+    flex-direction: column;
+    box-shadow: 0px 0px 0px 2px #00000010;
+    padding: 12px;
+    gap: 10px;
+    min-width: auto;
+}
+
+.revenue_card.small.accent {
+    box-shadow: 0px 0px 0px 2px var(--dashboard-accent-color);
+    background-color: var(--dashboard-accent-light);
+}
+
+.revenue_card.small>div:last-child {
+    display: flex;
+    align-items: center;
+    gap: 0px;
+    align-self: center;
+}
+
+.revenue_card.small>div:last-child svg {
+    width: 14px;
+    height: 14px;
+}
+
+.revenue_card.small>div:first-child {
+    color: var(--dashboard-black);
+    font-size: 14px;
+}
+
+.revenue_card:not(.small)>div:first-child {
+    color: #c4c4c4;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.revenue_card:not(.small)>div:nth-child(2) {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.revenue_card:not(.small)>div:nth-child(3) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.revenue_card:not(.small)>div:nth-child(3)>div:last-child {
+    width: 20px;
+    height: 20px;
+    border-radius: 8px;
+    background-color: var(--dashboard-light-grey);
+    display: grid;
+    place-items: center;
+}
+
+.user_percentage_wrapper {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.user_percentage_track {
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    background-color: #e5e5e5;
+    border-radius: 100px;
+    gap: 5px;
+    flex-grow: 1;
+    padding: 5px;
+}
+
+.user_percentage_chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background-color: #fff;
+    color: var(--dashboard-black);
+    border-radius: 50px;
+    padding: 5px;
+    padding-right: 10px;
+    font-size: 14px;
+    animation: fade_in 0.3s ease-in-out;
+}
+
+.user_percentage_chip>div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.dashboard_button {
+    background-color: var(--dashboard-black);
+    color: white;
+    box-shadow: none;
+    outline: none;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.dashboard_button:hover {
+    background-color: #3d3d3d;
+}
+
+.dashboard_bento_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    padding: 20px 0px;
+    align-items: start;
+}
+
+.dashboard_bento_wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.dashboard_bento_card {
+    background-color: #e5e5e5;
+    border-radius: 12px;
+}
+
+.dashboard_bento_card:nth-child(2) .bento_chart_wrapper {
+    flex-direction: row;
+    height: 75%;
+}
+
+.dashboard_bento_card:nth-child(2) .bento_chart_wrapper>div {
+    width: 25%;
+    height: 100%;
+}
+
+.dashboard_bento_card:last-child {
+    grid-column: span 2;
+    height: 200px;
+}
+
+.bento_card_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+}
+
+.bento_card_header>button:first-child svg {
+    width: 16px;
+    height: 16px
+}
+
+.bento_card_header>button:first-child {
+    background-color: transparent;
+    color: var(--dashboard-black);
+    box-shadow: none;
+    outline: none;
+    padding: 4px 3px 4px 8px;
+    border: none;
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 8px;
+}
+
+.bento_card_filter {
+    background-color: transparent;
+    color: var(--dashboard-black);
+    box-shadow: none;
+    outline: none;
+    padding: 6px 8px;
+    border: 1px solid var(--dashboard-grey);
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 8px;
+}
+
+.bento_chart_wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 0px 16px 16px;
+    gap: 3px;
+}
+
+.bento_chart_wrapper div {
+    width: auto;
+    height: 40px;
+    background-color: #fff;
+    border-radius: 12px;
+}
+
+.popover_panel {
+    width: 100px;
+    height: 200px;
+    border-radius: 12px;
+    box-shadow: 0px 0px 0px 1px #00000015;
+    border: none;
+    top: anchor(top);
+    left: 0px;
+}
+
+.dashboard_table {
+    font-family: "League Spartan";
+}
+
+.dashboard_table.p-datatable .p-datatable-thead>tr>th {
+    border: none;
+    padding-block: 5px;
+    color: var(--dashboard-grey);
+    font-weight: 500;
+    font-size: 14px;
+    background-color: white;
+}
+
+.dashboard_table.p-datatable .p-datatable-tbody>tr:not(.p-datatable-row-expansion) {
+    border-radius: 50px;
+    background-color: transparent;
+    box-shadow: 0px 1px 4px 0px #00000015;
+    overflow: hidden;
+}
+
+.dashboard_table.p-datatable .p-datatable-tbody>tr>td {
+    background: transparent;
+    border: none;
+    padding-block: 16px;
+    font-size: 14px;
+}
+
+.dashboard_table.p-datatable .p-datatable-tbody>tr>td:first-child {
+    color: var(--dashboard-black);
+    font-weight: 500;
+}
+
+.dashboard_table.p-datatable .p-datatable-tbody>tr>td:last-child {
+    padding: 0px;
+}
+
+.dashboard_table.p-datatable .p-datatable-tbody>tr>td:last-child>button {
+    padding: 5px;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    background-color: var(--dashboard-accent-color);
+    color: white;
+    opacity: 0;
+    pointer-events: none;
+
+}
+
+.dashboard_table.p-datatable .p-datatable-tbody>tr:hover>td:last-child>button {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dashboard_table.p-datatable .p-datatable-tbody>tr>td:last-child>button[aria-expanded="true"] {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dashboard_table.p-datatable>.p-datatable-wrapper {
+    overflow: visible;
+}
+
+.dashboard_table table {
+    border-spacing: 2px 5px !important;
+}
+
+.expansion_card {
+    background-color: #ffebf1;
+    padding: 20px;
+    border-radius: 16px;
+    margin-block-start: -2px;
+    animation: fade_in 0.5s ease-in-out
+}
+
+@keyframes fade_in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.expansion_chips {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.expansion_chips>div {
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: white;
+    border-radius: 50px;
+    color: var(--dashboard-black);
+    box-shadow: 0px 1px 4px 0px #00000015;
+}
+
+.expansion_percentage_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: space-between;
+    padding: 18px 0px;
+}
+
+.expansion_percentage_wrapper>div:nth-child(2) {
+    display: flex;
+    align-items: center;
+}
+
+.expansion_bento_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 5px;
+}
+
+.expansion_bento_grid>div {
+    padding: 16px;
+    background-color: white;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+}
+
+.expansion_bento_grid>div .user_chip_avatar {
+    width: 40px;
+    height: 40px
+}
+
+.expansion_bento_grid>div:first-child>div:first-child>div:first-child {
+    color: var(--dashboard-black);
+    font-weight: 600;
+    font-size: 16px;
+    border: none
+}
+
+.expansion_bento_grid>div:first-child>div:first-child>div:nth-child(2) {
+    display: flex;
+    padding-top: 12px;
+    align-items: stretch;
+    align-self: flex-start;
+}
+
+.expansion_bento_grid>div:not(:first-child)>div:first-child {
+    color: var(--dashboard-grey);
+    margin-bottom: 30px;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.expansion_bento_grid>div>div:last-child {
+    color: var(--dashboard-black);
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.expansion_bento_grid>div:first-child {
+    grid-row: span 2;
+    grid-column: span 2;
+}
+
+.expansion_bento_grid>div:nth-child(2) {
+    grid-row: span 1;
+    grid-column: span 2;
+}
+
+.expansion_bento_grid>div:nth-child(3) {
+    grid-row: span 1;
+    grid-column: span 1;
+}
