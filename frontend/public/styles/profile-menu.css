@@ -34,7 +34,7 @@
 .profile_menu_modal {
     padding: 0px 0px 10px 0px;
     box-shadow: 0px 0px 0px 1px #00000010, 0px 4px 16px 0px #00000015;
-    border-radius: 5px;
+    border-radius: 12px;
     overflow: hidden;
     width: 360px;
     font-family: "League Spartan";

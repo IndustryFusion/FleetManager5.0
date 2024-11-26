@@ -18,7 +18,7 @@
 
 .grid_three_columns {
     display: grid;
-    grid-template-columns: 0.75fr 1.5fr 0.75fr;
+    grid-template-columns: 1fr 1.75fr 1fr;
     grid-template-rows: 1fr;
     width: 100%;
     height: 100%;
@@ -214,7 +214,7 @@
 }
 
 .grid_main_content {
-    width: 80%;
+    width: 90%;
     position: sticky;
     inset: 40px 0px 0px 0px;
     animation: fade_in 0.5s ease-in-out;
@@ -255,6 +255,7 @@
     grid-template-rows: 1fr 1fr 10px 1fr;
     gap: 10px;
     background-color: var(--dashboard-light-olive);
+    min-height: 45vh;
 }
 
 .grid_main_content_card>div {
@@ -309,13 +310,14 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding-top: 40px;
+    padding: 40px 20px 40px 20px;
     position: relative;
 }
 
 .grid_placeholder {
     background-color: white;
     border-radius: 16px;
+    padding: 24px;
 }
 
 @keyframes fade_in {
@@ -326,4 +328,161 @@
     100% {
         opacity: 1;
     }
+}
+
+.item_details_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    color: #2b2b2b;
+    font-size: 14px;
+}
+
+.item_details_header>div:first-child>div:first-child {
+    font-size: 28px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.item_details_header>div:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.dashboard_button_rounded {
+    padding: 0px;
+    background-color: white;
+    border-radius: 50%;
+    height: 35px;
+    width: 35px;
+    box-shadow: none;
+    outline: none;
+    border: 1px solid #e5e5e5;
+    display: grid;
+    place-items: center;
+}
+
+.dashboard_button_rounded:hover,
+.dashboard_button_rounded:focus {
+    background-color: #f3f3f5;
+}
+
+.custom_tab_wrapper {
+    padding: 10px 0px;
+}
+
+.custom_tab_header {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.custom_tab_button {
+    padding: 8px 10px;
+    background-color: white;
+    border: none;
+    box-shadow: none;
+    border-radius: 0px;
+    border-bottom: 2px solid #cecece;
+    color: #cecece;
+    font-family: inherit;
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.custom_tab_button.current {
+    color: #2b2b2b;
+    border-bottom-color: #2b2b2b;
+}
+
+.custom_tab_body {
+    margin: 10px 0px;
+    min-height: 100px
+}
+
+.custom_tab_content {
+    display: grid;
+    place-items: center;
+    background-color: #f3f3f5;
+    border-radius: 8px;
+    padding: 16px;
+    min-height: 150px;
+    animation: fade_in 0.3s ease-in-out;
+}
+
+.dashboard_2_divider {
+    height: 1px;
+    background-color: #cecece;
+}
+
+.accordion_header_custom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-grow: 1
+}
+
+.accordion_header_custom>div:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 12px;
+}
+.machine_content_header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap:  5px;
+}
+.machine_content_header>div>div:first-child{
+    font-size: 14px;
+    font-weight: 500;
+    color: #2b2b2b;
+    margin-bottom: 4px;
+}
+.machine_content_header>div>div:last-child{
+    font-size: 12px;
+    color: #96a1a5;
+}
+.accordion_body_content_cover{
+        border: 1px solid #cecece;
+        border-radius: 8px;
+        padding: 16px;
+       margin-bottom: 20px;
+}
+.card_progress_wrapper.dark{
+    padding : 10px 0px 20px 0px;
+    font-size: 14px;
+}
+.card_progress_wrapper.dark>div:first-child{
+    font-size: 12px
+}
+.card_progress_wrapper.dark .completed_arrow{
+    right: -9px;
+}
+.card_progress_wrapper.dark .progress_track{
+    background-image: unset;
+    background-color: #2b2b2b;
+    height: 5px;
+}
+
+.wagon_context_button{
+    padding: 0px;
+    background-color: white;
+    height: 30px;
+    width: 30px;
+    box-shadow: none;
+    border-radius: 8px;
+    outline: none;;
+    display: grid;
+    place-items: center;
+    border: none;
+}
+.wagon_context_button:hover, .wagon_context_button:focus{
+    background-color: #f3f3f5;
 }
