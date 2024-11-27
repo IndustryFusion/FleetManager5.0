@@ -7,6 +7,8 @@ import { BiSolidUpArrow } from 'react-icons/bi';
 import Image from 'next/image';
 import { useState } from 'react';
 import { IoCubeSharp } from 'react-icons/io5';
+import { Button } from 'primereact/button';
+import CustomAccordion from '@/components/dashboard/custom-accordion';
 
 interface Card {
     id: string;
@@ -25,19 +27,98 @@ export default function DashboardTwo() {
         { id: 'DPO3ZZ58', status: 'Pending', plan: 90000, mined: 0, engaged: 0, workers: 0, entrance: 'B' },
         { id: 'ETO4WW83', status: 'In Progress', plan: 60000, mined: 35800, engaged: 200, workers: 185, entrance: 'D' }
     ];
-    const [selectedCard, setSelectedCard] = useState<Card | null>(null)
+    const wagons = [
+        { id: 'WG09-31', uptime: '05:13:31', delivered: '27.5', progress: '61', value: 620 },
+        { id: 'WG09-32', uptime: '04:31:31', delivered: '21.5', progress: '53', value: 548 },
+        { id: 'WG09-33', uptime: '06:45:12', delivered: '32.8', progress: '75', value: 710 },
+        { id: 'WG09-34', uptime: '03:20:45', delivered: '18.2', progress: '48', value: 490 }
+    ];
+
+    const [currentTab, setCurrentTab] = useState<number | null>(1);
+    const [selectedCard, setSelectedCard] = useState<Card | null>(cards[0])
 
     const handleCardSelection = (card: Card) => {
-        setSelectedCard(card);
-        console.log(card)
+        setSelectedCard(null);
+        setTimeout(() => {
+            setSelectedCard(card);
+        }, 0);
     }
+
 
     const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         event.stopPropagation();
-        console.log("Button clicked! Default and propagation prevented.");
     };
 
+    const handleTabSelection = (tab: number) => {
+        if (currentTab === tab) {
+            return;
+        }
+        setCurrentTab(null);
+        setTimeout(() => {
+            setCurrentTab(tab);
+        }, 0);
+    }
+    const workerHeader = () => {
+        return (
+            <div className='accordion_header_custom'>
+                <div>Workers</div>
+                <div><FaHelmetSafety className='card_icons' /><span>{selectedCard?.workers}</span></div>
+            </div>
+        )
+    }
+    const workerBody = () => {
+        return (<><div className='accordion_body_content_cover'>
+            accordion body</div></>)
+    }
+    const machineHeader = () => {
+        return (
+            <div className='accordion_header_custom'>
+                <div>Wagons</div>
+                <div><PiSteeringWheelFill className='card_icons' /><span>{selectedCard?.engaged}</span></div>
+            </div>
+        )
+    }
+    const machineBody = () => {
+        return (
+            <div>
+                {wagons.map((wagon) => (
+                    <div className='accordion_body_content_cover' key={wagon.id}>
+                        <div className='machine_content_header'>
+                            <div>
+                                <div>{wagon.id}</div>
+                                <div>Transport ID</div>
+                            </div>
+                            <div>
+                                <div>{wagon.uptime}</div>
+                                <div>Uptime</div>
+                            </div>
+                            <div>
+                                <div>{wagon.delivered} <sup>mt</sup></div>
+                                <div>Delivered</div>
+                            </div>
+                            <Button className='wagon_context_button'><Image src="/dashboard/context_icon.svg" width={20} height={20} alt='filter_icon' /></Button>
+                        </div>
+                        <div className="card_progress_wrapper dark">
+                            <div>
+                                <div>Progress {wagon.progress}%</div>
+                            </div>
+                            <div className="progress_track">
+                                <div>0 <sup>kg</sup></div>
+                                <div>750 <sup>kg</sup></div>
+                                <div className="progress_done" style={{ width: `${wagon.progress}%` }}>
+                                    <div className="completed_arrow">
+                                        <BiSolidUpArrow />
+                                        <div>{wagon.value}</div>
+                                    </div>
+                                </div>
+                                <div className="progress_pending"></div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>)
+    }
     return (
         <div className="flex">
             <Sidebar />
@@ -209,7 +290,54 @@ export default function DashboardTwo() {
                             )}
                         </div>
                         <div className="grid_placeholder">
-
+                            <div className="item_details_header">
+                                <div>
+                                    <div>{(19300175).toLocaleString()}<sup>mt</sup></div>
+                                    <div>Entrance B - Tin Remaining</div>
+                                </div>
+                                <div>
+                                    <Button className='dashboard_button_rounded'>
+                                        <Image src="/dashboard/filter_icon_large.svg" width={18} height={18} alt='filter_icon' />
+                                    </Button>
+                                    <Button className='dashboard_button_rounded'>
+                                        <Image src="/dashboard/cancel_icon.svg" width={18} height={18} alt='filter_icon' />
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="custom_tab_wrapper">
+                                <div className="custom_tab_header">
+                                    <Button className={`custom_tab_button ${currentTab === 1 ? 'current' : ''}`} onClick={() => handleTabSelection(1)}>S9</Button>
+                                    <Button className={`custom_tab_button ${currentTab === 2 ? 'current' : ''}`} onClick={() => handleTabSelection(2)}>S10</Button>
+                                    <Button className={`custom_tab_button ${currentTab === 3 ? 'current' : ''}`} onClick={() => handleTabSelection(3)}>S11</Button>
+                                    <Button className={`custom_tab_button ${currentTab === 4 ? 'current' : ''}`} onClick={() => handleTabSelection(4)}>S12</Button>
+                                </div>
+                                <div className="custom_tab_body">
+                                    {(currentTab !== null && currentTab === 1) && (
+                                        <div className="custom_tab_content">
+                                            S9
+                                        </div>
+                                    )}
+                                    {(currentTab !== null && currentTab === 2) && (
+                                        <div className="custom_tab_content">
+                                            S10
+                                        </div>
+                                    )}
+                                    {(currentTab !== null && currentTab === 3) && (
+                                        <div className="custom_tab_content">
+                                            S11
+                                        </div>
+                                    )}
+                                    {(currentTab !== null && currentTab === 4) && (
+                                        <div className="custom_tab_content">
+                                            S12
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="dashboard_2_divider"></div>
+                            <CustomAccordion headerTemplate={workerHeader} bodyTemplate={workerBody} />
+                            <div className="dashboard_2_divider"></div>
+                            <CustomAccordion headerTemplate={machineHeader} bodyTemplate={machineBody} expanded />
                         </div>
                     </div>
                 </div>
