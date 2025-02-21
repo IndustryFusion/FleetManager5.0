@@ -1,5 +1,7 @@
 import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import axios, { Axios } from 'axios';
+import { CompactEncrypt } from 'jose';
+import { createHash } from 'crypto';
 
 @Injectable()
 export class CertificateService {
@@ -7,6 +9,28 @@ export class CertificateService {
   private readonly ifricRegistryUrl = process.env.IFRIC_REGISTRY_BACKEND_URL;
   private readonly ifxPlatformUrl = process.env.IFX_PLATFORM_BACKEND_URL;
   private readonly icidServiceUrl = process.env.ICID_SERVICE_BACKEND_URL;
+
+  mask(input: string, key: string): string {
+    return input.split('').map((char, i) =>
+      (char.charCodeAt(0) ^ key.charCodeAt(i % key.length)).toString(16).padStart(2, '0')
+    ).join('');
+  }
+  
+  deriveKey(secret: string): Uint8Array {
+    const hash = createHash('sha256');
+    hash.update(secret);
+    return new Uint8Array(hash.digest());
+  }
+  
+  async encryptData(data: string) {
+    const encoder = new TextEncoder();
+    const encryptionKey = await this.deriveKey(process.env.JWT_SECRET);
+
+    const encrypted = await new CompactEncrypt(encoder.encode(data))
+    .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
+    .encrypt(encryptionKey);
+    return encrypted;
+  }
 
   async generateCompanyCertificate(company_ifric_id: string, expiry: Date, user_email: string, req: Request) {
     try {
@@ -127,9 +151,17 @@ export class CertificateService {
         'Accept': 'application/json',
         'Authorization': req.headers['authorization']
       };
+
+      const encryptedToken = await this.encryptData(req.headers['authorization'].split(" ")[1]);
+      const ifxHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${this.mask(encryptedToken, process.env.MASK_SECRET)}`
+      };
+
       // check whether the last created certificate is valid or expired or not
       //in get asset certificate we are verifiying the company cert
-      const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate?asset_ifric_id=${asset_ifric_id}&company_ifric_id=${company_ifric_id}`,{headers: registryHeaders});
+      const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate?asset_ifric_id=${asset_ifric_id}&company_ifric_id=${company_ifric_id}`,{headers: ifxHeaders});
       console.log("checkLastCertificate", checkLastCertificate.data)
       if(checkLastCertificate.data.length > 0) {
         const verifyLastCertificate = await axios.post(`${this.icidServiceUrl}/certificate/verify-asset-certificate`,{
@@ -191,7 +223,7 @@ export class CertificateService {
         asset_ifric_id,
         expiry,
       }, {
-        headers: registryHeaders
+        headers: ifxHeaders
       });
 
       return response.data;
@@ -207,13 +239,21 @@ export class CertificateService {
         'Accept': 'application/json',
         'Authorization': req.headers['authorization']
       };
+
+      const encryptedToken = await this.encryptData(req.headers['authorization'].split(" ")[1]);
+      const ifxHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${this.mask(encryptedToken, process.env.MASK_SECRET)}`
+      };
+
       const response = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate`,
         {
           params: {
             asset_ifric_id: asset_ifric_id,
             company_ifric_id: company_ifric_id
           },  
-          headers: registryHeaders
+          headers: ifxHeaders
         }
       );
       return response.data;
@@ -241,13 +281,21 @@ export class CertificateService {
         'Accept': 'application/json',
         'Authorization': req.headers['authorization']
       };
+
+      const encryptedToken = await this.encryptData(req.headers['authorization'].split(" ")[1]);
+      const ifxHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${this.mask(encryptedToken, process.env.MASK_SECRET)}`
+      };
+
       const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate`,
         {
           params: {
             asset_ifric_id: asset_ifric_id,
             company_ifric_id: company_ifric_id
           },  
-          headers: registryHeaders
+          headers: ifxHeaders
         }
       );
       console.log("checkLastCertificate", checkLastCertificate.data)
