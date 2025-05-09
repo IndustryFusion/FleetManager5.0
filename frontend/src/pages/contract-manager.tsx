@@ -17,11 +17,28 @@ import axios from "axios";
 import { fetchContractsRedux } from "@/redux/contract/contractSlice";
 import { useDispatch, useSelector } from "react-redux";
 
+type DataDoc = {
+  _id: string;
+  producerId: string;
+  bindingId: string;
+  assetId: string;
+  dataType: string;
+  assetType: string;
+  attribute: string;
+  value: string;
+  severity: string;
+  message: string;
+  alertReceiveTime: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
+
 const ContractManager = () => {
   const [nodes, setNodes] = useState([]);
   const [selectedKey, setSelectedKey] = useState("");
   // const [contractsData, setContractsData] = useState([]);
-  const [predictiveFilteredContractsData, setpredictiveFilteredContractsData] =useState([]);
+  const [predictiveFilteredContractsData, setpredictiveFilteredContractsData] = useState([]);
   const [iotAnalyticsContractsData, setIotAnalyticsContractsData] = useState([]);
   const [iotFinanceContractsData, setIotFinanceContractsData] = useState([]);
   const [filterContracts, setFilterContracts] = useState(false);
@@ -32,6 +49,10 @@ const ContractManager = () => {
   const [showAll, setShowAll] = useState(true);
   const toast = useRef<Toast>(null);
   const dispatch = useDispatch();
+
+  const backendUrl = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
+
+  const [docs, setDocs] = useState<DataDoc[]>([]);
 
   // Access the contracts data from Redux
   const contractsData = useSelector((state: any) => state.contracts.contracts);
@@ -51,7 +72,22 @@ const ContractManager = () => {
 
   useEffect(() => {
     NodeService.getTreeNodes().then((data) => setNodes(data));
+    async function fetchDocs() {
+      const details = await getAccessGroup();
+      const res = await axios.get(backendUrl + '/consumer/get-consumer-bindings/' + details?.company_ifric_id); // update with your actual API route
+      const data: DataDoc[] = res.data;
+      setDocs(data);
+    }
+    fetchDocs();
   }, []);
+
+  const count = docs.length;
+  const latestCreatedAt = docs.reduce((latest, doc) => {
+    const current = new Date(doc.createdAt).getTime();
+    return current > latest ? current : latest;
+  }, 0);
+
+  const uniqueAssetIds = Array.from(new Set(docs.map(doc => doc.assetId)));
 
   const getCompanyId = async () => {
     try {
@@ -170,7 +206,7 @@ const ContractManager = () => {
               <div className="contract-right-container">
                 <ContractHeader />
                 <div className="contract-cards-container">
-                <h2 className="ml-5 mb-0">{showAll ? "Folders " : ""}</h2>
+                  <h2 className="ml-5 mb-0">{showAll ? "Folders " : ""}</h2>
                   <ContractFolders
                     setFilterContracts={setFilterContracts}
                     setIotAnalyticsFilterContracts={
@@ -203,58 +239,78 @@ const ContractManager = () => {
                         </div>
                       )}
                       {filterContracts &&
-                      predictiveFilteredContractsData.length > 0
+                        predictiveFilteredContractsData.length > 0
                         ? predictiveFilteredContractsData.map((contract) => (
-                            <div key={contract._id}>
-                              <ContractCard contract={contract} />
-                            </div>
-                          ))
+                          <div key={contract._id}>
+                            <ContractCard contract={contract} />
+                          </div>
+                        ))
                         : filterContracts && (
-                            <div>
-                              <h3 className="not-found-text ml-4">
-                                Predictive Maintenance contract files not found
-                              </h3>
-                            </div>
-                          )}
+                          <div>
+                            <h3 className="not-found-text ml-4">
+                              Predictive Maintenance contract files not found
+                            </h3>
+                          </div>
+                        )}
                       {iotAnalyticsFilterContracts &&
-                      iotAnalyticsContractsData.length > 0
+                        iotAnalyticsContractsData.length > 0
                         ? iotAnalyticsContractsData.map((contract) => (
-                            <div key={contract._id}>
-                              <ContractCard contract={contract} />
-                            </div>
-                          ))
+                          <div key={contract._id}>
+                            <ContractCard contract={contract} />
+                          </div>
+                        ))
                         : iotAnalyticsFilterContracts && (
-                            <div>
-                              <h3 className="not-found-text ml-4">
-                                Iot Analytics contract files not found
-                              </h3>
-                            </div>
-                          )}
+                          <div>
+                            <h3 className="not-found-text ml-4">
+                              Iot Analytics contract files not found
+                            </h3>
+                          </div>
+                        )}
 
                       {iotFinanceFilterContracts &&
                         (iotFinanceContractsData.length > 0
                           ? iotFinanceContractsData.map((contract) => (
-                              <div key={contract._id}>
-                                <ContractCard contract={contract} />
-                              </div>
-                            ))
+                            <div key={contract._id}>
+                              <ContractCard contract={contract} />
+                            </div>
+                          ))
                           : iotFinanceFilterContracts && (
-                              <h3 className="not-found-text ml-4">
-                                Iot Finance contract files not found
-                              </h3>
-                            ))}
+                            <h3 className="not-found-text ml-4">
+                              Iot Finance contract files not found
+                            </h3>
+                          ))}
                       <div>
-                      <h2 className="ml-5 mt-7 heading-file-text">
+                        <h2 className="ml-5 mt-7 heading-file-text">
                           {showAll ? "Files" : ""}
                         </h2>
                         {contractsOriginal &&
-                        contractsData.map((contract) => (
-                          <div key={contract._id}>
-                            <ContractCard contract={contract} />
-                          </div>
-                        ))}
+                          contractsData.map((contract) => (
+                            <div key={contract._id}>
+                              <ContractCard contract={contract} />
+                            </div>
+                          ))}
                       </div>
-                      
+
+                      <div>
+                        <h2 className="ml-5 mt-7 heading-file-text">
+                          Contract Based Shared Data Statistics
+                        </h2>
+                        {docs.length > 0 ? (
+                          <div className="ml-5 mt-3 text-sm">
+                            <p><strong>Total Documents:</strong> {count}</p>
+                            <p><strong>Last Created At:</strong> {new Date(latestCreatedAt).toLocaleString()}</p>
+                            <p><strong>Unique Asset IDs ({uniqueAssetIds.length}):</strong></p>
+                            <ul className="list-disc ml-6">
+                              {uniqueAssetIds.map(id => (
+                                <li key={id}>{id}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : (
+                          <p className="ml-5 mt-3 text-sm">Loading statistics...</p>
+                        )}
+                      </div>
+
                     </>
                   )}
                 </div>

@@ -6,20 +6,16 @@ export class ConsumerService {
 
   private readonly ifxConnector = process.env.IFX_CONNECTOR_BACKEND_URL;
 
-  async getConsumerBindings(consumerId: string, contractType: string, contractId: string) {
+  async getConsumerBindings(consumerId: string) {
     console.log('Consumer ID:', consumerId);
-    console.log('Contract Type:', contractType);
-    console.log('Contract ID:', contractId);
 
     const encodedConsumerId = encodeURIComponent(consumerId);
-    const encodedContractType = encodeURIComponent(contractType);
-    const encodedContractId = encodeURIComponent(contractId);
     try {
       const registryHeaders = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       };
-      const bindings = await axios.get(`${this.ifxConnector}/consumer/${encodedConsumerId}/${encodedContractType}/${encodedContractId}`, { headers: registryHeaders });
+      const bindings = await axios.get(`${this.ifxConnector}/consumer/${encodedConsumerId}`, { headers: registryHeaders });
       return bindings.data;
     } catch (err) {
       throw err;

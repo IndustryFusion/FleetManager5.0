@@ -5,10 +5,10 @@ import { ConsumerService } from './consumer.service';
 export class ConsumerController {
   constructor(private readonly consumerService: ConsumerService) {}
 
-  @Get('get-consumer-bindings/:consumerId/:contractType/:contractId')
-  async getConsumerBindings(@Param('consumerId') consumerId: string, @Param('contractType') contractType: string, @Param('contractId') contractId: string) {
+  @Get('get-consumer-bindings/:consumerId')
+  async getConsumerBindings(@Param('consumerId') consumerId: string) {
     try {
-      return await this.consumerService.getConsumerBindings(consumerId, contractType, contractId);
+      return await this.consumerService.getConsumerBindings(consumerId);
     } catch(err) {
       throw err;
     }

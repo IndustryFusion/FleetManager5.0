@@ -289,7 +289,7 @@ const BindingManager = () => {
 
                       <div>
                         <h2 className="ml-5 mt-7 heading-file-text">
-                          {showAll ? "Files" : ""}
+                          {showAll ? "Bindings" : ""}
                         </h2>
                         {contractsOriginal &&
                           bindingsData.map((binding) => (
