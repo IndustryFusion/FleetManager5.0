@@ -75,6 +75,7 @@ const ContractManager = () => {
     async function fetchDocs() {
       const details = await getAccessGroup();
       const res = await axios.get(backendUrl + '/consumer/get-consumer-bindings/' + details?.company_ifric_id);
+      console.log("Consumer Bindings:", res.data);
       const fromTimestamp = encodeURIComponent("2025-05-01T10:35:00.234Z");
       const toTimestamp = encodeURIComponent(new Date().toISOString());
       for (let i = 0; i < res?.data.length; i++) {
@@ -83,8 +84,9 @@ const ContractManager = () => {
         const producerId = res?.data[i].data_provider_company_ifric_id;
         if (bindingId && assetId && producerId) {
           const res2 = await axios.get(
-            `${backendUrl}/consume-data-from-dataroom/${producerId}/${bindingId}/${assetId}?fromTimestamp=${fromTimestamp}&toTimestamp=${toTimestamp}`
+            `${backendUrl}/consumer/consume-data-from-dataroom/${producerId}/${bindingId}/${assetId}?fromTimestamp=${fromTimestamp}&toTimestamp=${toTimestamp}`
           );
+          console.log("Data from Dataroom:", res2.data);
           const data: DataDoc[] = res2.data;
           setDocs((prevDocs) => [...prevDocs, ...data]);
         }
