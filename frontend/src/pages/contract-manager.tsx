@@ -74,9 +74,21 @@ const ContractManager = () => {
     NodeService.getTreeNodes().then((data) => setNodes(data));
     async function fetchDocs() {
       const details = await getAccessGroup();
-      const res = await axios.get(backendUrl + '/consumer/get-consumer-bindings/' + details?.company_ifric_id); // update with your actual API route
-      const data: DataDoc[] = res.data;
-      setDocs(data);
+      const res = await axios.get(backendUrl + '/consumer/get-consumer-bindings/' + details?.company_ifric_id);
+      const fromTimestamp = encodeURIComponent("2025-05-01T10:35:00.234Z");
+      const toTimestamp = encodeURIComponent(new Date().toISOString());
+      for (let i = 0; i < res?.data.length; i++) {
+        const bindingId = res?.data[i].contract_binding_ifric_id;
+        const assetId = res?.data[i].asset_ifric_id;
+        const producerId = res?.data[i].data_provider_company_ifric_id;
+        if (bindingId && assetId && producerId) {
+          const res2 = await axios.get(
+            `${backendUrl}/consume-data-from-dataroom/${producerId}/${bindingId}/${assetId}?fromTimestamp=${fromTimestamp}&toTimestamp=${toTimestamp}`
+          );
+          const data: DataDoc[] = res2.data;
+          setDocs((prevDocs) => [...prevDocs, ...data]);
+        }
+      }
     }
     fetchDocs();
   }, []);
