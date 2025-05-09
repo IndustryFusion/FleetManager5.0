@@ -102,6 +102,9 @@ const ContractManager = () => {
   }, 0);
 
   const uniqueAssetIds = Array.from(new Set(docs.map(doc => doc.assetId)));
+  const uniqueDataTypes = Array.from(new Set(docs.map(doc => doc.dataType)));
+  const uniqueAssetTypes = Array.from(new Set(docs.map(doc => doc.assetType)));
+  const uniqueAttributes = Array.from(new Set(docs.map(doc => doc.attribute)));
 
   const getCompanyId = async () => {
     try {
@@ -317,6 +320,24 @@ const ContractManager = () => {
                             <ul className="list-disc ml-6">
                               {uniqueAssetIds.map(id => (
                                 <li key={id}>{id}</li>
+                              ))}
+                            </ul>
+                            <p><strong>Unique Data Types ({uniqueDataTypes.length}):</strong></p>
+                            <ul className="list-disc ml-6">
+                              {uniqueDataTypes.map(type => (
+                                <li key={type}>{type}</li>
+                              ))}
+                            </ul>
+                            <p><strong>Unique Asset Types ({uniqueAssetTypes.length}):</strong></p>
+                            <ul className="list-disc ml-6">
+                              {uniqueAssetTypes.map(type => (
+                                <li key={type}>{type}</li>
+                              ))}
+                            </ul>
+                            <p><strong>Unique Attributes ({uniqueAttributes.length}):</strong></p>
+                            <ul className="list-disc ml-6">
+                              {uniqueAttributes.map(attr => (
+                                <li key={attr}>{attr}</li>
                               ))}
                             </ul>
                           </div>
