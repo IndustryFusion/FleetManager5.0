@@ -105,6 +105,8 @@ const ContractManager = () => {
   const uniqueDataTypes = Array.from(new Set(docs.map(doc => doc.dataType)));
   const uniqueAssetTypes = Array.from(new Set(docs.map(doc => doc.assetType)));
   const uniqueAttributes = Array.from(new Set(docs.map(doc => doc.attribute)));
+  const uniqueProducerIds = Array.from(new Set(docs.map(doc => doc.producerId)));
+  const uniqueBindingIds = Array.from(new Set(docs.map(doc => doc.bindingId)));
 
   const getCompanyId = async () => {
     try {
@@ -316,6 +318,18 @@ const ContractManager = () => {
                           <div className="ml-5 mt-3 text-sm">
                             <p><strong>Total Documents:</strong> {count}</p>
                             <p><strong>Last Created At:</strong> {new Date(latestCreatedAt).toLocaleString()}</p>
+                            <p><strong>Unique Producer IDs ({uniqueProducerIds.length}):</strong></p>
+                            <ul className="list-disc ml-6">
+                              {uniqueProducerIds.map(id => (
+                                <li key={id}>{id}</li>
+                              ))}
+                            </ul>
+                            <p><strong>Unique Binding IDs ({uniqueBindingIds.length}):</strong></p>
+                            <ul className="list-disc ml-6">     
+                              {uniqueBindingIds.map(id => (
+                                <li key={id}>{id}</li>
+                              ))}
+                            </ul>
                             <p><strong>Unique Asset IDs ({uniqueAssetIds.length}):</strong></p>
                             <ul className="list-disc ml-6">
                               {uniqueAssetIds.map(id => (
