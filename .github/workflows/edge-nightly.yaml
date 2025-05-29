@@ -1,0 +1,77 @@
+name: Edge-Nightly
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: dev-edge
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      DOCKER_PREFIX: ${{ secrets.DOCKER_PREFIX }}
+      VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+      VAULT_USER: ${{ secrets.VAULT_USER }}
+      VAULT_PASS: ${{ secrets.VAULT_PASS }}
+      VAULT_PATH: "apps/data/edge/FleetManager/frontend"
+    outputs:
+      DOCKER_TAG: ${{ steps.build.outputs.NIGHTLY_DOCKER_TAG }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+          clean: true
+
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
+      - name: Authenticate and Fetch .env.development from Vault
+        run: |
+          # Authenticate with Vault
+          VAULT_TOKEN=$(curl -s --request POST --data '{"password": "'"${VAULT_PASS}"'"}' "${VAULT_ADDR}/v1/auth/userpass/login/${VAULT_USER}" | jq -r .auth.client_token)
+          # Fetch secrets from Vault
+          curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/${VAULT_PATH}" | jq -r '.data.data | to_entries | map("\(.key)=\(.value|tostring)") | .[]' > frontend/.env.development
+
+      - name: Verify .env.development
+        run: |
+          cat frontend/.env.development
+
+      - id: build
+        name: Build & Push Image
+        shell: bash
+        run: |
+          export DOCKER_TAG="latest"
+          export ENV="edge"
+          NIGHTLY_DOCKER_TAG=nightly-`date -I`-`date +%s`
+          docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
+          docker compose build --build-arg ENV_FILE=.env
+          docker tag ${DOCKER_PREFIX}/fleet50-backend:${DOCKER_TAG} ${DOCKER_PREFIX}/fleet50-backend:${NIGHTLY_DOCKER_TAG}
+          docker tag ${DOCKER_PREFIX}/fleet50-frontend:${DOCKER_TAG} ${DOCKER_PREFIX}/fleet50-frontend:${NIGHTLY_DOCKER_TAG}
+          docker push ${DOCKER_PREFIX}/fleet50-backend:${DOCKER_TAG}
+          docker push ${DOCKER_PREFIX}/fleet50-backend:${NIGHTLY_DOCKER_TAG}
+          docker push ${DOCKER_PREFIX}/fleet50-frontend:${DOCKER_TAG}
+          docker push ${DOCKER_PREFIX}/fleet50-frontend:${NIGHTLY_DOCKER_TAG}
+          docker rmi ${DOCKER_PREFIX}/fleet50-backend:${DOCKER_TAG}
+          docker rmi ${DOCKER_PREFIX}/fleet50-backend:${NIGHTLY_DOCKER_TAG}
+          docker rmi ${DOCKER_PREFIX}/fleet50-frontend:${DOCKER_TAG}
+          docker rmi ${DOCKER_PREFIX}/fleet50-frontend:${NIGHTLY_DOCKER_TAG}
+          echo "NIGHTLY_DOCKER_TAG=${NIGHTLY_DOCKER_TAG}" >> "${GITHUB_OUTPUT}"
+
+      - name: Cleanup .env.development
+        run: |
+          rm frontend/.env.development
+
+  deploy:
+    needs: build
+    uses: IndustryFusion/GitOpsRepo/.github/workflows/deploy-edge.yaml@main
+    with:
+      APPS: fleet50
+      NAMESPACE: iff
+      DOCKER_TAG: ${{ needs.build.outputs.DOCKER_TAG }}
+      CLUSTER: EDGE-DEV-CLUSTER
+      ENV: dev-edge
+    secrets:
+      PRIVATE_GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_TOKEN }}
+      HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}

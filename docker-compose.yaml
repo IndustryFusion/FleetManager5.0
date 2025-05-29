@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     environment:
-      - ENV=dev
+      - ENV=${ENV:-dev}
   if50-frontend:
     image: ${DOCKER_PREFIX:-ibn40}/fleet50-frontend:${DOCKER_TAG:-latest}
     build:
