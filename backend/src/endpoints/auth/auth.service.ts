@@ -14,10 +14,12 @@
 // limitations under the License. 
 // 
 
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
 import { FindOneAuthDto, FindIndexedDbAuthDto } from './dto/find-auth-dto';
 import * as jwt from 'jsonwebtoken';
+import { CompactEncrypt } from 'jose';
+import { createHash } from 'crypto';
 
 /**
  * Retrieves tokens from the keylock service.
@@ -30,7 +32,8 @@ import * as jwt from 'jsonwebtoken';
 @Injectable()
 export class AuthService {
   private readonly registryUrl = process.env.IFRIC_REGISTRY_BACKEND_URL;
-  private readonly SECRET_KEY = process.env.JWT_SECRET_KEY;
+  private readonly SECRET_KEY = process.env.JWT_SECRET_KEY!;
+  private readonly MASK_SECRET = process.env.MASK_SECRET!;
 
   async logIn(data: FindOneAuthDto) {
     try {
@@ -66,35 +69,77 @@ export class AuthService {
 
   async getIndexedData(data: FindIndexedDbAuthDto) {
     try {
-      const decoded = jwt.verify(data.token, this.SECRET_KEY);
+      const routeToken = data.token
+      const { m: maskedJwt } = jwt.verify(routeToken, this.SECRET_KEY) as { m: string };
+      const registryJwt = this.unmask(maskedJwt, this.MASK_SECRET);
+      const decoded = jwt.decode(registryJwt) as
+        | { sub?: string; user?: string; iat?: number; exp?: number }
+        | null;
+    
 
-      // Check if there's an inner token
-      if (decoded.token) {
-        const decodedToken = jwt.decode(decoded.token);
-
-        const registryHeader = {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${decoded.token}`
-        };
-        const response = await axios.post(`${this.registryUrl}/auth/get-indexed-db-data`,{
-            company_id: decodedToken?.sub,
-            email: decodedToken?.user,
-            product_name: data.product_name
-        }, {
-          headers: registryHeader
-        });
-        return response.data;
+      if (!decoded) {
+        throw new HttpException('Cannot decode registryJwt', HttpStatus.UNAUTHORIZED);
       }
+
+          const registryHeader = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            Authorization: `Bearer ${registryJwt}`,
+          };
+            const registryResponse = await axios.post(
+        `${this.registryUrl}/auth/get-indexed-db-data`,
+        {
+          company_id:   decoded.sub,
+          email:        decoded.user,
+          product_name:data.product_name,
+        },
+        { headers: registryHeader },
+      );
+          if (registryResponse.data) {
+            const encryptedToken = await this.encryptData(registryResponse.data.data.jwt_token);
+            registryResponse.data.data.ifricdi = this.mask(encryptedToken, process.env.MASK_SECRET);
+            registryResponse.data.data.jwt_token = registryJwt;
+            return registryResponse.data;
+          }
+        }catch(err) {
+          if (err instanceof jwt.TokenExpiredError) {
+            throw new UnauthorizedException('Token has expired');
+          }
+          if(err?.response?.status == 401) {
+            throw new UnauthorizedException();
+          }
+          throw new NotFoundException(`Failed to fetch indexed data: ${err.message}`);
+        }
       
-    }catch(err) {
-      if (err instanceof jwt.TokenExpiredError) {
-        throw new UnauthorizedException('Token has expired');
-      }
-      if(err?.response?.status == 401) {
-        throw new UnauthorizedException();
-      }
-      throw new NotFoundException(`Failed to fetch indexed data: ${err.message}`);
+  }
+  private  mask(input: string, key: string): string {
+    return input.split('').map((char, i) =>
+      (char.charCodeAt(0) ^ key.charCodeAt(i % key.length)).toString(16).padStart(2, '0')
+    ).join('');
+  }
+
+  private unmask(masked: string, key: string): string {
+    if (!key) {
+      throw new Error("Mask secret is not defined");
     }
+    const bytes = masked.match(/.{1,2}/g)!.map((h) => parseInt(h, 16));
+    return String.fromCharCode(
+      ...bytes.map((b, i) => b ^ key.charCodeAt(i % key.length))
+    );
+  }
+    
+  deriveKey(secret: string): Uint8Array {
+    const hash = createHash('sha256');
+    hash.update(secret);
+    return new Uint8Array(hash.digest());
+  }
+  async encryptData(data: string) {
+    const encoder = new TextEncoder();
+    const encryptionKey = await this.deriveKey(this.SECRET_KEY);
+
+    const encrypted = await new CompactEncrypt(encoder.encode(data))
+    .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
+    .encrypt(encryptionKey);
+    return encrypted;
   }
 }
