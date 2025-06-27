@@ -140,25 +140,41 @@ export class AssetService {
       } */
 
       const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${id}`, { headers: registryHeaders });  
-      for(let i = 0; i < companyTwinData.data.length; i++) {
-        try {
-          const url = this.scorpioUrl + '/' + companyTwinData.data[i].asset_ifric_id;
-          const response = await axios.get(url, { headers });
-  
-          if(response.data) {
-            const ownerCompanyData = await axios.get(`${this.registryUrl}/auth/get-company-details-id/${companyTwinData.data[i].owner_company_id}`, { headers: registryHeaders });
-            if(ownerCompanyData.data) {
-              result.push({
-                owner_company_name: ownerCompanyData.data[0].company_name,
-                assetData: response.data
-              });
+      const batchSize = 50; 
+      const batchPromises = [];
+      for (let i = 0; i < companyTwinData.data.length; i += batchSize) {
+        const batch = companyTwinData.data.slice(i, i + batchSize);
+        batchPromises.push(
+          (async () => {
+            try {
+              await Promise.allSettled(
+                batch.map(async (asset) => {
+                  try {
+                    const url = this.scorpioUrl + '/' + asset.asset_ifric_id;
+                    const response = await axios.get(url, { headers });
+                    if(response.data) {
+                      const ownerCompanyData = await axios.get(`${this.registryUrl}/auth/get-company-details-id/${asset.owner_company_id}`, { headers: registryHeaders });
+                      if(ownerCompanyData.data) {
+                        result.push({
+                          owner_company_name: ownerCompanyData.data[0].company_name,
+                          assetData: response.data
+                        });
+                      }
+                    }
+                  } catch(err) {
+                    return [];
+                  }
+                }) 
+              )
+            } catch(err) {
+              return [];
             }
-          }
-        } catch(err) {
-          console.log("Failed for few assets::", err?.message);
-          continue;
-        }
+          })()
+        )
       }
+
+      // Wait for all batch operations to complete
+      await Promise.allSettled(batchPromises);
       return result;
     } catch (err) {
       throw new NotFoundException(`Failed to fetch repository data: ${err.message}`);
