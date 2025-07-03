@@ -325,7 +325,6 @@ export class CertificateService {
             'Content-Type': 'application/json'
           }
         });
-
         if (verifyLastCertificate.data){
           return { valid: true }
         };
