@@ -98,6 +98,10 @@ export default function ProfileMenu() {
         } catch (error) {
             console.error("Logout failed:", error);
             showToast(toast, 'error', 'Logout Failed', 'An error occurred during logout');
+        } finally {
+            setTimeout(() => {
+                router.push(`${ifxSuiteUrl}/home`);
+            }, 500);
         }
     };
     let items = [

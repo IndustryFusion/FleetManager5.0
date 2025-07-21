@@ -73,7 +73,11 @@ export const UnauthorizedPopup: React.FC = () => {
     </div>
   );
 
-  if(!visible) return null;
+  if (!visible) {
+    return null;
+  } else if (["/auth/login", "/auth/register", "/recover-password", "/auth/reset/update-password", "/privacy", "/terms-and-conditions", "/thankyou", "/forgot-password"].includes(router.pathname)) {
+    return null;
+  }
 
   return (
     <>

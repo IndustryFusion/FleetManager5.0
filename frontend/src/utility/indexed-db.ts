@@ -154,10 +154,8 @@ export async function getAccessGroup(): Promise<AccessGroupData> {
                 const result = request.result as AccessGroupData;
                 if (result) {
                     result.jwt_token = await decryptJWT(result.jwt_token)
-                    resolve(result);
-                } else {
-                    reject(new Error("No access group data found"));
-                }
+                } 
+                resolve(result);
             };
             request.onerror = function (event) {
                 console.error("Error retrieving access group data: " + (event.target as IDBRequest).error);
