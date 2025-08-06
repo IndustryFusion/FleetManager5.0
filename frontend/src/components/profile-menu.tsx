@@ -24,6 +24,8 @@ import { Menu } from 'primereact/menu';
 import { Button } from 'primereact/button';
 import { showToast } from '@/utility/toast';
 import { Toast } from 'primereact/toast';
+import { resetReduxState } from '../redux/store';
+import router from "next/router";
 
 interface Product {
     _id: string;
@@ -79,18 +81,27 @@ export default function ProfileMenu() {
     };
     const handleLogout = async () => {
         try {
-            if (userData?.user_email) {
+            const accessGroupData = await getAccessGroup();
+            if (accessGroupData?.user_email) {
                 await clearIndexedDbOnLogout();
                 showToast(toast, 'success', 'Logout Successful', 'You have been logged out');
+                setUserData(null);
+
+                // reset redux after successfull logout
+                await resetReduxState();
                 setTimeout(() => {
-                    window.location.href = `${ifxSuiteUrl}/home`; 
-                },500);
+                    router.push(`${ifxSuiteUrl}/home`);
+                }, 500);
             } else {
                 showToast(toast, 'error', 'Logout Failed', 'User email not found');
             }
         } catch (error) {
             console.error("Logout failed:", error);
             showToast(toast, 'error', 'Logout Failed', 'An error occurred during logout');
+        } finally {
+            setTimeout(() => {
+                router.push(`${ifxSuiteUrl}/home`);
+            }, 500);
         }
     };
     let items = [
