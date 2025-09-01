@@ -140,21 +140,6 @@ export class AssetService {
       } */
 
       const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${id}`, { headers: registryHeaders });  
-<<<<<<< HEAD
-      for(let i = 0; i < companyTwinData.data.length; i++) {
-        try {
-          const url = this.scorpioUrl + '/' + companyTwinData.data[i].asset_ifric_id;
-          const response = await axios.get(url, { headers });
-  
-          if(response.data) {
-            const ownerCompanyData = await axios.get(`${this.registryUrl}/auth/get-company-details-id/${companyTwinData.data[i].owner_company_id}`, { headers: registryHeaders });
-            if(ownerCompanyData.data) {
-              result.push({
-                owner_company_name: ownerCompanyData.data[0].company_name,
-                owner_company_image: ownerCompanyData.data[0].company_image,
-                assetData: response.data
-              });
-=======
       const batchSize = 50; 
       const batchPromises = [];
       for (let i = 0; i < companyTwinData.data.length; i += batchSize) {
@@ -172,6 +157,7 @@ export class AssetService {
                       if(ownerCompanyData.data) {
                         result.push({
                           owner_company_name: ownerCompanyData.data[0].company_name,
+                          owner_company_image: ownerCompanyData.data[0].company_image,
                           assetData: response.data
                         });
                       }
@@ -183,7 +169,6 @@ export class AssetService {
               )
             } catch(err) {
               return [];
->>>>>>> 4c0eb2393e07fd0c8132dc02eb2961450d7c3adc
             }
           })()
         )
