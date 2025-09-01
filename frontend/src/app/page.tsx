@@ -53,7 +53,6 @@ export default function WelcomePage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
-    
     if (token) {
       setIndexedDb(token);
     }

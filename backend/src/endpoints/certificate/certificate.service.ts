@@ -15,20 +15,20 @@ export class CertificateService {
       (char.charCodeAt(0) ^ key.charCodeAt(i % key.length)).toString(16).padStart(2, '0')
     ).join('');
   }
-  
+
   deriveKey(secret: string): Uint8Array {
     const hash = createHash('sha256');
     hash.update(secret);
     return new Uint8Array(hash.digest());
   }
-  
+
   async encryptData(data: string) {
     const encoder = new TextEncoder();
     const encryptionKey = await this.deriveKey(process.env.JWT_SECRET);
 
     const encrypted = await new CompactEncrypt(encoder.encode(data))
-    .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
-    .encrypt(encryptionKey);
+      .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
+      .encrypt(encryptionKey);
     return encrypted;
   }
 
@@ -62,7 +62,7 @@ export class CertificateService {
           headers: registryHeaders
         });
 
-        if (verifyLastCertificate.data.valid) {
+        if (verifyLastCertificate.data) {
           return {
             success: false,
             status: 400,
@@ -106,38 +106,36 @@ export class CertificateService {
 
   async verifyCompanyCertificate(company_ifric_id: string, req: Request) {
     try {
-            const registryHeaders = {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'Authorization': req.headers['authorization']
-            };
-            // check whether the last created certificate is valid or expired or not
-            const checkLastCertificate = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${company_ifric_id}`, { headers: registryHeaders });
-            
-            if(checkLastCertificate.data.length > 0) {
-              const verifyLastCertificate = await axios.post(`${this.icidServiceUrl}/certificate/verify-company-certificate`,{
-                certificate_data: checkLastCertificate.data[0].certificate_data,
-                company_ifric_id,
-              }, {
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              });
-              
-              if(verifyLastCertificate.data.valid) {
-                return {
-                  success: true,
-                  status: 201,
-                  message: 'Company Verified'
-                };
-              }
-            } else {
-                return {
-                  success: false,
-                  status: 400,
-                  message: 'no certificates found for the company'
-                };
-            }
+      const registryHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization']
+      };
+      // check whether the last created certificate is valid or expired or not
+      const checkLastCertificate = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${company_ifric_id}`, { headers: registryHeaders });
+
+      if (checkLastCertificate.data.length > 0) {
+        const verifyLastCertificate = await axios.post(`${this.ifricRegistryUrl}/certificate/verify-company-certificate`, {
+          certificate_data: checkLastCertificate.data[0].certificate_data,
+          company_ifric_id,
+        },
+          { headers: registryHeaders }
+        );
+
+        if (verifyLastCertificate.data) {
+          return {
+            success: true,
+            status: 201,
+            message: 'Company Verified'
+          };
+        }
+      } else {
+        return {
+          success: false,
+          status: 400,
+          message: 'no certificates found for the company'
+        };
+      }
 
     } catch (err) {
       throw err;
@@ -161,47 +159,57 @@ export class CertificateService {
 
       // check whether the last created certificate is valid or expired or not
       //in get asset certificate we are verifiying the company cert
-      const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate?asset_ifric_id=${asset_ifric_id}&company_ifric_id=${company_ifric_id}`,{headers: ifxHeaders});
+      const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate?asset_ifric_id=${asset_ifric_id}&company_ifric_id=${company_ifric_id}`, { headers: ifxHeaders });
       console.log("checkLastCertificate", checkLastCertificate.data)
-      if(checkLastCertificate.data.length > 0) {
-        const verifyLastCertificate = await axios.post(`${this.icidServiceUrl}/certificate/verify-asset-certificate`,{
-          certificate_data: checkLastCertificate.data[0].certificate_data,
-          asset_ifric_id,
-        }, {
-          headers: {
-            'Content-Type': 'application/json'
+      if (checkLastCertificate.data.length > 0) {
+        if (!checkLastCertificate.data[0].vc_id) {
+          if (checkLastCertificate.data[0].expiry_on > new Date()) {
+            return {
+              success: false,
+              status: 400,
+              message: 'Cannot create more than one active certificate'
+            };
           }
-        });
-        console.log("verifyLastCertificate", verifyLastCertificate.data)
-        if(verifyLastCertificate.data.valid) {
-          return {
-            success: false,
-            status: 400,
-            message: 'Cannot create more than one active certificate'
-          };
+        } else {
+          const verifyLastCertificate = await axios.post(`${this.ifxPlatformUrl}/certificate/verify-asset-certificate`, {
+            certificate_data: checkLastCertificate.data[0].certificate_data,
+            asset_ifric_id,
+          }, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          console.log("verifyLastCertificate", verifyLastCertificate.data)
+          if (verifyLastCertificate.data) {
+            return {
+              success: false,
+              status: 400,
+              message: 'Cannot create more than one active certificate'
+            };
+          }
         }
       }
       // check whether the user is admin for DPP
-      const getUserDetails = await axios.get(`${this.ifricRegistryUrl}/auth/get-user-details`,{
+      const getUserDetails = await axios.get(`${this.ifricRegistryUrl}/auth/get-user-details`, {
         params: {
           user_email,
           company_ifric_id
-        }, 
+        },
         headers: registryHeaders
       })
-  
-      if(getUserDetails.data.length > 0) {
-        const getProductDetails = await axios.get(`${this.ifricRegistryUrl}/auth/get-user-specific-product-access`,{
+
+      if (getUserDetails.data.length > 0) {
+        const getProductDetails = await axios.get(`${this.ifricRegistryUrl}/auth/get-user-specific-product-access`, {
           params: {
             product_name: 'DPP Creator',
             user_id: getUserDetails.data[0]._id
           },
           headers: registryHeaders
         });
-  
-        if(getProductDetails.data.length) {
-          const userProductAccessGroup = await axios.get(`${this.ifricRegistryUrl}/auth/get-access-group/${getProductDetails.data[0].access_group_id}`, {headers: registryHeaders});
-          if(userProductAccessGroup.data && userProductAccessGroup.data.group_name !== 'admin') {
+
+        if (getProductDetails.data.length) {
+          const userProductAccessGroup = await axios.get(`${this.ifricRegistryUrl}/auth/get-access-group/${getProductDetails.data[0].access_group_id}`, { headers: registryHeaders });
+          if (userProductAccessGroup.data && userProductAccessGroup.data.group_name !== 'admin') {
             return {
               "success": false,
               "status": 422,
@@ -219,15 +227,16 @@ export class CertificateService {
         throw new Error("No user found with the provided mailId");
       }
 
-      const response = await axios.post(`${this.ifxPlatformUrl}/certificate/create-asset-certificate`,{
+      const response = await axios.post(`${this.ifxPlatformUrl}/certificate/create-asset-certificate`, {
         asset_ifric_id,
         expiry,
+        privateKey: "test"
       }, {
         headers: ifxHeaders
       });
 
       return response.data;
-    } catch(err) {
+    } catch (err) {
       throw err;
     }
   }
@@ -252,7 +261,7 @@ export class CertificateService {
           params: {
             asset_ifric_id: asset_ifric_id,
             company_ifric_id: company_ifric_id
-          },  
+          },
           headers: ifxHeaders
         }
       );
@@ -274,7 +283,7 @@ export class CertificateService {
     }
   }
 
-  async verifyAssetCertificate(asset_ifric_id: string, company_ifric_id:string, req :Request) {
+  async verifyAssetCertificate(asset_ifric_id: string, company_ifric_id: string, req: Request) {
     try {
       const registryHeaders = {
         'Content-Type': 'application/json',
@@ -294,13 +303,21 @@ export class CertificateService {
           params: {
             asset_ifric_id: asset_ifric_id,
             company_ifric_id: company_ifric_id
-          },  
+          },
           headers: ifxHeaders
         }
       );
       console.log("checkLastCertificate", checkLastCertificate.data)
-      if(checkLastCertificate.data.length > 0) {
-        const verifyLastCertificate = await axios.post(`${this.icidServiceUrl}/certificate/verify-asset-certificate`,{
+
+      if (!checkLastCertificate.data[0].vc_id) {
+        if (checkLastCertificate.data[0].expiry_on < new Date()) {
+          return { valid: false };
+        }
+        else {
+          return { valid: true };
+        }
+      } else {
+        const verifyLastCertificate = await axios.post(`${this.ifxPlatformUrl}/certificate/verify-asset-certificate`, {
           certificate_data: checkLastCertificate.data[0].certificate_data,
           asset_ifric_id,
         }, {
@@ -308,18 +325,10 @@ export class CertificateService {
             'Content-Type': 'application/json'
           }
         });
-        console.log("verifyLastCertificate", verifyLastCertificate.data)
-        if(verifyLastCertificate.data.valid) {
-          return verifyLastCertificate.data;
-        }
-      } else {
-        return {
-          success: false,
-          status: 404,
-          message: 'Asset Certificates not found'
+        if (verifyLastCertificate.data){
+          return { valid: true }
         };
       }
-      
     } catch (err) {
       throw err;
     }

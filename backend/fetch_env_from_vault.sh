@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APP_NAME="FleetManager"
-ENV_TYPE="dev"
+ENV_TYPE="${ENV:-dev}"
 ENV_FILE="env"
 
 

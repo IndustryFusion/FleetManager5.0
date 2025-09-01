@@ -15,6 +15,7 @@
 
 import { CompactEncrypt, compactDecrypt } from 'jose';
 import { createHash } from 'crypto';
+import axios from 'axios';
 
 //get a consistent 256-bit key
 function deriveKey(secret: string): Uint8Array {
@@ -23,12 +24,13 @@ function deriveKey(secret: string): Uint8Array {
     return new Uint8Array(hash.digest());
 }
 const ENCRYPTION_KEY: Uint8Array =deriveKey(process.env.NEXT_PUBLIC_JWT_SECRET);
-
+const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 if (!process.env.NEXT_PUBLIC_JWT_SECRET) {
     console.warn('WARNING: JWT_SECRET is not set. This is a security risk.');
 }
 
 interface LoginData {
+    ifricdi: string;
     company_ifric_id: string;
     user_name: string;
     jwt_token: string;
@@ -113,6 +115,7 @@ export async function storeAccessGroup(loginData: LoginData) : Promise<void> {
             company_ifric_id: loginData.company_ifric_id,
             user_name: loginData.user_name,
             jwt_token: encryptedJWT,
+            ifricdi: loginData.ifricdi,
             user_role: loginData.user_role,
             access_group: loginData.access_group,
             access_group_Ifric_Dashboard: loginData.access_group_Ifric_Dashboard,
@@ -151,10 +154,8 @@ export async function getAccessGroup(): Promise<AccessGroupData> {
                 const result = request.result as AccessGroupData;
                 if (result) {
                     result.jwt_token = await decryptJWT(result.jwt_token)
-                    resolve(result);
-                } else {
-                    reject(new Error("No access group data found"));
-                }
+                } 
+                resolve(result);
             };
             request.onerror = function (event) {
                 console.error("Error retrieving access group data: " + (event.target as IDBRequest).error);
@@ -213,7 +214,22 @@ export async function updateAccessGroupField(fieldName: string, fieldValue: any)
     }
 }
 
-
+export const getAccessGroupData = async(token: string) => {
+    try {
+        const registryHeader = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/get-indexed-db-data`, {token, product_name: "Fleet Manager"}, {
+            headers: registryHeader
+        });
+        await storeAccessGroup(response.data.data);
+        return { status: 200, message: "stored data successfully"}
+    } catch(error: any) {
+        throw error;
+    }
+}
 export const clearIndexedDbOnLogout = async () => {
     try {
         const db = await new Promise<IDBDatabase>((resolve, reject) => {
