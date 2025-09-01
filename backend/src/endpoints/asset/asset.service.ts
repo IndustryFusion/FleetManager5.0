@@ -150,6 +150,7 @@ export class AssetService {
             if(ownerCompanyData.data) {
               result.push({
                 owner_company_name: ownerCompanyData.data[0].company_name,
+                owner_company_image: ownerCompanyData.data[0].company_image,
                 assetData: response.data
               });
             }
