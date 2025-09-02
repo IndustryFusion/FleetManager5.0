@@ -49,6 +49,13 @@ const AssetTable: React.FC<any> = ({
       columnKey: "assetSelectCheckBox",
     },
     {
+      columnKey: "productName",
+      field: "assetData.product_name",
+      header: productNameHeader(t, toggleColor, isBlue),
+      body: productNameBodyTemplate,
+      sortable: true,
+    },
+    {
       field: "assetData.id",
       header: ifricIdHeader(t),
       body: assetIdBodyTemplate,
@@ -69,22 +76,14 @@ const AssetTable: React.FC<any> = ({
       body: assetTypeBodyTemplate,
       sortable: true,
     },
+    // {
+    //   columnKey: "manufacturer",
+    //   field: "assetData.asset_manufacturer_name",
+    //   header: manufacturerHeader(t),
+    //   body: manufacturerDataTemplate,
+    //   sortable: true,
+    // },
     {
-      columnKey: "productName",
-      field: "assetData.product_name",
-      header: productNameHeader(t, toggleColor, isBlue),
-      body: productNameBodyTemplate,
-      sortable: true,
-    },
-    {
-      columnKey: "manufacturer",
-      field: "assetData.asset_manufacturer_name",
-      header: manufacturerHeader(t),
-      body: manufacturerDataTemplate,
-      sortable: true,
-    },
-  
-     {
       columnKey: "Owner",
       field: "owner_company_name",
       header: ownerHeader(t),

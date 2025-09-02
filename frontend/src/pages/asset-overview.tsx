@@ -274,28 +274,54 @@ const AssetOverView: React.FC = () => {
 
   const assetIdBodyTemplate = (rowData: any) => {
     const key = expandValue[rowData?.assetData?.id] || false;
+  const formatId = (id: string) => {
+    if (!id) return "";
+    if (key) return id;
+    const prefix = id.slice(10, 17);
+    const lastSix = id.slice(-6);
+    return (
+      <span>
+        <span className="id-prefix">{prefix}</span>
+        <span className="id-dots">....</span>
+        <span className="id-suffix">{lastSix}</span>
+      </span>
+    );
+  };
+
+  const handleCopy = (id: string) => {
+    if (id) {
+      navigator.clipboard.writeText(id);
+      toast.current?.show({
+        severity: "success",
+        summary: "Copied",
+        detail: "Industry Fusion ID copied to clipboard",
+        life: 2000,
+      });
+    }
+  };
+
     return (
       <div>
         <div
-          className="flex gap-1 justify-content-center align-items-center tr-text"
-          style={{ width: "271px" }}
+          className="flex gap-1 justify-content-left align-items-center"
         >
-          {rowData?.assetData?.asset_status === "complete" ? (
+          {/* {rowData?.assetData?.asset_status === "complete" ? (
             <img src="/complete-icon.jpg" alt="complete-icon" />
           ) : (
             <img src="/incomplete-icon.jpg" alt="incomplete-icon" />
-          )}
-          <p className={key ? "expand-id-text" : "id-text"}>{rowData?.assetData?.id}</p>
+          )} */}
+          <p className="tr-text-grey">{formatId(rowData?.assetData?.id)}</p>
           <button
-            onClick={() => toggleExpansion(rowData?.assetData?.id)}
+            onClick={() => handleCopy(rowData?.assetData?.id)}
             className="transparent-btn"
+            title="Copy ID"
           >
-            <i className="pi pi-angle-down"></i>
-          </button>
-        </div>
+         <img src="/copy-icon.svg" width={16} height={16} />
+        </button>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   const showToast = (
     severity: ToastMessage["severity"],

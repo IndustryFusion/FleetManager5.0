@@ -116,7 +116,7 @@ function Sidebar() {
              Data Twins
             </div>
           </Button>
-          <Button
+          {/* <Button
            className={`sidebar_navlink ${
             router.pathname.startsWith("/contract-manager")
               ? "is_active"
@@ -139,7 +139,7 @@ function Sidebar() {
             >
               Contracts
             </div>
-          </Button>
+          </Button> */}
           <Button
             className={`sidebar_navlink ${
               router.pathname.startsWith("/certificates")
@@ -166,7 +166,7 @@ function Sidebar() {
               Certificates
             </div>
           </Button>
-          <Button
+          {/* <Button
             className={`sidebar_navlink ${
               router.pathname === "/contract-manager" ? "is_active" : ""
             }`}
@@ -187,8 +187,8 @@ function Sidebar() {
             >
               Contract Manager
             </div>
-          </Button>
-          <Button
+          </Button> */}
+          {/* <Button
             className={`sidebar_navlink ${
               router.pathname === "/binding-manager" ? "is_active" : ""
             }`}
@@ -209,8 +209,8 @@ function Sidebar() {
             >
               Binding Manager
             </div>
-          </Button>
-          <Button
+          </Button> */}
+          {/* <Button
             className={`sidebar_navlink ${
               router.pathname === "/binding-request" ? "is_active" : ""
             }`}
@@ -231,7 +231,7 @@ function Sidebar() {
             >
               Binding Request
             </div>
-          </Button>
+          </Button> */}
          <div style= {{marginTop:"auto", paddingBlock: "30px"}}>
          <Button
             tooltip={!sidebarOpen ? "Help Center" : undefined}
