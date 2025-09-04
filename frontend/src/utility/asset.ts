@@ -105,7 +105,7 @@ export const fetchAssets = async () => {
     const responseData = response.data;
     // console.log("responseData",responseData)
     const mappedData = responseData.map((asset: any) => ({
-      owner_company_name: asset.owner_company_name,
+      ...asset,
       assetData: mapBackendDataToAsset(asset.assetData),
     }));
     // console.log("mappedData",mappedData)
