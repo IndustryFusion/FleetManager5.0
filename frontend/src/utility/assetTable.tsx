@@ -141,6 +141,7 @@ export const actionItemsTemplate = (rowData: Asset, onMoveToRoom: (asset: Asset)
 
 export const ownerBodyTemplate = (rowData: any) => {
   const ownerName = rowData?.owner_company_name || "N/A";
+  const ownerCompanyImage=rowData?.owner_company_image;
   let displayOwnerName = ownerName;
   let toolTipContent = ownerName;
   const initial = ownerName !== "N/A" ? ownerName.charAt(0).toUpperCase() : "?";
@@ -154,7 +155,14 @@ export const ownerBodyTemplate = (rowData: any) => {
   }
   return (
     <div className="flex gap-2" style={{ alignItems: "center", width: "180px" }}>
-      <div className="no-product-image">{initial}</div>
+      {ownerCompanyImage && ownerCompanyImage !== "NULL" ?
+      (
+        <img src={ownerCompanyImage}
+        alt="ownerCompanyImgae"
+        className="profile-picture flex-shrink-0"/>
+      ):(
+         <div className="no-product-image">{initial}</div>
+      )}
       <Tooltip target=".owner-tooltip" className="navbar_tooltip" position="bottom" />
       <p className="tr-text-grey owner-tooltip" data-pr-tooltip={toolTipContent}>
         {displayOwnerName}
