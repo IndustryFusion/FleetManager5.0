@@ -29,6 +29,10 @@ import { CertificateController } from './endpoints/certificate/certificate.contr
 import { CertificateService } from './endpoints/certificate/certificate.service';
 import { ConsumerService } from './endpoints/consumer/consumer.service';
 import { ConsumerController } from './endpoints/consumer/consumer.controller';
+import { ContractController } from './endpoints/contract/contract.controller';
+import { BindingController } from './endpoints/binding/binding.controller';
+import { ContractService } from './endpoints/contract/contract.service';
+import { BindingService } from './endpoints/binding/binding.service';
 
 @Module({
   imports: [],
@@ -39,7 +43,9 @@ import { ConsumerController } from './endpoints/consumer/consumer.controller';
     AssetController,
     FileController,
     CertificateController,
-    ConsumerController
+    ConsumerController,
+    ContractController,
+    BindingController
   ],
   providers: [
     AppService,
@@ -48,7 +54,9 @@ import { ConsumerController } from './endpoints/consumer/consumer.controller';
     AssetService,
     FileService,
     CertificateService,
-    ConsumerService
+    ConsumerService,
+    ContractService,
+    BindingService
   ],
 })
 export class AppModule {}
