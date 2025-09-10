@@ -17,6 +17,7 @@ import OwnerDetailsCard from './owner-details';
 import { postFile } from '@/utility/asset';
 import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, verifyAssetCertificate, generateAssetCertificate, getCompanyDetailsById } from '@/utility/auth';
 import moment from 'moment';
+import { getContracts } from '@/utility/contracts';
 
 interface Company {
   id: string;
@@ -71,6 +72,8 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const [userEmail, setUserEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [showUploadMessage, setShowUploadMessage] = useState(false);
+  const [contractData, setContractData] = useState<Record<string,any>[]>([]);
+  const [contractLoading, setContractLoading] = useState<boolean>(true);
 
   const certificateOptions: Certificate[] = [
     { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
@@ -82,6 +85,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
     getCompanyCertification(company_ifric_id);
     getAssetCertification();
     getCompanyDetails();
+    getCompanyContracts(company_ifric_id);
   }, []);
 
   useEffect(() => {
@@ -123,6 +127,22 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
     }
     catch (error: any) {
       console.error("error fetching company certification", error);
+    }
+  }
+
+  const getCompanyContracts = async (company_ifric_id: string) => {
+    try {
+      const response = await getContracts(company_ifric_id);
+      if(response.length) {
+        const contractNames = response.map(contract => {
+          return { label: contract.contract_name, value: contract.contract_name }
+        });
+        setContractData(contractNames);
+      }
+    } catch(error: any) {
+      toast.current?.show({ severity: 'error', summary: 'Error', detail: error.message || 'Failed to fetch company contract' });
+    } finally {
+      setContractLoading(false);
     }
   }
 
@@ -603,14 +623,14 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
                 <div className="p-field p-float-label">
                   <MultiSelect id="certificate"
                     value={certificate} // Ensure certificate.value is used
-                    options={certificateOptions}
+                    options={contractData}
                     showSelectAll={false}
                     panelHeaderTemplate={(<div></div>)}
                     onChange={(e: DropdownChangeEvent) => {
                       setCertificate(e.value || null);  // Set the entire certificate object
                     }}
                     optionLabel="label"
-                    placeholder="Select a certificate"
+                    placeholder={contractLoading ? "Loading..." : "Select a certificate"}
                     className="company_dropdown" display="chip" />
                   <img
                     className="dropdown-icon-img "

@@ -100,7 +100,7 @@ export const createContract = async (dataToSend: Record<string,any>) => {
 
 export const getContracts =async(companyIfricId: string)=>{
 try{
- const response = await api.get(`${IFX_BACKEND_URL}/contract/get-company-contract/${companyIfricId}`)
+ const response = await api.get(`${BACKEND_API_URL}/contract/get-company-contract/${companyIfricId}`)
  return response.data
 }
 catch (error:any) {
