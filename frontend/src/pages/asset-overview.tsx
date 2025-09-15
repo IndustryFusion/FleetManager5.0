@@ -144,7 +144,7 @@ const AssetOverView: React.FC = () => {
   }
   ]
 
-  console.log("selectedProduct here is", selectedProduct);
+  // console.log("selectedProduct here is", selectedProduct);
   
   const getCompanyId = async()=>{
     try {

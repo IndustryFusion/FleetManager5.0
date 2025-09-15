@@ -78,7 +78,7 @@ export const manufacturerDataTemplate = (rowData: any): React.ReactNode => {
 
 
 export const productNameBodyTemplate = (rowData: any): React.ReactNode => {
-   console.log("Row Data:", rowData);
+  //  console.log("Row Data:", rowData);
   const productImage = rowData.assetData?.product_image;
   const productName = rowData.assetData?.product_name || "";
 
