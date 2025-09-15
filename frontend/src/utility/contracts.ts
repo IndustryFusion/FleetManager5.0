@@ -238,10 +238,12 @@ export const getAssetCertificateById = async (asset_ifric_id: string, company_if
 };
 export const createBinding = async (data: Record<string, any>) => {
   try {
-    return await api.post(
-      `${IFX_BACKEND_URL}/binding`,
-      data
+   const res = await api.post(
+      `${BACKEND_API_URL}/binding`,
+      data 
     );
+    console.log(res, "CreateBinding response")
+    return res;
   } catch (error: any) {
     if (error?.response && error?.response?.status === 401) {
       updatePopupVisible(true);

@@ -18,6 +18,9 @@ import { postFile } from '@/utility/asset';
 import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, verifyAssetCertificate, generateAssetCertificate, getCompanyDetailsById } from '@/utility/auth';
 import moment from 'moment';
 import { getContracts } from '@/utility/contracts';
+import { createBinding } from "@/utility/contracts";
+import { toDate } from '@/utility/dateformat';
+import { getAccessGroup } from '@/utility/indexed-db';
 
 interface Company {
   id: string;
@@ -74,11 +77,14 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const [showUploadMessage, setShowUploadMessage] = useState(false);
   const [contractData, setContractData] = useState<Record<string,any>[]>([]);
   const [contractLoading, setContractLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(false);
+  const [completeContract, setCompleteContract]= useState<Record<string,any>[]>([]);
+  const [seletedContract,setSeletcedContract]=useState<Record<string,any>[]>([]);
 
-  const certificateOptions: Certificate[] = [
-    { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
-    { label: 'contract_Insurance_IFRIC', value: 'contract_Insurance_IFRIC' },
-  ];
+  // const certificateOptions: Certificate[] = [
+  //   { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
+  //   { label: 'contract_Insurance_IFRIC', value: 'contract_Insurance_IFRIC' },
+  // ];
 
   useEffect(() => {
     fetchFactoryOwners();
@@ -133,10 +139,13 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const getCompanyContracts = async (company_ifric_id: string) => {
     try {
       const response = await getContracts(company_ifric_id);
-      if(response.length) {
-        const contractNames = response.map(contract => {
+      // console.log(response,"RS getContracts")
+      if(response.length) {      
+        const contractNames = response.map((contract: { contract_name: any }) => {
           return { label: contract.contract_name, value: contract.contract_name }
         });
+
+        setCompleteContract(response)
         setContractData(contractNames);
       }
     } catch(error: any) {
@@ -221,11 +230,145 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   };
   const handleFactoryOwnerChange = (e: DropdownChangeEvent) => {
     const selectedOwner = e.value;
+    // console.log(selectedOwner,"selectedOnwer")
     setFactoryOwner(selectedOwner);
     setOwnerVerified(null);
     setCompanyIfricId(e.value.companyIfricId);
     getCompanyCertification(e.value.companyIfricId);
   };
+
+  const calcValidTill = (contract: any): Date | null => {
+    // console.log(contract,"calcValidTill Contract")
+  const {
+    start_date_present,
+    start_date,
+    set_duration,
+    contract_duration,
+    no_end_date,
+    set_fixed_end_date,
+    fixed_end_date,
+    meta_data,
+  } = contract;
+
+  const createdDate = meta_data?.created_at ? new Date(meta_data.created_at) : new Date();
+
+  if (start_date_present && set_duration && contract_duration) {
+    return addDuration(new Date(start_date), contract_duration);
+  }
+
+  if (set_duration && contract_duration) {
+    return addDuration(createdDate, contract_duration);
+  }
+
+  if (no_end_date) {
+    const date = new Date(createdDate);
+    date.setFullYear(date.getFullYear() + 40);
+    return date;
+  }
+
+  if (start_date_present && set_fixed_end_date && fixed_end_date) {
+    return new Date(fixed_end_date);
+  }
+
+  if (set_fixed_end_date && fixed_end_date) {
+    return new Date(fixed_end_date);
+  }
+
+  return null;
+};
+
+const addDuration = (date: Date, duration: string): Date | null => {
+  if (!duration) return null;
+  const [value, unitRaw] = duration.split("_");
+  const num = parseInt(value, 10);
+  const unit = unitRaw.toLowerCase();
+  const newDate = new Date(date);
+  // console.log(newDate,"NewDate")
+
+  if (unit.startsWith("day")) newDate.setDate(newDate.getDate() + num);
+  else if (unit.startsWith("month")) newDate.setMonth(newDate.getMonth() + num);
+  else if (unit.startsWith("year")) newDate.setFullYear(newDate.getFullYear() + num);
+  // console.log(newDate,"NewDate After")
+  return newDate;
+};
+
+  
+ const handleAssignContract = async (companyIFRICID: string | undefined , arrayOfContractDetails: Array<string>) => {
+  setLoading(true);
+  try {
+    if(!arrayOfContractDetails){
+      return;
+    }
+
+    const responseData=filterSelectedContractData(arrayOfContractDetails)
+    if(!responseData) return;
+
+    const { user_email } = await getAccessGroup();
+    
+    const promises = responseData.map(async (contract:any) => {
+      const validTill = calcValidTill(contract);    
+
+      const dataToSend = {
+        contract_ifric_id: contract.contract_ifric_id,
+        company_ifric_id: companyIFRICID,
+        is_DataProvider: true,
+        asset_id: [], 
+        action_status: "shared",
+        contract_status: "inactive",
+        signed_date : toDate(new Date()),
+        valid_till_date: validTill ? toDate(validTill) : null,
+        user_email,
+      };
+
+      console.log("Binding payload", dataToSend);
+      return createBinding(dataToSend);
+    });
+
+    const results = await Promise.allSettled(promises);
+    console.log("Promise results",results)
+
+    const successes = results.filter(r => r.status === "fulfilled");
+    const failures = results.filter(r => r.status === "rejected");
+
+    if (successes.length > 0) {
+      console.log("Success",successes.length)
+      toast.current?.show({
+        severity: "success",
+        summary: "Contracts Assigned",
+        detail: `${successes.length} contract(s) assigned successfully`,
+      });
+    }
+
+    if (failures.length > 0) {
+      console.log("Failure",failures.length)
+      toast.current?.show({
+        severity: "warn",
+        summary: "Some Assignments Failed",
+        detail: `${failures.length} contract(s) failed to assign`,
+      });
+    }
+
+  } catch (error) {
+    console.error("❌ handleAssignContract error:", error);
+    toast.current?.show({
+      severity: "error",
+      summary: "Error",
+      detail: "Unexpected error while assigning contract",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+const filterSelectedContractData=(contractNames:Array<string>):any=>{
+  if (!Array.isArray(completeContract)) return [];
+  if (!Array.isArray(contractNames) || contractNames.length === 0) return []; 
+  const contractNameList= (s?: string) => (s ?? "").trim().toLowerCase();
+  const wanted = new Set(contractNames.map(contractNameList));
+  const filteredContract:Record<string,any>[]= completeContract.filter(x => wanted.has(contractNameList(x.contract_name)));
+  return filteredContract;
+
+}
 
   const fetchFactoryOwners = async () => {
     try {
@@ -322,14 +465,23 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
       <Button
         label="Cancel"
         icon="pi pi-times"
-        onClick={() => { onHide() }}
+        onClick={() => {
+          onHide();
+        }}
         className="p-button-text"
         style={{ backgroundColor: "#E6E6E6", color: "black" }} // Set text color to black
       />
       <Button
         label="Save"
         icon="pi pi-check"
-        onClick={handleSave}
+        onClick={async () => {
+          await handleSave();
+           await handleAssignContract(
+             factoryOwner?.companyIfricId,
+             contract
+           );
+       
+        }}
         disabled={!factoryOwner}
         style={{ backgroundColor: "#E6E6E6", color: "black" }} // Set text color to black
         autoFocus
@@ -621,13 +773,17 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
               <h3 className='form_group_title'>DataSpace Contract</h3>
               <div className="form_field">
                 <div className="p-field p-float-label">
+                  
                   <MultiSelect id="certificate"
-                    value={certificate} // Ensure certificate.value is used
+                    value={contract} // Ensure certificate.value is used
                     options={contractData}
                     showSelectAll={false}
                     panelHeaderTemplate={(<div></div>)}
                     onChange={(e: DropdownChangeEvent) => {
-                      setCertificate(e.value || null);  // Set the entire certificate object
+                      // setCertificate(e.value || null);
+                      //   // Set the entire certificate object
+                    //  console.log("SelectedContractNames dropdown",e.value)
+                     setContract(e.value)                     
                     }}
                     optionLabel="label"
                     placeholder={contractLoading ? "Loading..." : "Select a certificate"}
