@@ -17,7 +17,7 @@ import OwnerDetailsCard from './owner-details';
 import { postFile } from '@/utility/asset';
 import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, verifyAssetCertificate, generateAssetCertificate, getCompanyDetailsById } from '@/utility/auth';
 import moment from 'moment';
-import { getContracts } from '@/utility/contracts';
+import { getAssignedContracts, getContracts } from "@/utility/contracts";
 import { createBinding } from "@/utility/contracts";
 import { toDate } from '@/utility/dateformat';
 import { getAccessGroup } from '@/utility/indexed-db';
@@ -87,10 +87,17 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
   const [contractLoading, setContractLoading] = useState<boolean>(true);
   const [loading, setLoading] = useState(false);
   const [completeContract, setCompleteContract]= useState<Record<string,any>[]>([]);
-  const [seletedContract,setSeletcedContract]=useState<Record<string,any>[]>([]);
-  
-
-
+  const [saveMessage, setSaveMessage] = useState<{
+    severity: "success" | "error" | "warn";
+    text: string;
+  } | null>(null);
+  const [assignMessage, setAssignMessage] = useState<{
+    severity: "success" | "error" | "warn";
+    text: string;
+  } | null>(null);
+  const [assignedContractsList, setAssignedContractsList] = useState<string[]>(
+    []
+  );
 
   // const certificateOptions: Certificate[] = [
   //   { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
@@ -104,6 +111,33 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
     getCompanyDetails();
     getCompanyContracts(company_ifric_id);
   }, []);
+
+  useEffect(() => {
+    const fetchAlreadyAssignedContracts = async () => {
+      if (!factoryOwner || !assetIfricId) return;
+
+      try {
+        const accessGroup = await getAccessGroup();
+        const res = await getAssignedContracts(
+          factoryOwner.companyIfricId,
+          accessGroup.company_ifric_id,
+          assetIfricId
+        );
+        console.log(res, "getcontractassign");
+
+        if (res && Array.isArray(res.data)) {
+          const assignedNames = res.data.map((c: any) =>
+            c.contract_name.trim().toLowerCase()
+          );
+          setAssignedContractsList(assignedNames);
+        }
+      } catch (error) {
+        console.error("Error fetching assigned contracts for asset:", error);
+      }
+    };
+
+    fetchAlreadyAssignedContracts();
+  }, [factoryOwner, assetIfricId]);
 
   useEffect(() => {
     const newCompletedSteps = [
@@ -228,15 +262,18 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
       console.log("API response:", response);
 
       if (response && response.data.status === 204) {
-        onSave();
-        onHide();
-        toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Asset assignment updated successfully' });
-      } else {
-        throw new Error(response?.data.message || 'Failed to update');
+        setSaveMessage({
+          severity: "success",
+          text: "Asset assignment updated successfully",
+        });
+        throw new Error(response?.data.message || "Failed to update");
       }
     } catch (error: any) {
-      console.error('Error updating asset assignment:', error);
-      toast.current?.show({ severity: 'error', summary: 'Error', detail: error.message || 'Failed to update asset assignment' });
+      console.error("Error updating asset assignment:", error);
+      setSaveMessage({
+        severity: "error",
+        text: error.message || "Failed to update asset assignment",
+      });
     }
   };
   const handleFactoryOwnerChange = (e: DropdownChangeEvent) => {
@@ -345,36 +382,34 @@ const addDuration = (date: Date, duration: string): Date | null => {
       return createBinding(dataToSend);
     });
 
-    const results = await Promise.allSettled(promises);
-    console.log("Promise results",results)
+      const results = await Promise.allSettled(promises);
 
-    const successes = results.filter(r => r.status === "fulfilled");
-    const failures = results.filter(r => r.status === "rejected");
+      const successes = results.filter((r) => r.status === "fulfilled");
+      const failures = results.filter((r) => r.status === "rejected");
+      const failedContracts = failures.map(
+        (f, idx) => arrayOfContractDetails[idx]
+      );
 
-    if (successes.length > 0) {
-      console.log("Success",successes.length)
-      toast.current?.show({
-        severity: "success",
-        summary: "Contracts Assigned",
-        detail: `${successes.length} contract(s) assigned successfully`,
-      });
-    }
+      if (successes.length > 0) {
+        setAssignMessage({
+          severity: "success",
+          text: `${successes.length} assigned successfully.`,
+        });
+      }
 
-    if (failures.length > 0) {
-      console.log("Failure",failures.length)
-      toast.current?.show({
-        severity: "warn",
-        summary: "Some Assignments Failed",
-        detail: `${failures.length} contract(s) failed to assign`,
-      });
-    }
-
-  } catch (error) {
-    console.error("❌ handleAssignContract error:", error);
-    toast.current?.show({
-      severity: "error",
-      summary: "Error",
-      detail: "Unexpected error while assigning contract",
+      if (failures.length > 0) {
+        setAssignMessage({
+          severity: "error",
+          text: `${failures.length} failed to assign: ${failedContracts.join(
+            ", "
+          )}`,
+        });
+      }
+    } catch (error) {
+      console.error("❌ handleAssignContract error:", error);
+      setAssignMessage({
+        severity: "error",
+        text: "Unexpected error while assigning contracts",
     });
   } finally {
     setLoading(false);
@@ -479,7 +514,18 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
         <path d="M8 12.75C8 12.75 9.6 13.6625 10.4 15C10.4 15 12.8 9.75 16 8" stroke={check} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     );
-  }
+  };
+
+  const mappedContractOptions = contractData.map((c: any) => {
+    const isAssigned = assignedContractsList.includes(
+      c.value?.trim().toLowerCase()
+    );
+    return {
+      ...c,
+      isAssigned,
+      disabled: isAssigned, 
+    };
+  });
 
   const dialogFooter = (
     <div>
@@ -507,6 +553,17 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
         style={{ backgroundColor: "#E6E6E6", color: "black" }} // Set text color to black
         autoFocus
       />
+      <div className="mt-2">
+        {saveMessage && (
+          <Message severity={saveMessage.severity} text={saveMessage.text} />
+        )}
+        {assignMessage && (
+          <Message
+            severity={assignMessage.severity}
+            text={assignMessage.text}
+          />
+        )}
+      </div>
     </div>
   );
 
@@ -797,15 +854,25 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                   
                   <MultiSelect id="certificate"
                     value={contract} // Ensure certificate.value is used
-                    options={contractData}
+                    options={mappedContractOptions}
                     showSelectAll={false}
-                    panelHeaderTemplate={(<div></div>)}
+                    panelHeaderTemplate={<div></div>}
                     onChange={(e: DropdownChangeEvent) => {
                       // setCertificate(e.value || null);
                       //   // Set the entire certificate object
-                    //  console.log("SelectedContractNames dropdown",e.value)
-                     setContract(e.value)                     
+                      //  console.log("SelectedContractNames dropdown",e.value)
+                      setContract(e.value);
                     }}
+                    itemTemplate={(option) => (
+                      <div className="option-wrapper">
+                        <span>{option.label}</span>
+                        {option.isAssigned && (
+                          <span className="already-selected">
+                            Already Selected
+                          </span>
+                        )}
+                      </div>
+                    )}
                     optionLabel="label"
                     placeholder={contractLoading ? "Loading..." : "Select a certificate"}
                     className="company_dropdown" display="chip" />

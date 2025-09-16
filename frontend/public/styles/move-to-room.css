@@ -559,3 +559,15 @@ cursor: not-allowed;
 .p-fileupload .p-button:hover {
   background-color: #3e3d3dac !important;
 }
+.option-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.already-selected {
+  color: var(--ifx-tint-blue-900-primary, #3ca0c9);
+  font-weight: 500;
+  margin-left: 75px;
+  font-size: 14px
+}
