@@ -33,7 +33,15 @@ interface Certificate {
   value: string;
 }
 
+interface AssetData {
+  id: string;
+  type?: string;
+  asset_category?: string;
+  name?: string;
+}
+
 interface MoveToRoomDialogProps {
+  asset?: AssetData;
   assetName: string;
   company_ifric_id: string;
   assetIfricId: string;
@@ -53,7 +61,7 @@ interface OwnerDetails {
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const IFRIC_REGISTRY_BACKEND_URL = process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
 
-const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfricId, company_ifric_id, visible, onHide, onSave }) => {
+const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,assetIfricId, company_ifric_id, visible, onHide, onSave }) => {
   const [factoryOwner, setFactoryOwner] = useState<Company | null>(null);
   const [factoryOwners, setFactoryOwners] = useState<OwnerDetails[]>([]);
   const [certificate, setCertificate] = useState<Certificate[] | null>([]);
@@ -80,6 +88,9 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({ assetName, assetIfr
   const [loading, setLoading] = useState(false);
   const [completeContract, setCompleteContract]= useState<Record<string,any>[]>([]);
   const [seletedContract,setSeletcedContract]=useState<Record<string,any>[]>([]);
+  
+
+
 
   // const certificateOptions: Certificate[] = [
   //   { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
@@ -303,7 +314,9 @@ const addDuration = (date: Date, duration: string): Date | null => {
     const responseData=filterSelectedContractData(arrayOfContractDetails)
     if(!responseData) return;
 
-    const { user_email } = await getAccessGroup();
+    const { user_email} = await getAccessGroup();
+    const accessGroup =await getAccessGroup();
+    
     
     const promises = responseData.map(async (contract:any) => {
       const validTill = calcValidTill(contract);    
@@ -312,10 +325,18 @@ const addDuration = (date: Date, duration: string): Date | null => {
         contract_ifric_id: contract.contract_ifric_id,
         company_ifric_id: companyIFRICID,
         is_DataProvider: true,
-        asset_id: [], 
+        asset_id: [
+          {
+            asset_ifric: assetIfricId,
+            asset_name: assetName,
+            asset_type: asset?.type,
+            asset_cateorgy: asset?.asset_category,
+            Asset_manufactueres_company_ifirc: accessGroup.company_ifric_id,
+          },
+        ],
         action_status: "shared",
         contract_status: "inactive",
-        signed_date : toDate(new Date()),
+        signed_date: toDate(new Date()),
         valid_till_date: validTill ? toDate(validTill) : null,
         user_email,
       };
@@ -478,7 +499,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
           await handleSave();
            await handleAssignContract(
              factoryOwner?.companyIfricId,
-             contract
+             contract 
            );
        
         }}
