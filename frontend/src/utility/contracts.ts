@@ -17,6 +17,7 @@
 
 
 
+import axios from "axios";
 import api from "./jwt";
 import { updatePopupVisible } from "./update-popup";
 
@@ -244,6 +245,38 @@ export const createBinding = async (data: Record<string, any>) => {
     );
     console.log(res, "CreateBinding response")
     return res;
+  } catch (error: any) {
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+      return null;
+    } else {
+      throw error;
+    }
+  }
+};
+
+export const getAssignedContracts = async (
+  binding_company_ifric_id: string,
+  contract_company_ifric_id: string,
+  asset_ifric_id: string
+) => {
+
+  try {
+    console.log(
+    "BindingIfricId",  binding_company_ifric_id, "CompanyIfricId",contract_company_ifric_id, "AssetFricId",asset_ifric_id
+    )
+    const res = await axios.get(
+
+      `${BACKEND_API_URL}/binding/get-contract-details-by-binding-company/${binding_company_ifric_id}/${contract_company_ifric_id}/${asset_ifric_id}`,{
+          headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }
+      }
+    );
+     console.log(res,"Response")
+    return res;
+   
   } catch (error: any) {
     if (error?.response && error?.response?.status === 401) {
       updatePopupVisible(true);
