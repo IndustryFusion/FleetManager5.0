@@ -372,6 +372,7 @@ const AssetOverView: React.FC = () => {
         <MoveToRoomDialog
         visible={isMoveToRoomDialogVisible}
         onHide={() => setIsMoveToRoomDialogVisible(false)}
+        asset={selectedProduct?.assetData}
         assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
         company_ifric_id={companyIfricId}
         assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
