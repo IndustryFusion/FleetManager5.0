@@ -10,4 +10,9 @@ export class BindingController {
   create(@Body() createBindingDto: CreateBindingDto) {
     return this.bindingService.create(createBindingDto);
   }
+
+  @Get('get-contract-details-by-binding-company/:company_ifric_id')
+  getContractDetailsByBindingCompany(@Param('company_ifric_id') company_ifric_id: string) {
+    return this.bindingService.getContractDetailsByBindingCompany(company_ifric_id);
+  }
 }
