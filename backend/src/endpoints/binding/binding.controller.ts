@@ -11,8 +11,8 @@ export class BindingController {
     return this.bindingService.create(createBindingDto);
   }
 
-  @Get('get-contract-details-by-binding-company/:company_ifric_id')
-  getContractDetailsByBindingCompany(@Param('company_ifric_id') company_ifric_id: string) {
-    return this.bindingService.getContractDetailsByBindingCompany(company_ifric_id);
+  @Get('get-contract-details-by-binding-company/:binding_company_ifric_id/:contract_company_ifric_id/:asset_ifric_id')
+  getContractDetailsByBindingCompany(@Param('binding_company_ifric_id') binding_company_ifric_id: string, @Param('contract_company_ifric_id') contract_company_ifric_id: string, @Param('asset_ifric_id') asset_ifric_id: string) {
+    return this.bindingService.getContractDetailsByBindingCompany(binding_company_ifric_id, contract_company_ifric_id, asset_ifric_id);
   }
 }

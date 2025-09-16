@@ -22,9 +22,9 @@ export class BindingService {
     }
   }
 
-  async getContractDetailsByBindingCompany(company_ifric_id: string) {
+  async getContractDetailsByBindingCompany(binding_company_ifric_id: string, contract_company_ifric_id: string, asset_ifric_id: string) {
     try {
-      const response = await axios.get(`${this.contractUrl}/binding/get-contract-details-by-binding-company/${company_ifric_id}`);
+      const response = await axios.get(`${this.contractUrl}/binding/get-contract-details-by-binding-company/${binding_company_ifric_id}/${contract_company_ifric_id}/${asset_ifric_id}`);
       return response.data;
     } catch (err) {
       if (err instanceof HttpException) {
