@@ -561,13 +561,21 @@ cursor: not-allowed;
 }
 .option-wrapper {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  justify-content: space-between !important;
+  align-items: center;
 }
 
 .already-selected {
   color: var(--ifx-tint-blue-900-primary, #3ca0c9);
   font-weight: 500;
-  margin-left: 75px;
-  font-size: 14px
+  margin-left: 250px;
+  font-size: 14px;
+}
+
+.p-inputtext {
+  border-radius: 10px;
+}
+
+.company_dropdown.p-dropdown {
+  border-radius: 10px !important;
 }

@@ -686,6 +686,12 @@ svg.p-icon {
   width: 271px;
 }
 
+.loader-container{
+  position: absolute;
+  top: 40rem;
+  width: 100%;
+}
+
 .custom-row-padding .p-datatable-tbody > tr > td {
   padding: 10px 14px;
 }

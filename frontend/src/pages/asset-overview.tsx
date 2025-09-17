@@ -40,6 +40,7 @@ import { fetchAssetsRedux } from "@/redux/asset/assetsSlice";
 import { FilterMatchMode } from "primereact/api";
 import { getAccessGroupData } from "@/utility/auth";
 import { ContextMenu } from "primereact/contextmenu";
+import Loading from "@/components/loader/loading";
 
 type ExpandValue = {
   [key: string]: boolean;
@@ -58,6 +59,7 @@ const AssetOverView: React.FC = () => {
   const [showExtraCard, setShowExtraCard] = useState<boolean>(false);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [showContextMenu, setShowContextMenu] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchFilters, setSearchFilters] = useState({
     global: {
       value: null as string | null,
@@ -171,6 +173,7 @@ const AssetOverView: React.FC = () => {
   
   const fetchAsset = async () => {
     try {
+      setLoading(true); 
       const response = await fetchAssets();
       setAssetCount(response?.length || 0);
     } catch (error: any) {
@@ -181,6 +184,8 @@ const AssetOverView: React.FC = () => {
         console.error("Error:", error);
         showToast("error", "Error", error);
       }
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -421,10 +426,16 @@ const AssetOverView: React.FC = () => {
             }}
           >
             <div style={{ ...dataTableStyle, width: dataTableCardWidth }}>
-              {activeTab === "Assets" &&
-              checkboxContainer(selectedAssets, showSelectedAsset, setSelectedAssets, filterAssetsData)
-              }         
               {activeTab === "Assets" && (
+              <>
+                {loading ? (
+              <div className="loader-container">
+                <Loading />
+              </div>
+               ) : (
+              <>
+                        
+                {checkboxContainer(selectedAssets, showSelectedAsset, setSelectedAssets, filterAssetsData)}
                 <AssetTable
                   currentPage={currentPage}
                   selectedRowsPerPage={selectedRowsPerPage}
@@ -446,17 +457,20 @@ const AssetOverView: React.FC = () => {
                   onMoveToRoom={handleMoveToRoom}
                   searchFilters={searchFilters}
                 />
+                 </>
+                )}
+              </>
               )}
-            </div>
-            {showExtraCard && (
-              <div style={{ width: "30%" }}>
-                <AssetDetailsCard
-                  asset={selectedProduct}
-                  setShowExtraCard={setShowExtraCard}
-                />
+                  </div>
+                {showExtraCard && (
+                  <div style={{ width: "30%" }}>
+                    <AssetDetailsCard
+                      asset={selectedProduct}
+                      setShowExtraCard={setShowExtraCard}
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
         </div>
       
       <Footer />

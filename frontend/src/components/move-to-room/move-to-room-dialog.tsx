@@ -98,6 +98,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
   const [assignedContractsList, setAssignedContractsList] = useState<string[]>(
     []
   );
+  const [factoryOwnerSearch, setFactoryOwnerSearch] = useState("");
 
   // const certificateOptions: Certificate[] = [
   //   { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
@@ -664,6 +665,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
               <h3 className='form_group_title'>Factory Owner <span style={{color:"#ff0000"}}>*</span></h3>
               <div className="form_field">
                 <div className="p-field p-float-label">
+
                   <Dropdown
                     id="factoryOwner"
                     value={factoryOwner}
@@ -672,6 +674,8 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                     optionLabel="name"
                     placeholder="Select a factory owner"
                     className="company_dropdown"
+                    filter
+                    filterBy="name"
                   />
                   <img
                     className="dropdown-icon-img "
@@ -856,7 +860,6 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                     value={contract} // Ensure certificate.value is used
                     options={mappedContractOptions}
                     showSelectAll={false}
-                    panelHeaderTemplate={<div></div>}
                     onChange={(e: DropdownChangeEvent) => {
                       // setCertificate(e.value || null);
                       //   // Set the entire certificate object
@@ -865,7 +868,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                     }}
                     itemTemplate={(option) => (
                       <div className="option-wrapper">
-                        <span>{option.label}</span>
+                       <div>{option.label}</div>
                         {option.isAssigned && (
                           <span className="already-selected">
                             Already Selected
@@ -873,9 +876,22 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                         )}
                       </div>
                     )}
-                    optionLabel="label"
+                    optionLabel="label"       
                     placeholder={contractLoading ? "Loading..." : "Select a certificate"}
-                    className="company_dropdown" display="chip" />
+                    className="company_dropdown" display="chip"
+                    filter
+                    filterBy="label"
+                    // panelHeaderTemplate={() => (
+                    //  <div style={{ padding: "0.5rem" }}>
+                    //     <InputText
+                    
+                    //       placeholder="Search..."
+                    //       className="custom-search-input"
+                    //       style={{ width: "100%", padding: "0.5rem", borderRadius: "10px" }}
+                    //     />
+                    //   </div>
+                    // )}
+                    />
                   <img
                     className="dropdown-icon-img "
                     src="/dropdown-icon.svg"
