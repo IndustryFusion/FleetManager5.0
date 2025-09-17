@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, UnauthorizedException } from 
 import axios, { Axios } from 'axios';
 import { CompactEncrypt } from 'jose';
 import { createHash } from 'crypto';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 @Injectable()
 export class CertificateService {
@@ -136,7 +137,6 @@ export class CertificateService {
           message: 'no certificates found for the company'
         };
       }
-
     } catch (err) {
       throw err;
     }
@@ -285,17 +285,10 @@ export class CertificateService {
 
   async verifyAssetCertificate(asset_ifric_id: string, company_ifric_id: string, req: Request) {
     try {
-      const registryHeaders = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': req.headers['authorization']
-      };
-
-      const encryptedToken = await this.encryptData(req.headers['authorization'].split(" ")[1]);
       const ifxHeaders = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${this.mask(encryptedToken, process.env.MASK_SECRET)}`
+        'Authorization': req.headers['authorization']
       };
 
       const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate`,
@@ -309,28 +302,49 @@ export class CertificateService {
       );
       console.log("checkLastCertificate", checkLastCertificate.data)
 
-      if (!checkLastCertificate.data[0].vc_id) {
-        if (checkLastCertificate.data[0].expiry_on < new Date()) {
-          return { valid: false };
-        }
-        else {
-          return { valid: true };
-        }
+      if(!checkLastCertificate.data.length) {
+        return { valid: false }
+      }
+      const verifyLastCertificate = await axios.post(`${this.ifxPlatformUrl}/certificate/verify-asset-certificate`, {
+        certificate_data: checkLastCertificate.data[0].certificate_data,
+        asset_ifric_id,
+      }, {
+        headers: ifxHeaders
+      });
+      if (verifyLastCertificate.data) {
+        return { valid: true }
       } else {
-        const verifyLastCertificate = await axios.post(`${this.ifxPlatformUrl}/certificate/verify-asset-certificate`, {
-          certificate_data: checkLastCertificate.data[0].certificate_data,
-          asset_ifric_id,
-        }, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        if (verifyLastCertificate.data){
-          return { valid: true }
-        };
+        return { valid: false }
       }
     } catch (err) {
-      throw err;
+      if (err instanceof HttpException) {
+        throw err;
+      } else if(err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async verifyCompanyAndAssetCertificate(asset_ifric_id: string, company_ifric_id: string, req: Request) {
+    try {
+      const [companyResponse, assetResponse] = await Promise.all([
+        this.verifyCompanyCertificate(company_ifric_id, req),
+        this.verifyAssetCertificate(asset_ifric_id, company_ifric_id, req)
+      ]);
+      return {
+        company_cert: companyResponse.success,
+        asset_cert: assetResponse.valid
+      }
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if(err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
     }
   }
 }

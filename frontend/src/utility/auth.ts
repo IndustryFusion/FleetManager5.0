@@ -318,6 +318,20 @@ export const verifyAssetCertificate = async(company_ifric_id: string, asset_ifri
     }
 }
 
+export const verifyCompanyAssetCertificate = async(company_ifric_id: string, asset_ifric_id: string) => {
+    try{
+        return await api.get(`${FLEET_MANAGER_BACKEND_URL}/certificate/verify-company-asset-certificate/${company_ifric_id}/${asset_ifric_id}`);
+    }
+    catch(error: any){
+        console.log("error getting asset verification", error);
+        if (error?.response && error?.response?.status === 401) {
+        updatePopupVisible(true);
+        } else {
+        throw error;
+        }
+    }
+}
+
 export const generateAssetCertificate = async(dataToSend: Record<string, any>) => {
     try{
         return await api.post(`${FLEET_MANAGER_BACKEND_URL}/certificate/create-asset-certificate`, dataToSend)

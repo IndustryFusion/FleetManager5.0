@@ -15,7 +15,7 @@ import axios from 'axios';
 import { MultiSelect } from 'primereact/multiselect';
 import OwnerDetailsCard from './owner-details';
 import { postFile } from '@/utility/asset';
-import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, verifyAssetCertificate, generateAssetCertificate, getCompanyDetailsById } from '@/utility/auth';
+import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, generateAssetCertificate, getCompanyDetailsById, verifyCompanyAssetCertificate } from '@/utility/auth';
 import moment from 'moment';
 import { getAssignedContracts, getContracts } from "@/utility/contracts";
 import { createBinding } from "@/utility/contracts";
@@ -106,8 +106,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
 
   useEffect(() => {
     fetchFactoryOwners();
-    getCompanyCertification(company_ifric_id);
-    getAssetCertification();
+    verfiyCompanyAndAssetCertificate();
     getCompanyDetails();
     getCompanyContracts(company_ifric_id);
   }, []);
@@ -165,15 +164,9 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
       const response = await verifyCompanyCertificate(company_ifric_id);
       if (response?.data.success === true && response.data.status === 201) {
         setOwnerVerified(true);
-        if (companyVerified === null) {
-          setCompanyVerified(true);
-        }
       }
       else {
         setOwnerVerified(false);
-        if (companyVerified === null) {
-          setCompanyVerified(false);
-        }
       }
     }
     catch (error: any) {
@@ -200,20 +193,25 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
     }
   }
 
-  const getAssetCertification = async () => {
+  const verfiyCompanyAndAssetCertificate = async () => {
     try {
-      const response = await verifyAssetCertificate(company_ifric_id, assetIfricId);
-      if (response?.data.valid === true) {
-        setAssetVerified(true);
+      const response = await verifyCompanyAssetCertificate(company_ifric_id, assetIfricId);
+      if (response?.data.company_cert === true) {
+        setCompanyVerified(true);
+      } else {
+        setCompanyVerified(false);
       }
-      else {
+      if(response?.data.asset_cert === true) {
+        setAssetVerified(true);
+        setPreCertifyAsset(true);
+      } else {
         setAssetVerified(false);
       }
-    }
-    catch (error: any) {
-      console.error("Error fetching asset certification", error)
+    } catch(error: any) {
+      console.error("Error verifying company and product certificate:", error);
     }
   }
+
   const createAssetCertification = async (e: any) => {
     e.preventDefault();
     if (certificationDate) {
@@ -723,6 +721,15 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                           </div>
                         </div>
                     </>
+                  )}
+                  {assetVerified === false && preCertifyAsset === false && (
+                    <div className='mt-3'>
+                      <div>certify asset is must to revice access for dataspace room</div>
+                      <Button
+                        label="Certify Asset"
+                        style={{ backgroundColor: "#E6E6E6", color: "black", marginTop: "1rem"}} // Set text color to black
+                      />
+                    </div>
                   )}
                 </div>
               {preCertifyAsset && (
