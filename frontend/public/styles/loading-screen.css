@@ -1,0 +1,43 @@
+.black-progress-bar {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .black-progress-bar .p-progressbar-value {
+    background-color: #000 !important;
+  }
+  
+  .black-progress-bar .p-progressbar-indeterminate {
+    background-color: #000 !important;
+  }
+  
+  .loading-screen-container {
+    @apply absolute left-0 right-0 bottom-0 flex items-center justify-center;
+  }
+  
+  .loading-screen-wrapper {
+    @apply w-full px-4;
+  }
+  
+  .loading-screen-content {
+    @apply max-w-screen-xl mx-auto;
+  }
+  
+  .custom-progress-bar {
+    height: 6px;
+    width: 80%;
+    margin-left: 10%;
+    margin-top: -35%;
+    margin-bottom: 16px;
+  }
+  
+  .loading-text-container {
+    @apply text-center space-y-2;
+  }
+  
+  .loading-title {
+    @apply text-lg font-medium;
+  }
+  
+  .loading-subtitle {
+    @apply text-sm text-gray-600;
+  }
