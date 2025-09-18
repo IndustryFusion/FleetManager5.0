@@ -25,6 +25,16 @@ export const productTypeHeader = (
     </div>
   );
 };
+export const createdDateHeader = (
+  t: (key: string) => string
+): React.ReactNode => {
+  return (
+    <div className="flex gap-1 align-items-center">
+      <p>Created</p>
+      <img src="/sort-arrow.svg" alt="sort-arrow-icon" />
+    </div>
+  );
+};
 
 export const manufacturerHeader = (
   t: (key: string) => string

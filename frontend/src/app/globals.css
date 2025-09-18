@@ -25,3 +25,201 @@
 body{
   font-family: "League Spartan", sans-serif;
 }
+
+:root {
+  --fusion-blue: #3874C9;
+  --black: #10182B;
+  --grey-box: #F3F3F5;
+  --red: #A73737;
+  --white: #ffffff;
+  --fusion-yellow: #FCA82B;
+  --dividers: #E6E6E6;
+  --Grey-Box: #F3F3F5;
+  --common-text-grey-600: #475467;
+  --common-text-grey-200: #E4E7EC;
+  --common-text-grey-400: #98A2B3;
+  --common-text-grey-100: #F2F4F7;
+  --ifx-shades-900: #3CA0C9;
+}
+
+
+/* Utility classes, please reuse this wherever necessary */
+/* button styling with or without icon */
+/* black button */
+.global-button {
+  padding: 8px 14px;
+  margin: 0px;
+  background-color: var(--black);
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  /* box-shadow: rgba(0, 0, 0, 0.25); */
+  border: none;
+  border-radius: 8px !important;
+  transition: all 100ms ease;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid var(--black) !important;
+  text-decoration: none;
+}
+
+.global-button:focus-visible {
+  outline: 2px solid var(--ifx-shades-900);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+.global-button:focus {
+  box-shadow: none !important;
+}
+
+.global-button:is(:hover) {
+  box-shadow: 1px 2px 8px 0px rgba(67, 71, 78, 0.15), inset 0px 2px 2px 0px rgba(255, 255, 255, 0.25);
+}
+
+.global-button:disabled {
+  opacity: 0.5;
+}
+
+.global-button.dropdown {
+  padding: 0px;
+  position: relative;
+  height: auto;
+}
+
+.global-button.dropdown .p-dropdown {
+  height: auto;
+}
+
+.global-button.dropdown:has(.p-dropdown.p-disabled) {
+  opacity: 0.5;
+}
+
+/* grey button */
+.global-button.is-grey {
+  background-color: var(--grey-box);
+  color: var(--black);
+  border: 1px solid #E6E6E6 !important;
+}
+
+.global-button.is-grey:is(:hover) {
+  background-color: #E6E6E6;
+  box-shadow: 1px 2px 8px 0px rgba(67, 71, 78, 0.033), inset 0px 2px 2px 0px rgba(255, 255, 255, 0.25);
+}
+
+.global-button.p-button {
+  box-shadow: none;
+}
+
+.global-button.p-button:hover {
+  box-shadow: 1px 2px 8px 0px rgba(67, 71, 78, 0.15), inset 0px 2px 2px 0px rgba(255, 255, 255, 0.25);
+}
+
+.global-button.is-grey.p-button:hover {
+  box-shadow: 1px 2px 8px 0px rgba(67, 71, 78, 0.033), inset 0px 2px 2px 0px rgba(255, 255, 255, 0.25);
+}
+
+.global-button.dropdown img {
+  position: absolute;
+  left: 10px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.global-button.dropdown .p-dropdown.p-component.p-inputwrapper {
+  background: transparent;
+  color: inherit;
+}
+
+.global-button.dropdown .p-dropdown .p-dropdown-label {
+  padding: 9px 14px 9px 35px !important;
+  color: inherit;
+}
+
+.global-button.dropdown:has(img:last-child) .p-dropdown .p-dropdown-label {
+  padding: 9px 35px 9px 14px !important;
+}
+
+.global-button.dropdown:has(img:last-child) img {
+  right: 10px;
+  left: auto;
+}
+
+.global_dropdown_panel {
+  border-radius: 8px;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
+  border: none;
+  overflow: hidden;
+  margin-top: 6px;
+  max-width: 400px;
+  max-height: 300px;
+}
+
+.global_dropdown_panel .p-dropdown-items {
+  padding: 9px;
+}
+
+.global_dropdown_panel .p-dropdown-items .p-dropdown-item {
+  padding: 8px 10px;
+  font-size: 16px;
+  color: var(--black);
+  background-color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.global_dropdown_panel .p-dropdown-items .p-dropdown-item .p-dropdown-item-label {
+  width: 100%;
+  text-wrap: wrap;
+}
+
+.global_dropdown_panel .p-dropdown-items .p-dropdown-item.p-highlight {
+  color: var(--ifx-shades-900) !important;
+  background-color: #F3F3F5;
+  margin: 0px;
+  margin-bottom: 6px;
+}
+
+.global_dropdown_panel .p-dropdown-items .p-dropdown-item.p-focus {
+  background-color: #F3F3F5;
+}
+
+.global_dropdown_panel .p-dropdown-items .p-dropdown-item:last-child {
+  margin-bottom: 0px;
+}
+
+.global_dropdown_panel .p-autocomplete-item {
+  padding: 8px 10px !important;
+  font-size: 16px;
+  color: var(--black);
+  background-color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.global_dropdown_panel .p-autocomplete-items {
+  padding: 9px;
+}
+
+.global_dropdown_panel .p-autocomplete-items .p-autocomplete-item:hover {
+  color: var(--ifx-shades-900);
+  background-color: #F3F3F5;
+}
+
+.global_dropdown_panel .p-autocomplete-item.p-focus {
+  background-color: #F3F3F5;
+}
+
+.global_dropdown_panel .p-dropdown-header .p-inputtext {
+  border-radius: 7px !important;
+}
+
+.global_dropdown_panel .p-dropdown-header .p-inputtext:is(:focus, :hover) {
+  border-color: var(--ifx-shades-900);
+}

@@ -668,6 +668,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                     options={factoryOwners}
                     onChange={handleFactoryOwnerChange}
                     optionLabel="name"
+                    filter
                     placeholder="Select a factory owner"
                     className="company_dropdown"
                   />
@@ -863,7 +864,8 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                     value={contract} // Ensure certificate.value is used
                     options={mappedContractOptions}
                     showSelectAll={false}
-                    panelHeaderTemplate={<div></div>}
+                    filter
+                    // panelHeaderTemplate={<div></div>}
                     onChange={(e: DropdownChangeEvent) => {
                       // setCertificate(e.value || null);
                       //   // Set the entire certificate object
