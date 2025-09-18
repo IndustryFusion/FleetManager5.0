@@ -11,11 +11,14 @@ import {
   serialNumberHeader,
   ownerBodyTemplate,
   actionItemsTemplate,
-  ownerHeader
+  ownerHeader,
+  createdDateHeader
 } from "@/utility/assetTable";
+import Image from "next/image";
 import { Column } from "primereact/column";
 
 import { DataTable } from "primereact/datatable";
+import { Dropdown } from "primereact/dropdown";
 import React, { useEffect,useState } from "react";
 
 
@@ -91,6 +94,12 @@ const AssetTable: React.FC<any> = ({
       sortable: true,
     },
     {
+      columnKey: "Created",
+      field: "assetData.creation_date",
+      header: createdDateHeader,
+      sortable: true,
+    },
+    {
       columnKey: "Action",
       field: "action",
       header: t("overview:action"),
@@ -104,6 +113,41 @@ const AssetTable: React.FC<any> = ({
     const endRow = Math.min(startRow + selectedRowsPerPage - 1, assetsData.length);
     setRangeDisplay(`${startRow}-${endRow}`);
   }, [currentPage, selectedRowsPerPage, assetsData]);
+
+  const paginatorTemplate = {
+    layout:
+      "CurrentPageReport PrevPageLink PageLinks NextPageLink RowsPerPageDropdown",
+      RowsPerPageDropdown: (options: any) => {
+      const dropdownOptions = [
+        { label: "5 Records per Page", value: 5 },
+        { label: "10 Records per Page", value: 10 },
+        { label: "20 Records per Page", value: 20 },
+        { label: "40 Records per Page", value: 40 },
+      ];
+
+      return (
+        <div className="flex align-items-center gap-1 ml-auto">
+          <div style={{color: "var(--common-text-grey-400)"}}>Display:</div>
+          <div className="global-button is-grey dropdown">
+            <Dropdown
+              value={options.value}
+              options={dropdownOptions}
+              onChange={(e) => options.onChange(e)}
+              panelClassName="global_dropdown_panel"
+            />
+            <Image className="rotate-180" src="/sidebar/arrow_down.svg" width={16} height={16} alt="dropdown-icon"></Image>
+          </div>
+        </div>
+      );
+    },
+      CurrentPageReport: (options: any) => {
+      return (
+        <span style={{ marginRight: "auto", minWidth: "220px", color: "var(--common-text-grey-400)" }}>
+          {options.first} - {options.last} Assets
+        </span>
+      );
+    },
+  }
  
   return (
     <>   
@@ -111,6 +155,7 @@ const AssetTable: React.FC<any> = ({
         value={assetsData} // Use the fetched assets as the data source
         first={currentPage * Number(selectedRowsPerPage)}
         paginator
+        paginatorTemplate={paginatorTemplate}
         reorderableColumns={enableReordering}
         selectionMode="multiple"
         rows={Number(selectedRowsPerPage)}     
@@ -145,7 +190,7 @@ const AssetTable: React.FC<any> = ({
         onContextMenu={(e) => cm.current.show(e.originalEvent)}
         contextMenuSelection={selectedProduct}
         onContextMenuSelectionChange={(e) => setSelectedProduct(e.value)}
-         sortField="product_name"
+         sortField="created_date"
          sortOrder={-1}
         rowGroupMode={selectedGroupOption !== null ? "subheader" : undefined}
         rowGroupHeaderTemplate={(data) => {      
@@ -165,7 +210,7 @@ const AssetTable: React.FC<any> = ({
         {activeTab === "Assets"
           && columnConfig.map((col) => <Column key={col.columnKey} {...col} />) }
       </DataTable>
-      <span className="pagination-range-display">{rangeDisplay}  Assets </span>
+      {/* <span className="pagination-range-display">{rangeDisplay}  Assets </span> */}
     </>
   );
 };

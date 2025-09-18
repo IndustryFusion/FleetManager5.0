@@ -670,6 +670,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                     options={factoryOwners}
                     onChange={handleFactoryOwnerChange}
                     optionLabel="name"
+                    filter
                     placeholder="Select a factory owner"
                     className="company_dropdown"
                     filter
