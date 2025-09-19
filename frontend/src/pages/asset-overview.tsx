@@ -40,7 +40,6 @@ import { fetchAssetsRedux } from "@/redux/asset/assetsSlice";
 import { FilterMatchMode } from "primereact/api";
 import { getAccessGroupData } from "@/utility/auth";
 import { ContextMenu } from "primereact/contextmenu";
-import Loading from "@/components/loader/loading";
 
 type ExpandValue = {
   [key: string]: boolean;
@@ -426,15 +425,10 @@ const AssetOverView: React.FC = () => {
             }}
           >
             <div style={{ ...dataTableStyle, width: dataTableCardWidth }}>
-              {activeTab === "Assets" && (
-              <>
-                {loading ? (
-              <div className="loader-container">
-                <Loading />
-              </div>
-               ) : (
-              <>
-                        
+                {activeTab === "Assets" && (
+                  <>
+    
+
                 {checkboxContainer(selectedAssets, showSelectedAsset, setSelectedAssets, filterAssetsData)}
                 <AssetTable
                   currentPage={currentPage}
@@ -453,13 +447,14 @@ const AssetOverView: React.FC = () => {
                   isBlue={isBlue}
                   assetIdBodyTemplate={assetIdBodyTemplate}
                   assetsData={filterAssetsData}
+                  loading={assetStatus === "loading"}
                   activeTab={activeTab}
                   onMoveToRoom={handleMoveToRoom}
                   searchFilters={searchFilters}
                 />
                  </>
-                )}
-              </>
+                 
+              
               )}
                   </div>
                 {showExtraCard && (
