@@ -579,3 +579,21 @@ cursor: not-allowed;
 .company_dropdown.p-dropdown {
   border-radius: 10px !important;
 }
+.option-wrapper>div:first-child{
+  flex-grow: 1;
+}
+.option-wrapper>span{
+  display: block;
+  flex-grow: 0 !important;
+}
+
+.dataspace_contract_panel .p-multiselect-item span:first-of-type{
+  display: block;
+  flex-grow: 1;
+}
+
+.dataspace_contract_panel .p-multiselect-item span .option-wrapper{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

@@ -19,6 +19,7 @@ import { Column } from "primereact/column";
 
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
+import { Skeleton } from "primereact/skeleton";
 import React, { useEffect,useState } from "react";
 
 
@@ -37,6 +38,7 @@ const AssetTable: React.FC<any> = ({
   isBlue,
   assetIdBodyTemplate,
   assetsData,
+  loading,
   activeTab,
   onMoveToRoom,
   searchFilters ,
@@ -45,23 +47,27 @@ const AssetTable: React.FC<any> = ({
 }) => {
 
   const [rangeDisplay, setRangeDisplay] = useState('');
+  const rowSkeleton = (width: string = "100%") => (
+    <Skeleton width={width} height="1rem" borderRadius="10px" />
+  );
   const columnConfig = [
     {
       selectionMode: "multiple" as "multiple",
       headerStyle: { width: "3rem" },
       columnKey: "assetSelectCheckBox",
+      body: loading ? () => rowSkeleton("1rem") : undefined,
     },
     {
       columnKey: "productName",
       field: "assetData.product_name",
       header: productNameHeader(t, toggleColor, isBlue),
-      body: productNameBodyTemplate,
+      body: loading ? () => rowSkeleton("180px") : productNameBodyTemplate,
       sortable: true,
     },
     {
       field: "assetData.id",
       header: ifricIdHeader(t),
-      body: assetIdBodyTemplate,
+      body: loading ? () => rowSkeleton("100px") : assetIdBodyTemplate,
       columnKey: "ifricId",
       sortable: true,
     },
@@ -69,14 +75,14 @@ const AssetTable: React.FC<any> = ({
       columnKey: "serialNumber",
       field: "assetData.asset_serial_number",
       header: serialNumberHeader(t),
-      body: serialNumberBodyTemplate,
+      body: loading ? () => rowSkeleton("120px") : serialNumberBodyTemplate,
       sortable: true,
     },
     {
       columnKey: "type",
       field: "assetData.type",
       header: productTypeHeader(t),
-      body: assetTypeBodyTemplate,
+      body: loading ? () => rowSkeleton("100px") : assetTypeBodyTemplate,
       sortable: true,
     },
     // {
@@ -90,20 +96,23 @@ const AssetTable: React.FC<any> = ({
       columnKey: "Owner",
       field: "owner_company_name",
       header: ownerHeader(t),
-      body: ownerBodyTemplate,
+      body: loading ? () => rowSkeleton("160px") : ownerBodyTemplate,
       sortable: true,
     },
     {
       columnKey: "Created",
       field: "assetData.creation_date",
       header: createdDateHeader,
+      body: loading ? () => rowSkeleton("160px"):"",
       sortable: true,
     },
     {
       columnKey: "Action",
       field: "action",
       header: t("overview:action"),
-      body: (rowData: Asset) => actionItemsTemplate(rowData, onMoveToRoom),
+      body: loading
+        ? () => rowSkeleton("80px")
+        : (rowData: Asset) => actionItemsTemplate(rowData, onMoveToRoom),
     },
   ];
  
@@ -152,7 +161,11 @@ const AssetTable: React.FC<any> = ({
   return (
     <>   
       <DataTable
-        value={assetsData} // Use the fetched assets as the data source
+        value={
+          loading
+            ? Array.from({ length: Number(selectedRowsPerPage) })
+            : assetsData
+        }
         first={currentPage * Number(selectedRowsPerPage)}
         paginator
         paginatorTemplate={paginatorTemplate}

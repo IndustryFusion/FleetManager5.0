@@ -868,6 +868,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                     value={contract} // Ensure certificate.value is used
                     options={mappedContractOptions}
                     showSelectAll={false}
+                    panelClassName='dataspace_contract_panel'
                     onChange={(e: DropdownChangeEvent) => {
                       // setCertificate(e.value || null);
                       //   // Set the entire certificate object
