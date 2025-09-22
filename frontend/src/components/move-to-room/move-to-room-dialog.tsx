@@ -538,7 +538,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
         style={{ backgroundColor: "#E6E6E6", color: "black" }} // Set text color to black
       />
       <Button
-        label="Save"
+        label="Transfer Ownership"
         icon="pi pi-check"
         onClick={async () => {
           await handleSave();
@@ -880,7 +880,13 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                        <div>{option.label}</div>
                         {option.isAssigned && (
                           <span className="already-selected">
-                            Already Selected
+                            <img
+                              src="/checkmark-circle-03.svg"
+                              alt="Already added"
+                              width={12}
+                              height={12}
+                            />
+                        {" "}    Already Selected
                           </span>
                         )}
                       </div>
