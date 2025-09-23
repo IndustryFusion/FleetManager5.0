@@ -161,3 +161,22 @@ export const getAssetById = async (assetId: string): Promise<Asset | null> => {
     }
   }
 };
+
+export const createPurchasedPdt = async (company_ifric_id: string, asset_ifric_id: string, asset_cert_valid: boolean) => {
+  try {
+    const response = await api.post(`${BACKEND_API_URL}/purchased-pdt-cache/${company_ifric_id}/${asset_ifric_id}/${asset_cert_valid}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+      return null;
+    } else {
+      throw error;
+    }
+  }
+}
