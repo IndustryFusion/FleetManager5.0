@@ -14,14 +14,13 @@ import '../../../public/styles/move-to-room.css';
 import axios from 'axios';
 import { MultiSelect } from 'primereact/multiselect';
 import OwnerDetailsCard from './owner-details';
-import { postFile } from '@/utility/asset';
+import { postFile, createPurchasedPdt } from '@/utility/asset';
 import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, generateAssetCertificate, getCompanyDetailsById, verifyCompanyAssetCertificate } from '@/utility/auth';
 import moment from 'moment';
 import { getAssignedContracts, getContracts } from "@/utility/contracts";
 import { createBinding } from "@/utility/contracts";
 import { toDate } from '@/utility/dateformat';
 import { getAccessGroup } from '@/utility/indexed-db';
-
 interface Company {
   id: string;
   name: string;
@@ -261,6 +260,8 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
       console.log("API response:", response);
 
       if (response && response.data.status === 204) {
+        // create purchased pdt cache
+        await createPurchasedPdt(factoryOwner.companyIfricId, assetIfricId, assetVerified ?? false);
         setSaveMessage({
           severity: "success",
           text: "Asset assignment updated successfully",
