@@ -64,11 +64,12 @@ function Sidebar() {
         <div className={`sidebar_logo_wrapper ${!sidebarOpen ? "logo_small" : ""}`}>
           <Image
             src="/sidebar/logo_expanded.svg"
-            width={195}
-            height={41}
+            width={183}
+            height={46}
             alt="fleet logo"
             onClick={() => handleRoute("dashboard")}
             style={{ cursor: "pointer",height:"auto" }}
+            className="sidebar_logo"
           ></Image>
           <Image
             src="/sidebar/sidebar_collapse_icon.svg"
