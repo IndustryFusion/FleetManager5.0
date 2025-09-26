@@ -21,10 +21,11 @@
     place-items: center;
     width: 45px;
     height: 45px;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 500;
     color: white;
     border-radius: 50%;
+    padding-top: 3px;
 }
 
 .user_avatar_image_circle {
@@ -74,9 +75,9 @@
     color: white;
     display: grid;
     place-items: center;
-    font-size: 34px;
+    font-size: 24px;
     font-weight: 400;
-    padding-bottom: 3px;
+    padding-top: 3px;
     margin: -30px 16px 0px 16px;
     border: 2px solid #fff;
 }
