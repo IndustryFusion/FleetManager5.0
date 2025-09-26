@@ -260,8 +260,10 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
       console.log("API response:", response);
 
       if (response && response.data.status === 204) {
-        // create purchased pdt cache
-        await createPurchasedPdt(factoryOwner.companyIfricId, assetIfricId, assetVerified ?? false);
+        // if factory owner company_ifric_id is not same as current company_ifric_id then create purchased pdt cache
+        if(factoryOwner.companyIfricId !== company_ifric_id) {
+          await createPurchasedPdt(factoryOwner.companyIfricId, assetIfricId, assetVerified ?? false);
+        }
         setSaveMessage({
           severity: "success",
           text: "Asset assignment updated successfully",
