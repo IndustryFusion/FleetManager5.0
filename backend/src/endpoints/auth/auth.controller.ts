@@ -14,7 +14,7 @@
 // limitations under the License. 
 // 
 
-import { Controller, Post, Body} from '@nestjs/common';
+import { Controller, Post, Body, Get, Req} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { FindOneAuthDto, FindIndexedDbAuthDto } from './dto/find-auth-dto';
 
@@ -39,5 +39,10 @@ export class AuthController {
     } catch (err) {
       throw err;
     }
+  }
+
+  @Get('get-all-companies')
+  getAllCompanies(@Req() req: Request) {
+    return this.authService.getAllCompanies(req);
   }
 }
