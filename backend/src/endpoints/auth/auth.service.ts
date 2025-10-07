@@ -142,4 +142,26 @@ export class AuthService {
     .encrypt(encryptionKey);
     return encrypted;
   }
+
+  async getAllCompanies(req: Request) {
+    try {
+      const registryHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization']
+      }
+      const response = await axios.get(`${this.registryUrl}/auth/get-all-companies`, {headers: registryHeaders});
+      return response.data;
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
 }
+
+  
