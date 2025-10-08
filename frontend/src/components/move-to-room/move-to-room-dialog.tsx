@@ -15,7 +15,7 @@ import axios from 'axios';
 import { MultiSelect } from 'primereact/multiselect';
 import OwnerDetailsCard from './owner-details';
 import { postFile, createPurchasedPdt } from '@/utility/asset';
-import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, generateAssetCertificate, getCompanyDetailsById, verifyCompanyAssetCertificate } from '@/utility/auth';
+import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, generateAssetCertificate, getCompanyDetailsById, verifyCompanyAssetCertificate, getAllCompanies } from '@/utility/auth';
 import moment from 'moment';
 import { getAssignedContracts, getContracts } from "@/utility/contracts";
 import { createBinding } from "@/utility/contracts";
@@ -430,13 +430,16 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
 
   const fetchFactoryOwners = async () => {
     try {
-      const response = await getCategorySpecificCompany("factory_owner");
+      const response = await getAllCompanies();
+      console.log(response, "Factory Owners Response");
       if (response && response.data && Array.isArray(response.data)) {
         const formattedOwners = response.data.map((owner: any) => ({
           id: owner.company_ifric_id,
           name: owner.company_name,
           companyIfricId: owner.company_ifric_id,
-          company_category: owner.company_category
+          company_category: owner.company_category,
+          country: owner.company_country ,
+          logoUrl: owner.company_image 
         }));
         setFactoryOwners(formattedOwners);
       } else {
@@ -661,12 +664,13 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
           </div>
         </div>
         <div className="owner_form_wrapper">
-          <form className='owner_form'>
+          <form className="owner_form">
             <div className="form_field_group">
-              <h3 className='form_group_title'>Factory Owner <span style={{color:"#ff0000"}}>*</span></h3>
+              <h3 className="form_group_title">
+                New Product Owner<span style={{ color: "#ff0000" }}>*</span>
+              </h3>
               <div className="form_field">
                 <div className="p-field p-float-label">
-
                   <Dropdown
                     id="factoryOwner"
                     value={factoryOwner}
@@ -676,15 +680,58 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                     filter
                     placeholder="Select a factory owner"
                     className="company_dropdown"
-                    filter
-                    filterBy="name"
+                    filterBy="name,country"
+                    itemTemplate={(option) => (
+                      <div className="owner-option">
+                        <div className="owner-avatar">
+                          {option.logoUrl ? (
+                            <img
+                              src={option.logoUrl}
+                              alt={option.name}
+                              className="owner-logo"
+                              width={40}
+                              height={40}
+                            />
+                          ) : (
+                            <div className="no-product-image">
+                              {option.name?.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div className="owner-info">
+                          <div className="owner-name">{option.name}</div>
+                          <div className="owner-country">{option.country}</div>
+                        </div>
+                        {option.alreadySelected && (
+                          <div className="owner-selected">
+                            <img
+                              src="/checkmark-circle-03.svg"
+                              alt="Selected"
+                              width={14}
+                              height={14}
+                            />
+                            <span>Already Selected</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    valueTemplate={(option) =>
+                      option ? (
+                        <div className="owner-selected-template">
+                          <span>{option.name}</span>
+                        </div>
+                      ) : (
+                        <span>Select a factory owner</span>
+                      )
+                    }
                   />
+
                   <img
                     className="dropdown-icon-img "
                     src="/dropdown-icon.svg"
                     alt="dropdown-icon"
                   />
-                  <label htmlFor="factoryOwner">Factory Owner</label>
+                  <label htmlFor="factoryOwner">New Product Owner</label>
                 </div>
               </div>
               {(ownerVerified === true && factoryOwner) && (
@@ -693,9 +740,14 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                   <div>IFRIC Verified</div>
                 </div>
               )}
-              {(ownerVerified === false && factoryOwner) && (
-                <div className='asset_verified_group'>
-                  <Image src="/warning.svg" alt='company verified' width={16} height={16}></Image>
+              {ownerVerified === false && factoryOwner && (
+                <div className="asset_verified_group">
+                  <Image
+                    src="/warning.svg"
+                    alt="company verified"
+                    width={16}
+                    height={16}
+                  ></Image>
                   <div>Not IFRIC Verified</div>
                 </div>
               )}

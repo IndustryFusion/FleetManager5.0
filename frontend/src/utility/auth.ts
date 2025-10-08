@@ -274,6 +274,22 @@ export const getCategorySpecificCompany = async(categoryName: string) => {
         }
     }
 }
+
+export const getAllCompanies = async () => {
+  try {
+    const response = await api.get(`${REGISTRY_API_URL}/auth/get-all-companies`);
+    console.log("✅ API response: New Response", response.data);
+    return response;
+    } catch (error:any) {
+    console.error("Error getting companies:", error);
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+    } else {
+      throw new Error(error.response?.data?.message || "Error getting companies");
+    }
+  }
+};
+
 export const getAccessGroupData = async(token: string) => {
     try {
         const registryHeader = {
