@@ -243,7 +243,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
   const handleSave = async () => {
     try {
       if (!factoryOwner?.companyIfricId) {
-        throw new Error('Factory owner ID is missing');
+        throw new Error('New Product Owner ID is missing');
       }
 
       const dataToSend = {
@@ -431,7 +431,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
   const fetchFactoryOwners = async () => {
     try {
       const response = await getAllCompanies();
-      console.log(response, "Factory Owners Response");
+      console.log(response, "New Product Owners Response");
       if (response && response.data && Array.isArray(response.data)) {
         const formattedOwners = response.data.map((owner: any) => ({
           id: owner.company_ifric_id,
@@ -446,8 +446,8 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
         throw new Error('Invalid data format received from the server');
       }
     } catch (error) {
-      console.error('Error fetching factory owners:', error);
-      toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to fetch factory owners' });
+      console.error('Error fetching new product owners:', error);
+      toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to fetch new product owners' });
     }
   };
 
@@ -490,7 +490,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
   };
 
   const timelineEvents = [
-    { status: 'Selected Owner', subtext: 'Selected Factory Owner' },
+    { status: 'Selected Owner', subtext: 'Selected New Product Owner' },
     { status: 'Uploaded Contract', subtext: 'Contract or Sales Agreement uploaded' },
     { status: 'Selected Certificate', subtext: 'Certified by IFX - IFRIC' },
     { status: 'Assigned Owner', subtext: 'Asset Data Twin Transferred' },
@@ -610,7 +610,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                 <CustomCheck stroke="#6b7280" fill="white" check="white" />
               )}
               <div className='check_content_wrapper'>
-                <div className="custom_check_title" style={{ color: factoryOwner ? "#2b2b2b" : "#6b7280" }}>Factory Owner</div>
+                <div className="custom_check_title" style={{ color: factoryOwner ? "#2b2b2b" : "#6b7280" }}>New Product Owner</div>
                 <div className="custom_check_helper">Select Owner</div>
               </div>
             </div>
@@ -635,7 +635,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
               )}
               <div className='check_content_wrapper'>
                 <div className="custom_check_title" style={{ color: salesAgreement ? "#2b2b2b" : "#6b7280" }}>Sale Contract</div>
-                <div className="custom_check_helper">Selected Factory Owner</div>
+                <div className="custom_check_helper">Selected New Product Owner</div>
               </div>
             </div>
             <div className="custom_step_cell">
@@ -647,7 +647,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
               )}
               <div className='check_content_wrapper'>
                 <div className="custom_check_title" style={{ color: certificate && certificate.length !== 0 ? "#2b2b2b" : "#6b7280" }}>DataSpace Contract</div>
-                <div className="custom_check_helper">Selected Factory Owner</div>
+                <div className="custom_check_helper">Selected New Product Owner</div>
               </div>
             </div>
             <div className="custom_step_cell">
@@ -658,7 +658,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
               )}
               <div className='check_content_wrapper'>
                 <div className="custom_check_title" style={{ color: checkIndex >= 4 ? "#2b2b2b" : "#6b7280" }}>Assigned Owner</div>
-                <div className="custom_check_helper">Selected Factory Owner</div>
+                <div className="custom_check_helper">Selected New Product Owner</div>
               </div>
             </div>
           </div>
@@ -678,7 +678,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                     onChange={handleFactoryOwnerChange}
                     optionLabel="name"
                     filter
-                    placeholder="Select a factory owner"
+                    placeholder="Select a new product owner"
                     className="company_dropdown"
                     filterBy="name,country"
                     itemTemplate={(option) => (
@@ -721,7 +721,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                           <span>{option.name}</span>
                         </div>
                       ) : (
-                        <span>Select a factory owner</span>
+                        <span>Select a new product owner</span>
                       )
                     }
                   />
