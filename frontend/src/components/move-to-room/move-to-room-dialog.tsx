@@ -268,7 +268,6 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
           severity: "success",
           text: "Asset assignment updated successfully",
         });
-        throw new Error(response?.data.message || "Failed to update");
       }
     } catch (error: any) {
       console.error("Error updating asset assignment:", error);
