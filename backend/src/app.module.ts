@@ -35,7 +35,8 @@ import { ContractService } from './endpoints/contract/contract.service';
 import { BindingService } from './endpoints/binding/binding.service';
 import { PurchasedPdtCacheController } from './endpoints/purchased-pdt-cache/purchased-pdt-cache.controller';
 import { PurchasedPdtCacheService } from './endpoints/purchased-pdt-cache/purchased-pdt-cache.service';
-
+import { CompanyController } from './endpoints/company/company.controller';
+import { CompanyService } from './endpoints/company/company.service';
 @Module({
   imports: [],
   controllers: [
@@ -48,7 +49,8 @@ import { PurchasedPdtCacheService } from './endpoints/purchased-pdt-cache/purcha
     ConsumerController,
     ContractController,
     BindingController,
-    PurchasedPdtCacheController
+    PurchasedPdtCacheController,
+    CompanyController
   ],
   providers: [
     AppService,
@@ -60,7 +62,8 @@ import { PurchasedPdtCacheService } from './endpoints/purchased-pdt-cache/purcha
     ConsumerService,
     ContractService,
     BindingService,
-    PurchasedPdtCacheService
+    PurchasedPdtCacheService,
+    CompanyService
   ],
 })
 export class AppModule {}
