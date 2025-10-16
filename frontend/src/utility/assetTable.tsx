@@ -89,8 +89,9 @@ export const manufacturerDataTemplate = (rowData: any): React.ReactNode => {
 
 export const productNameBodyTemplate = (rowData: any): React.ReactNode => {
   //  console.log("Row Data:", rowData);
-  const productImage = rowData.assetData?.product_image;
-  const productName = rowData.assetData?.product_name || "";
+  const productImage = rowData.product_image;
+  const productName = rowData.product_name
+|| "";
 
   return (
     <div className="flex align-items-center gap-2" style={{ width: "200px", lineBreak: "anywhere" }}>
@@ -111,12 +112,12 @@ export const productNameBodyTemplate = (rowData: any): React.ReactNode => {
 };
 
 export const assetTypeBodyTemplate = (rowData: any): React.ReactNode => {
-  const assetType = rowData?.assetData?.type?.split("/").pop();
+  const assetType = rowData?.type?.split("/").pop();
   return <p className="tr-text-grey">{assetType}</p>;
 };
 
 export const serialNumberBodyTemplate = (rowData: any): React.ReactNode => {
-  const serialNumber: string = rowData?.assetData?.asset_serial_number || "";
+  const serialNumber: string = rowData?.asset_serial_number || "";
   let displaySerialNumber = serialNumber;
   let toolTipContent: string | null = null;
 
@@ -135,23 +136,30 @@ export const serialNumberBodyTemplate = (rowData: any): React.ReactNode => {
     </>
   );
 };
-export const actionItemsTemplate = (rowData: Asset, onMoveToRoom: (asset: Asset) => void) => {
+export const actionItemsTemplate = (
+  rowData: any,
+  onMoveToRoom: (asset: any) => void,
+  companyIfricId: string
+) => {
+  const ownerCompanyIfricId = rowData?.company_ifric_id;
+  const isDifferentOwner = ownerCompanyIfricId && ownerCompanyIfricId !== companyIfricId;
+  const buttonLabel = isDifferentOwner ? "Ownership Data" : "Assign Owner";
   return (
-    <button onClick={() => onMoveToRoom(rowData)} className="action-menu-icon cursor-pointer" >
-      <img
-      src="/move-icon.svg" 
-      alt="move-icon" 
-      className="mr-2"
-    />
-    Assign Owner
+    <button
+      onClick={() => onMoveToRoom(rowData)}
+      className="action-menu-icon cursor-pointer"
+    >
+      <img src="/move-icon.svg" alt="move-icon" className="mr-2" />
+      {buttonLabel}
     </button>
   );
 };
 
 
 export const ownerBodyTemplate = (rowData: any) => {
-  const ownerName = rowData?.owner_company_name || "N/A";
-  const ownerCompanyImage=rowData?.owner_company_image;
+  console.log(rowData,"Rowdata")
+  const ownerName = rowData?.company_name || "-";
+  const ownerCompanyImage=rowData?.company_image;
   let displayOwnerName = ownerName;
   let toolTipContent = ownerName;
   const initial = ownerName !== "N/A" ? ownerName.charAt(0).toUpperCase() : "?";
@@ -159,7 +167,7 @@ export const ownerBodyTemplate = (rowData: any) => {
   if (ownerName.length > 15) {
     displayOwnerName = ownerName.slice(0, 15) + "...";
     toolTipContent =
-      rowData["eclass:displayOwnerName"] ||
+      rowData["displayOwnerName"] ||
       rowData["displayOwnerName"] ||
       ownerName;
   }
@@ -245,8 +253,9 @@ export const filterAssets = (
     return sortedassets;
   }
 
-  return sortedassets.filter(({assetData}) => {
-    const manufacturerName =  assetData.asset_manufacturer_name
+  return sortedassets.filter((item: { assetData: any }) => {
+    const assetData = item.assetData;
+    const manufacturerName = assetData.asset_manufacturer_name;
     return Object.keys(selectedFilters).every((filterCategory) => {
       const filters = selectedFilters[filterCategory];
       if (filters && Object.values(filters).some((value) => value === true)) {
@@ -255,7 +264,7 @@ export const filterAssets = (
             if (
               (filterCategory === "type" && assetData.type?.split("/").pop() === filterKey) ||
               (filterCategory === "manufacturer_name" &&
-                manufacturerName  === filterKey)
+                manufacturerName === filterKey)
             ) {
               return true;
             }

@@ -43,7 +43,8 @@ const AssetTable: React.FC<any> = ({
   onMoveToRoom,
   searchFilters ,
   selectedProduct,
-  setSelectedProduct
+  setSelectedProduct,
+  companyIfricId,
 }) => {
 
   const [rangeDisplay, setRangeDisplay] = useState('');
@@ -59,28 +60,28 @@ const AssetTable: React.FC<any> = ({
     },
     {
       columnKey: "productName",
-      field: "assetData.product_name",
+      field: "product_name",
       header: productNameHeader(t, toggleColor, isBlue),
       body: loading ? () => rowSkeleton("180px") : productNameBodyTemplate,
-      sortable: true,
+      sortable: false,
     },
     {
-      field: "assetData.id",
+      columnKey: "id",
+      field: "id",
       header: ifricIdHeader(t),
       body: loading ? () => rowSkeleton("100px") : assetIdBodyTemplate,
-      columnKey: "ifricId",
       sortable: true,
     },
     {
       columnKey: "serialNumber",
-      field: "assetData.asset_serial_number",
+      field: "asset_serial_number",
       header: serialNumberHeader(t),
       body: loading ? () => rowSkeleton("120px") : serialNumberBodyTemplate,
       sortable: true,
     },
     {
       columnKey: "type",
-      field: "assetData.type",
+      field: "type",
       header: productTypeHeader(t),
       body: loading ? () => rowSkeleton("100px") : assetTypeBodyTemplate,
       sortable: true,
@@ -94,14 +95,14 @@ const AssetTable: React.FC<any> = ({
     // },
     {
       columnKey: "Owner",
-      field: "owner_company_name",
+      field: "company_name",
       header: ownerHeader(t),
       body: loading ? () => rowSkeleton("160px") : ownerBodyTemplate,
       sortable: true,
     },
     {
       columnKey: "Created",
-      field: "assetData.creation_date",
+      field: "creation_date",
       header: createdDateHeader,
       body: loading ? () => rowSkeleton("160px"):"",
       sortable: true,
@@ -112,7 +113,7 @@ const AssetTable: React.FC<any> = ({
       header: t("overview:action"),
       body: loading
         ? () => rowSkeleton("80px")
-        : (rowData: Asset) => actionItemsTemplate(rowData, onMoveToRoom),
+        : (rowData: Asset) => actionItemsTemplate(rowData, onMoveToRoom, companyIfricId),
     },
   ];
  
@@ -192,19 +193,19 @@ const AssetTable: React.FC<any> = ({
         }}
         filters={searchFilters}
         globalFilterFields={[
-          "assetData.id",
-          "assetData.asset_serial_number",
-          "assetData.type",
-          "assetData.product_name",
-          "assetData.asset_manufacturer_name",
-          'owner_company_name'
+          "id",
+          "asset_serial_number",
+          "type",
+          "product_name",
+          "asset_manufacturer_name",
+          'company_name'
         ]}
         sortMode="multiple"
         onContextMenu={(e) => cm.current.show(e.originalEvent)}
         contextMenuSelection={selectedProduct}
         onContextMenuSelectionChange={(e) => setSelectedProduct(e.value)}
-         sortField="created_date"
-         sortOrder={-1}
+        sortField="creation_date"
+        sortOrder={-1}
         rowGroupMode={selectedGroupOption !== null ? "subheader" : undefined}
         rowGroupHeaderTemplate={(data) => {      
           let rowHeader;

@@ -2,6 +2,7 @@ import { Dropdown } from "primereact/dropdown";
 import "../../../public/styles/asset-overview.css";
 
 type Asset = {
+  company_name: string;
   type: string;
   properties?: {
     asset_manufacturer_name?: string;
@@ -29,13 +30,13 @@ const DropdownWithCustomOptions: React.FC<DropdownWithCustomOptionsProps> = ({
   setFilterProp,
   tableData,
 }) => {
-  const assetTypes = Array.from(
-    new Set<string>([...tableData].map(({ assetData }) => assetData.type))
-  ).map((item) => item?.split("/").pop() as string);
+  // const assetTypes = Array.from(
+  //   new Set<string>([...tableData].map(({ assetData }) => assetData.type))
+  // ).map((item) => item?.split("/").pop() as string);
 
   const assetManufacturerName = Array.from(
     new Set<string>(
-      tableData.map(({ assetData }) => assetData.asset_manufacturer_name ?? "")
+      tableData.map(({ assetData }) => assetData?.company_name?? "")
     )
   );
 
@@ -43,7 +44,7 @@ const DropdownWithCustomOptions: React.FC<DropdownWithCustomOptionsProps> = ({
     {
       category: "Product Type",
       key: "type",
-      options: [...assetTypes].map((type) => ({ label: type, type })),
+      // options: [...assetTypes].map((type) => ({ label: type, type })),
     },
     {
       category: "Manufacturer",
