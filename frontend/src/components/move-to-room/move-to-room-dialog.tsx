@@ -756,7 +756,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
                 <div>
                   {(assetVerified === false && assetVerified !== null) && (
                     <div>
-                      <Checkbox inputId="preCertifyAsset" checked={preCertifyAsset} onChange={e => setPreCertifyAsset(e.checked as boolean)} className='company_checkbox' />
+                      <Checkbox inputId="preCertifyAsset" checked={preCertifyAsset}  className='company_checkbox' />
                       <label htmlFor="preCertifyAsset">Pre Certify Asset</label>
                     </div>
                   )}

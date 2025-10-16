@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Asset } from "@/interfaces/assetTypes";
-import { fetchAssets } from "@/utility/asset";
+import { fetchAssets, getAssetsAndOwnerDetails } from "@/utility/asset";
+import { getAccessGroup } from "@/utility/indexed-db";
 
 interface AssetsState {
   assets: Asset[];
@@ -17,7 +18,9 @@ const initialState: AssetsState = {
 export const fetchAssetsRedux = createAsyncThunk(
   "assets/fetchAssets",
   async () => {
-    const assetData = await fetchAssets();
+    const company_ifric_id= await getAccessGroup()
+    const assetData = await getAssetsAndOwnerDetails(company_ifric_id.company_ifric_id)
+    console.log("AssetData redux",assetData)
     if(assetData) {
       return assetData || [];
     } else {

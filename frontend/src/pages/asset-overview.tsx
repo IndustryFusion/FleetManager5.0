@@ -21,13 +21,13 @@ import AssetDetailsCard from "../components/assetOverview/asset-view";
 import Footer from "../components/footer";
 import { Toast, ToastMessage } from "primereact/toast";
 import { Asset } from "@/interfaces/assetTypes";
-import {fetchAssets} from "@/utility/asset";
+import { fetchAssets, getAssetsAndOwnerDetails } from "@/utility/asset";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Sidebar from "@/components/sidebar";
 import Navbar from "@/components/navbar";
 import OverviewHeader from "@/components/assetOverview/overview-header";
-import { checkboxContainer, filterAssets } from "@/utility/assetTable";
+import { actionItemsTemplate, checkboxContainer, filterAssets } from "@/utility/assetTable";
 import AssetTable from "@/components/assetOverview/asset-table";
 import TableHeader from "@/components/assetOverview/table-header";;
 import { fetchTemplates } from '@/redux/templates/templatesSlice';
@@ -122,10 +122,10 @@ const AssetOverView: React.FC = () => {
     label: "Certificates",
     icon: "",
     command: () => {  
-      if (selectedProduct?.assetData?.id) {
+        if (selectedProduct?.id) {
         router.push({
-          pathname: "/certificates",
-          query: { asset_ifric_id: selectedProduct?.assetData?.id },
+            pathname: "/certificates",
+            query: { asset_ifric_id: selectedProduct?.id },
         });
       } else {
         showToast(
@@ -172,18 +172,27 @@ const AssetOverView: React.FC = () => {
   
   const fetchAsset = async () => {
     try {
-      setLoading(true); 
-      const response = await fetchAssets();
-      setAssetCount(response?.length || 0);
+      setLoading(true);
+      const company_ifric_id = (await getAccessGroup()).company_ifric_id;
+      console.log(company_ifric_id);
+      const response = await getAssetsAndOwnerDetails(company_ifric_id);
+      console.log("ftch", response);
+      const normalized = Array.isArray(response)
+        ? response.map((item: any) => {
+          if (item && item.assetData) return item;
+          return { ...item, assetData: item };
+        })
+        : [];
+
+      setAssets(normalized || []);
+      setAssetCount(normalized.length || 0);
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
-        console.error("Error response:", error.response?.data.message);
         showToast("error", "Error", "Fetching assets");
       } else {
-        console.error("Error:", error);
-        showToast("error", "Error", error);
+        showToast("error", "Error", error.message);
       }
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -204,15 +213,15 @@ const AssetOverView: React.FC = () => {
     const storedValue = localStorage.getItem("selectedRowsPerPage");
     if (storedValue) {
       setSelectedRowsPerPage(storedValue);
-    } 
-    if(assets.length === 0){
-      fetchAsset();
     }
+    // if (assets.length === 0) {
+    //   fetchAsset();
+    // }
     const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && activeTab === "Assets" ) {
+      if (event.key === "Escape" && activeTab === "Assets") {
         setSelectedAssets([]);
-        setShowSelectedAsset(false);      
-        }
+        setShowSelectedAsset(false);
+      }
     };
     window.addEventListener("keydown", handleEsc);
     return () => {
@@ -277,7 +286,7 @@ const AssetOverView: React.FC = () => {
   };
 
   const assetIdBodyTemplate = (rowData: any) => {
-    const key = expandValue[rowData?.assetData?.id] || false;
+    const key = expandValue[rowData?.id] || false;
   const formatId = (id: string) => {
     if (!id) return "";
     if (key) return id;
@@ -314,9 +323,9 @@ const AssetOverView: React.FC = () => {
           ) : (
             <img src="/incomplete-icon.jpg" alt="incomplete-icon" />
           )} */}
-          <p className="tr-text-grey">{formatId(rowData?.assetData?.id)}</p>
+          <p className="tr-text-grey">{formatId(rowData?.id)}</p>
           <button
-            onClick={() => handleCopy(rowData?.assetData?.id)}
+            onClick={() => handleCopy(rowData?.id)}
             className="transparent-btn"
             title="Copy ID"
           >
@@ -340,12 +349,7 @@ const AssetOverView: React.FC = () => {
     });
   };
 
-  const sortedAssetsData = [...assets].sort((a, b) => {
-    if (a.assetData.product_name.toUpperCase() < b.assetData.product_name.toUpperCase()) return -1;
-    if (a.assetData.product_name.toUpperCase() > b.assetData.product_name.toUpperCase()) return 1;
-    return 0;
-  });
-
+  const sortedAssetsData = assets || [];
 
   const onFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -376,10 +380,10 @@ const AssetOverView: React.FC = () => {
         <MoveToRoomDialog
         visible={isMoveToRoomDialogVisible}
         onHide={() => setIsMoveToRoomDialogVisible(false)}
-        asset={selectedProduct?.assetData}
-        assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
+        asset={selectedProduct}
+        assetName={selectedProduct?.product_name || "No Asset Name"}
         company_ifric_id={companyIfricId}
-        assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
+        assetIfricId={selectedProduct?.id || "No Asset Name"}
         onSave={() => {
           setIsMoveToRoomDialogVisible(false);
           showToast("success", "Success", "Asset moved successfully");
@@ -451,7 +455,8 @@ const AssetOverView: React.FC = () => {
                   activeTab={activeTab}
                   onMoveToRoom={handleMoveToRoom}
                   searchFilters={searchFilters}
-                />
+                  companyIfricId={companyIfricId} 
+               />
                  </>
                  
               

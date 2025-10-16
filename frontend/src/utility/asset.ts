@@ -183,12 +183,16 @@ export const createPurchasedPdt = async (company_ifric_id: string, asset_ifric_i
 
 export const getAssetsAndOwnerDetails = async (company_ifric_id: string) => {
   try {
-    const response = await api.post(`${BACKEND_API_URL}/company/get-assets-and-owner-details/${company_ifric_id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    });
+    const response = await api.get(
+      `${BACKEND_API_URL}/company/get-assets-and-owner-details/${company_ifric_id}`
+      // {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Accept: "application/json",
+      //   },
+      // }
+    ); 
+    console.log("Assets Response:", response.data);
     return response.data;
   } catch (error: any) {
     if (error?.response && error?.response?.status === 401) {
@@ -198,4 +202,4 @@ export const getAssetsAndOwnerDetails = async (company_ifric_id: string) => {
       throw error;
     }
   }
-}
+};
