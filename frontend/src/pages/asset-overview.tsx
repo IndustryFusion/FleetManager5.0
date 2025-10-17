@@ -40,6 +40,8 @@ import { fetchAssetsRedux } from "@/redux/asset/assetsSlice";
 import { FilterMatchMode } from "primereact/api";
 import { getAccessGroupData } from "@/utility/auth";
 import { ContextMenu } from "primereact/contextmenu";
+import ConfirmTransferDialog from "@/components/move-to-room/confirm-dialog";
+import { showToast } from "@/utility/toast";
 
 type ExpandValue = {
   [key: string]: boolean;
@@ -59,6 +61,7 @@ const AssetOverView: React.FC = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [showContextMenu, setShowContextMenu] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [selectedContract, setSelectedContract] = useState<any>(null);
   const [searchFilters, setSearchFilters] = useState({
     global: {
       value: null as string | null,
@@ -96,7 +99,7 @@ const AssetOverView: React.FC = () => {
   const [enableReordering, setEnableReordering] = useState(false);
   const [isBlue, setIsBlue] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({});
-  const [selectedGroupOption, setSelectedGroupOption] = useState(null);
+  const [selectedGroupOption, setSelectedGroupOption] = useState<string | null>(null);
   const [companyIfricId, setCompanyIfricId] = useState("");
   const [groupOptions, setGroupOptions] = useState([
     { label: "Product Type", value: "type" },
@@ -107,9 +110,24 @@ const AssetOverView: React.FC = () => {
   const router = useRouter();
   const [accessgroupIndexDb, setAccessgroupIndexedDb] =useState<any>(null);
   const [isMoveToRoomDialogVisible, setIsMoveToRoomDialogVisible] = useState(false);
+  const [isConfirmDialogVisible, setIsConfirmDialogVisible] = useState(false); 
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState("Assets");
-
+  const [transferAsset, setTransferAsset] = useState<any>(null);
+  const [onAcceptFns, setOnAcceptFns] = useState<{
+  save?: () => Promise<void>;
+  assign?: () => Promise<void>;
+}>({});
+const [factoryOwner, setFactoryOwner] = useState<{
+  id?: string;
+  name?: string;
+  companyIfricId?: string;
+  company_category?: string;
+  country?: string;
+  logoUrl?: string;
+  city?: string;
+} | null>(null);
+ const [testFactoryOwner,setTestFactoryOwner]=useState<any>([])
 
   const menuModel = [
     {
@@ -129,6 +147,7 @@ const AssetOverView: React.FC = () => {
         });
       } else {
         showToast(
+           toast,
           "error",
           "No Asset Selected",
           "Please select an asset first"
@@ -139,11 +158,26 @@ const AssetOverView: React.FC = () => {
     {
     label: "Assign Owner",
     icon: "",
-    command: (rowData:Asset) => {
-      handleMoveToRoom(rowData)
+    command: () => {
+      if (selectedProduct) {
+        handleMoveToRoom(selectedProduct);
+      }
   }
   }
   ]
+
+  // const showToast = (
+  //   severity: ToastMessage["severity"],
+  //   summary: string,
+  //   message: string
+  // ) => {
+  //   toast.current?.show({
+  //     severity: severity,
+  //     summary: summary,
+  //     detail: message,
+  //     life: 8000,
+  //   });
+  // };
 
   // console.log("selectedProduct here is", selectedProduct);
   
@@ -154,7 +188,7 @@ const AssetOverView: React.FC = () => {
       setCompanyIfricId(details.company_ifric_id)
     } catch(error: any) {
       console.log("error from catch ",error);
-      showToast("error", "Error", "Failed to fetch access group data");
+      showToast(toast, "error", "Error", "Failed to fetch access group data");
     }
   }
   useEffect(() => {
@@ -188,9 +222,9 @@ const AssetOverView: React.FC = () => {
       setAssetCount(normalized.length || 0);
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
-        showToast("error", "Error", "Fetching assets");
+        showToast(toast, "error", "Error", "Fetching assets");
       } else {
-        showToast("error", "Error", error.message);
+        showToast(toast, "error", "Error", error.message);
       }
     } finally {
       setLoading(false);
@@ -285,9 +319,52 @@ const AssetOverView: React.FC = () => {
     setSelectedProduct(rowData);
   };
 
+  const handleMoveToRoomClick = (asset: any) => {
+    setTransferAsset(asset);
+    setIsMoveToRoomDialogVisible(true);
+  };
+
+const handleTransferOwnershipClick = (
+  saveFn: () => Promise<void>,
+  assignFn: () => Promise<void>,
+  asset: Asset,
+  selectedOwner: typeof factoryOwner | null,
+  contract?: any
+) => {
+  if (!selectedOwner) {
+    showToast(toast,"error", "Missing Owner", "Please select a factory owner before transferring ownership.");
+    return;
+  }
+
+  setFactoryOwner(selectedOwner);
+  setTransferAsset(asset);
+  setSelectedContract(contract); // <-- store contract here
+  setOnAcceptFns({ save: saveFn, assign: assignFn });
+  setIsConfirmDialogVisible(true);
+  setIsMoveToRoomDialogVisible(false);
+};
+
+
+
+const handleConfirmTransfer = async () => {
+  if (!transferAsset) return;
+
+  try {
+    setIsConfirmDialogVisible(false);
+    if (onAcceptFns.save) await onAcceptFns.save();
+    if (onAcceptFns.assign) await onAcceptFns.assign();
+    dispatch(fetchAssetsRedux());
+    showToast(toast,"success", "Success", "Ownership transferred successfully");
+    showToast(toast,"success", "Success", "Assigned Contract successfully");
+    router.push("/asset-overview");
+  } catch (error) {
+    showToast(toast,"error", "Error", "Failed to transfer ownership");
+  }
+};
+
   const assetIdBodyTemplate = (rowData: any) => {
     const key = expandValue[rowData?.id] || false;
-  const formatId = (id: string) => {
+    const formatId = (id: string) => {
     if (!id) return "";
     if (key) return id;
     const prefix = id.slice(10, 17);
@@ -336,18 +413,7 @@ const AssetOverView: React.FC = () => {
   );
 };
 
-  const showToast = (
-    severity: ToastMessage["severity"],
-    summary: string,
-    message: string
-  ) => {
-    toast.current?.show({
-      severity: severity,
-      summary: summary,
-      detail: message,
-      life: 8000,
-    });
-  };
+ 
 
   const sortedAssetsData = assets || [];
 
@@ -365,116 +431,144 @@ const AssetOverView: React.FC = () => {
   );
 
 
-
   return (
     <div className="container">
       {showContextMenu && (
-                <ContextMenu
-                  model={menuModel}
-                  ref={cm}
-                  // onHide={() => setSelectedProduct(null)}
-                />
-              )}
+        <ContextMenu
+          model={menuModel}
+          ref={cm}
+        // onHide={() => setSelectedProduct(null)}
+        />
+      )}
       <Toast ref={toast} />
       {isMoveToRoomDialogVisible && (
         <MoveToRoomDialog
-        visible={isMoveToRoomDialogVisible}
-        onHide={() => setIsMoveToRoomDialogVisible(false)}
-        asset={selectedProduct}
-        assetName={selectedProduct?.product_name || "No Asset Name"}
-        company_ifric_id={companyIfricId}
-        assetIfricId={selectedProduct?.id || "No Asset Name"}
-        onSave={() => {
-          setIsMoveToRoomDialogVisible(false);
-          showToast("success", "Success", "Asset moved successfully");
-          dispatch(fetchAssetsRedux())
-        }}
-      />
+          visible={isMoveToRoomDialogVisible}
+          onHide={() => setIsMoveToRoomDialogVisible(false)}
+          asset={selectedProduct ? {
+            id: selectedProduct.id,
+            type: selectedProduct.type,
+            asset_category: selectedProduct.asset_category,
+            name: selectedProduct.product_name
+          } : undefined}
+          assetName={selectedProduct?.product_name || "No Asset Name"}
+          company_ifric_id={companyIfricId}
+          assetIfricId={selectedProduct?.id || "No Asset Name"}
+          onSave={() => {
+            setIsMoveToRoomDialogVisible(false);
+            showToast(toast,"success", "Success", "Asset moved successfully");
+            dispatch(fetchAssetsRedux());
+          }}
+           onTransferOwnership={(saveFn, assignFn, selectedOwner,contract) =>
+           handleTransferOwnershipClick(saveFn, assignFn, selectedProduct!, selectedOwner, contract)
+         }
+        />
+      )}
+      {isConfirmDialogVisible && transferAsset && (
+        <ConfirmTransferDialog
+          visible={isConfirmDialogVisible}
+          onHide={() => setIsConfirmDialogVisible(false)}
+          onConfirm={handleConfirmTransfer}
+          assetName={transferAsset.product_name || "No Asset Name"}
+          transferAsset={transferAsset}
+          factoryOwner={
+            factoryOwner
+              ? {
+                companyName: factoryOwner.name,
+                companyImage: factoryOwner.logoUrl,
+                companyCategory: factoryOwner.company_category,
+                country: factoryOwner.country,
+                city: factoryOwner.city,
+              }
+              : undefined
+          }
+          contract={selectedContract} 
+        />
       )}
       <div className="flex">
-      <Sidebar />
+        <Sidebar />
         <div className="main_content_wrapper">
-        <div className="navbar_wrapper">
-          <Navbar 
-          navHeader={"PDT Overview"}
-          />
-          <OverviewHeader
-            assetCount={ assetCount }
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            accessgroupIndexDb={accessgroupIndexDb}
-          />
-          <TableHeader
-            enableReordering={enableReordering}
-            setEnableReordering={setEnableReordering}
-            selectedGroupOption={selectedGroupOption}
-            setSelectedGroupOption={setSelectedGroupOption}
-            globalFilterValue={globalFilterValue}
-            onFilter={activeTab === "Assets" && onFilter }
-            selectedFilters={selectedFilters}
-            setSelectedFilters={setSelectedFilters}
-            groupOptions={groupOptions}
-            tableData={
-              activeTab === "Assets" && sortedAssetsData
-            }
-            activeTab={activeTab}
-          />
+          <div className="navbar_wrapper">
+            <Navbar
+              navHeader={"PDT Overview"}
+            />
+            <OverviewHeader
+              assetCount={assetCount}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              accessgroupIndexDb={accessgroupIndexDb}
+            />
+            <TableHeader
+              enableReordering={enableReordering}
+              setEnableReordering={setEnableReordering}
+              selectedGroupOption={selectedGroupOption}
+              setSelectedGroupOption={setSelectedGroupOption}
+              globalFilterValue={globalFilterValue}
+              onFilter={activeTab === "Assets" ? onFilter : undefined}
+              selectedFilters={selectedFilters}
+              setSelectedFilters={setSelectedFilters}
+              groupOptions={groupOptions}
+              tableData={
+                activeTab === "Assets" ? sortedAssetsData : []
+              }
+              activeTab={activeTab}
+            />
 
-          <div
-            style={{
-              paddingLeft: "24px",
-              position: "relative",
-              display: "flex",
-              height: "calc(70vh - 14px)",
-            }}
-          >
-            <div style={{ ...dataTableStyle, width: dataTableCardWidth }}>
+            <div
+              style={{
+                paddingLeft: "24px",
+                position: "relative",
+                display: "flex",
+                height: "calc(70vh - 14px)",
+              }}
+            >
+              <div style={{ ...dataTableStyle, width: dataTableCardWidth }}>
                 {activeTab === "Assets" && (
                   <>
-    
 
-                {checkboxContainer(selectedAssets, showSelectedAsset, setSelectedAssets, filterAssetsData)}
-                <AssetTable
-                  currentPage={currentPage}
-                  selectedRowsPerPage={selectedRowsPerPage}
-                  enableReordering={enableReordering}
-                  selectedAssets={selectedAssets}
-                  setSelectedAssets={setSelectedAssets}
-                  handleSelect={handleSelect}
-                  setShowSelectedAsset={setShowSelectedAsset}
-                  setSelectedProduct={setSelectedProduct}
-                  selectedProduct={selectedProduct}
-                  cm={cm}
-                  selectedGroupOption={selectedGroupOption}
-                  t={t}
-                  toggleColor={toggleColor}
-                  isBlue={isBlue}
-                  assetIdBodyTemplate={assetIdBodyTemplate}
-                  assetsData={filterAssetsData}
-                  loading={assetStatus === "loading"}
-                  activeTab={activeTab}
-                  onMoveToRoom={handleMoveToRoom}
-                  searchFilters={searchFilters}
-                  companyIfricId={companyIfricId} 
-               />
-                 </>
-                 
-              
-              )}
-                  </div>
-                {showExtraCard && (
-                  <div style={{ width: "30%" }}>
-                    <AssetDetailsCard
-                      asset={selectedProduct}
-                      setShowExtraCard={setShowExtraCard}
+
+                    {checkboxContainer(selectedAssets, showSelectedAsset, setSelectedAssets, filterAssetsData)}
+                    <AssetTable
+                      currentPage={currentPage}
+                      selectedRowsPerPage={selectedRowsPerPage}
+                      enableReordering={enableReordering}
+                      selectedAssets={selectedAssets}
+                      setSelectedAssets={setSelectedAssets}
+                      handleSelect={handleSelect}
+                      setShowSelectedAsset={setShowSelectedAsset}
+                      setSelectedProduct={setSelectedProduct}
+                      selectedProduct={selectedProduct}
+                      cm={cm}
+                      selectedGroupOption={selectedGroupOption}
+                      t={t}
+                      toggleColor={toggleColor}
+                      isBlue={isBlue}
+                      assetIdBodyTemplate={assetIdBodyTemplate}
+                      assetsData={filterAssetsData}
+                      loading={assetStatus === "loading"}
+                      activeTab={activeTab}
+                      onMoveToRoom={handleMoveToRoom}
+                      searchFilters={searchFilters}
+                      companyIfricId={companyIfricId}
                     />
-                  </div>
+                  </>
+
+
                 )}
               </div>
+              {showExtraCard && (
+                <div style={{ width: "30%" }}>
+                  <AssetDetailsCard
+                    asset={selectedProduct}
+                    setShowExtraCard={setShowExtraCard}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <Footer />
         </div>
-      
-      <Footer />
-      </div>
       </div>
     </div>
   );

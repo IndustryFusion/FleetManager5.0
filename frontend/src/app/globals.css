@@ -98,7 +98,14 @@ body{
 .global-button.dropdown:has(.p-dropdown.p-disabled) {
   opacity: 0.5;
 }
-
+.global-button.is-white {
+  background-color: #fff;
+  border: 1px solid #E4E7EC !important;
+  color: var(--black)
+}
+.global-button.is-white:hover {
+  background-color: #fff;
+}
 /* grey button */
 .global-button.is-grey {
   background-color: var(--grey-box);
