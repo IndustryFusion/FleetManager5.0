@@ -146,7 +146,7 @@ export const actionItemsTemplate = (
   const buttonLabel = isDifferentOwner ? "Ownership Data" : "Assign Owner";
   return (
     <button
-      onClick={() => onMoveToRoom(rowData)}
+      onClick={isDifferentOwner ? undefined : () => onMoveToRoom(rowData)}
       className="action-menu-icon cursor-pointer"
     >
       <img src="/move-icon.svg" alt="move-icon" className="mr-2" />

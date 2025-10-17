@@ -41,6 +41,7 @@ import { FilterMatchMode } from "primereact/api";
 import { getAccessGroupData } from "@/utility/auth";
 import { ContextMenu } from "primereact/contextmenu";
 import ConfirmTransferDialog from "@/components/move-to-room/confirm-dialog";
+import { showToast } from "@/utility/toast";
 
 type ExpandValue = {
   [key: string]: boolean;
@@ -60,6 +61,7 @@ const AssetOverView: React.FC = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [showContextMenu, setShowContextMenu] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [selectedContract, setSelectedContract] = useState<any>(null);
   const [searchFilters, setSearchFilters] = useState({
     global: {
       value: null as string | null,
@@ -145,6 +147,7 @@ const [factoryOwner, setFactoryOwner] = useState<{
         });
       } else {
         showToast(
+           toast,
           "error",
           "No Asset Selected",
           "Please select an asset first"
@@ -161,6 +164,19 @@ const [factoryOwner, setFactoryOwner] = useState<{
   }
   ]
 
+  // const showToast = (
+  //   severity: ToastMessage["severity"],
+  //   summary: string,
+  //   message: string
+  // ) => {
+  //   toast.current?.show({
+  //     severity: severity,
+  //     summary: summary,
+  //     detail: message,
+  //     life: 8000,
+  //   });
+  // };
+
   // console.log("selectedProduct here is", selectedProduct);
   
   const getCompanyId = async()=>{
@@ -170,7 +186,7 @@ const [factoryOwner, setFactoryOwner] = useState<{
       setCompanyIfricId(details.company_ifric_id)
     } catch(error: any) {
       console.log("error from catch ",error);
-      showToast("error", "Error", "Failed to fetch access group data");
+      showToast(toast, "error", "Error", "Failed to fetch access group data");
     }
   }
   useEffect(() => {
@@ -204,9 +220,9 @@ const [factoryOwner, setFactoryOwner] = useState<{
       setAssetCount(normalized.length || 0);
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
-        showToast("error", "Error", "Fetching assets");
+        showToast(toast, "error", "Error", "Fetching assets");
       } else {
-        showToast("error", "Error", error.message);
+        showToast(toast, "error", "Error", error.message);
       }
     } finally {
       setLoading(false);
@@ -310,24 +326,17 @@ const handleTransferOwnershipClick = (
   saveFn: () => Promise<void>,
   assignFn: () => Promise<void>,
   asset: Asset,
-  selectedOwner: {
-    id?: string;
-    name?: string;
-    companyIfricId?: string;
-    company_category?: string;
-    country?: string;
-    logoUrl?: string;
-    city?: string;
-  } | null
+  selectedOwner: typeof factoryOwner | null,
+  contract?: any
 ) => {
-  // if (!selectedOwner) {
-  //   showToast("error", "Missing Owner", "Please select a factory owner before transferring ownership.");
-  //   return;
-  // }
+  if (!selectedOwner) {
+    showToast(toast,"error", "Missing Owner", "Please select a factory owner before transferring ownership.");
+    return;
+  }
 
-  // ✅ Use it here
   setFactoryOwner(selectedOwner);
   setTransferAsset(asset);
+  setSelectedContract(contract); // <-- store contract here
   setOnAcceptFns({ save: saveFn, assign: assignFn });
   setIsConfirmDialogVisible(true);
   setIsMoveToRoomDialogVisible(false);
@@ -339,16 +348,17 @@ const handleConfirmTransfer = async () => {
   if (!transferAsset) return;
 
   try {
-    setIsConfirmDialogVisible(false); // close dialog
+    setIsConfirmDialogVisible(false);
     if (onAcceptFns.save) await onAcceptFns.save();
     if (onAcceptFns.assign) await onAcceptFns.assign();
-    showToast("success", "Success", "Ownership transferred successfully");
     dispatch(fetchAssetsRedux());
-    router.push("/fleet-overview");
+    showToast(toast,"success", "Success", "Ownership transferred successfully");
+    showToast(toast,"success", "Success", "Assigned Contract successfully");
+    router.push("/asset-overview");
   } catch (error) {
-    showToast("error", "Error", "Failed to transfer ownership");
+    showToast(toast,"error", "Error", "Failed to transfer ownership");
   }
-};;
+};
 
   const assetIdBodyTemplate = (rowData: any) => {
     const key = expandValue[rowData?.id] || false;
@@ -401,18 +411,7 @@ const handleConfirmTransfer = async () => {
   );
 };
 
-  const showToast = (
-    severity: ToastMessage["severity"],
-    summary: string,
-    message: string
-  ) => {
-    toast.current?.show({
-      severity: severity,
-      summary: summary,
-      detail: message,
-      life: 8000,
-    });
-  };
+ 
 
   const sortedAssetsData = assets || [];
 
@@ -429,11 +428,6 @@ const handleConfirmTransfer = async () => {
     selectedFilters,
   );
 
-
-  console.log("transferasset",transferAsset)
-  console.log("selectedprodct",selectedProduct)
-  console.log("selectedasset",selectedAssets)
-  console.log("factory Owner", factoryOwner?.name)
 
   return (
     <div className="container">
@@ -456,12 +450,12 @@ const handleConfirmTransfer = async () => {
           assetIfricId={selectedProduct?.id || "No Asset Name"}
           onSave={() => {
             setIsMoveToRoomDialogVisible(false);
-            showToast("success", "Success", "Asset moved successfully");
+            showToast(toast,"success", "Success", "Asset moved successfully");
             dispatch(fetchAssetsRedux());
           }}
-          onTransferOwnership={(saveFn, assignFn) =>
-             handleTransferOwnershipClick(saveFn, assignFn, selectedProduct!)
-          }
+           onTransferOwnership={(saveFn, assignFn, selectedOwner,contract) =>
+           handleTransferOwnershipClick(saveFn, assignFn, selectedProduct!, selectedOwner, contract)
+         }
         />
       )}
       {isConfirmDialogVisible && transferAsset && (
@@ -471,7 +465,18 @@ const handleConfirmTransfer = async () => {
           onConfirm={handleConfirmTransfer}
           assetName={transferAsset.product_name || "No Asset Name"}
           transferAsset={transferAsset}
-          factoryOwner={testFactoryOwner}
+          factoryOwner={
+            factoryOwner
+              ? {
+                companyName: factoryOwner.name,
+                companyImage: factoryOwner.logoUrl,
+                companyCategory: factoryOwner.company_category,
+                country: factoryOwner.country,
+                city: factoryOwner.city,
+              }
+              : undefined
+          }
+          contract={selectedContract} 
         />
       )}
       <div className="flex">

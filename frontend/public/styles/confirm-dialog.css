@@ -9,17 +9,186 @@
 
 .confirm-transfer-dialog.p-dialog .p-dialog-content {
     padding: 32px 24px;
+    gap: 24px;
 }
 
-.confirm-dialog-content{
+.confirm-transfer-dialog.p-dialog .p-dialog-footer {
+    border-top: 1px solid var(--Common-Text-Grey-200-Stroke, #e4e7ec);
+    padding: 16px 24px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.confirm-dialog-container {
+    display: flex;
+    gap: 24px;
+    flex-direction: column;
+}
+
+.confirm-dialog-content {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.counter-parties-container{
+.counter-parties-container {
     padding: 8px 0px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+}
+
+.parties-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+}
+
+.no-product-img {
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    font-weight: 500;
+    width: 50px;
+    height: 50px;
+    border-radius: 70px;
+    color: white !important;
+    background-color: #2b2b2b !important;
+}
+
+.party-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.group-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.group-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: contain;
+    background-color: white;
+}
+
+.group-name {
+    color: var(--Common-Text-Grey-900, #10182b);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.group-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.signed-contracts {
+    color: var(--Common-Text-Grey-600, #475467);
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.party-card {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    min-width: 260px;
+    border-radius: 16px;
+    background: var(--Secondary-Grey, #F7F8FA);
+    z-index: 1;
+}
+
+.party-card.outlined {
+    border: 1px solid var(--ifx-tint-blue-900-primary, #3ca0c9);
+    background: var(--Secondary-Grey, #F7F8FA);
+}
+
+.party-card.filled {
+    background-color: #f7f8fa;
+}
+
+.footer-dialog-confirm {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px;
+}
+
+.contract-parties-header {
+    color: var(--Common-Text-Grey-900, #10182B);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.confirm-heaader-title {
+    color: var(--Common-Text-Grey-900, #10182B);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 18px;
+}
+
+.blue {
+    color: var(--ifx-tint-blue-900-primary, #3CA0C9);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 18px
+}
+
+
+.footer-dialog-confirm {
+    margin-top: 16px;
+    border-radius: 12px;
+    background: #F2F4F7;
+    display: flex;
+    align-items: flex-start;
+}
+
+.contract-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 24px;
+    min-width: 150px;
+    color: var(--Common-Text-Grey-600, #475467);
+    font-family: "League Spartan";
+    font-size: 14px;
+    margin: 3px;
+    /* margin-bottom: 8px; */
+    font-weight: 400;
+}
+
+.contract-header img {
+    width: 24px;
+    height: 24px;
+}
+
+.contract-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 3px;
+}
+
+.contract-item {
+    padding: 8px;
+    border-radius: 6px;
+    background: var(--White, #FFF);
+    font-size: 14px;
+    color: var(--Common-Text-Grey-900, #10182B);
+    font-weight: 500;
 }
