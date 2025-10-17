@@ -7,7 +7,15 @@ interface ConfirmTransferDialogProps {
   visible: boolean;
   assetName: string;
   transferAsset:any;
-  factoryOwner?: { companyName?: string };
+  factoryOwner?: {
+    id?: string;
+    name?: string;
+    companyIfricId?: string;
+    company_category?: string;
+    country?: string;
+    logoUrl?: string;
+    city?: string;
+  } | null;
   onHide: () => void;
   onConfirm: () => void;
 }
@@ -85,16 +93,16 @@ export default function ConfirmTransferDialog({
                 {/* New/Transfer Company */}
                 <div className="party-card">
                   <img
-                    src={factoryOwner?.companyLogo || "/default-logo.png"}
-                    alt={factoryOwner?.companyName}
+                    src={factoryOwner?.logoUrl || "/default-logo.png"}
+                    alt={factoryOwner?.name}
                   />
                   <div className="party-info">
                     <strong>
-                      {factoryOwner?.name|| "New Company"}
+                      {factoryOwner?.name || "New Company"}
                     </strong>
                     <p>
-                      {factoryOwner?.companyCity || "City"},{" "}
-                      {factoryOwner?.companyCountry || "Country"}
+                      {factoryOwner?.city || "City"},{" "}
+                      {factoryOwner?.country || "Country"}
                     </p>
                   </div>
                 </div>

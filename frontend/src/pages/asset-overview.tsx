@@ -97,7 +97,7 @@ const AssetOverView: React.FC = () => {
   const [enableReordering, setEnableReordering] = useState(false);
   const [isBlue, setIsBlue] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({});
-  const [selectedGroupOption, setSelectedGroupOption] = useState(null);
+  const [selectedGroupOption, setSelectedGroupOption] = useState<string | null>(null);
   const [companyIfricId, setCompanyIfricId] = useState("");
   const [groupOptions, setGroupOptions] = useState([
     { label: "Product Type", value: "type" },
@@ -155,8 +155,10 @@ const [factoryOwner, setFactoryOwner] = useState<{
     {
     label: "Assign Owner",
     icon: "",
-    command: (rowData:Asset) => {
-      handleMoveToRoom(rowData)
+    command: () => {
+      if (selectedProduct) {
+        handleMoveToRoom(selectedProduct);
+      }
   }
   }
   ]
@@ -309,7 +311,6 @@ const [factoryOwner, setFactoryOwner] = useState<{
 const handleTransferOwnershipClick = (
   saveFn: () => Promise<void>,
   assignFn: () => Promise<void>,
-  asset: Asset,
   selectedOwner: {
     id?: string;
     name?: string;
@@ -320,14 +321,14 @@ const handleTransferOwnershipClick = (
     city?: string;
   } | null
 ) => {
-  // if (!selectedOwner) {
-  //   showToast("error", "Missing Owner", "Please select a factory owner before transferring ownership.");
-  //   return;
-  // }
+  if (!selectedOwner) {
+    showToast("error", "Missing Owner", "Please select a factory owner before transferring ownership.");
+    return;
+  }
 
   // ✅ Use it here
   setFactoryOwner(selectedOwner);
-  setTransferAsset(asset);
+  setTransferAsset(selectedProduct);
   setOnAcceptFns({ save: saveFn, assign: assignFn });
   setIsConfirmDialogVisible(true);
   setIsMoveToRoomDialogVisible(false);
@@ -449,18 +450,22 @@ const handleConfirmTransfer = async () => {
         <MoveToRoomDialog
           visible={isMoveToRoomDialogVisible}
           onHide={() => setIsMoveToRoomDialogVisible(false)}
-          asset={selectedProduct}
+          asset={selectedProduct ? {
+            id: selectedProduct.id,
+            type: selectedProduct.type,
+            asset_category: selectedProduct.asset_category,
+            name: selectedProduct.product_name
+          } : undefined}
           assetName={selectedProduct?.product_name || "No Asset Name"}
           company_ifric_id={companyIfricId}
-          onClick={() => handleMoveToRoomClick(selectedProduct)}
           assetIfricId={selectedProduct?.id || "No Asset Name"}
           onSave={() => {
             setIsMoveToRoomDialogVisible(false);
             showToast("success", "Success", "Asset moved successfully");
             dispatch(fetchAssetsRedux());
           }}
-          onTransferOwnership={(saveFn, assignFn) =>
-             handleTransferOwnershipClick(saveFn, assignFn, selectedProduct!)
+          onTransferOwnership={(saveFn, assignFn, selectedOwner) =>
+             handleTransferOwnershipClick(saveFn, assignFn, selectedOwner)
           }
         />
       )}
@@ -471,7 +476,7 @@ const handleConfirmTransfer = async () => {
           onConfirm={handleConfirmTransfer}
           assetName={transferAsset.product_name || "No Asset Name"}
           transferAsset={transferAsset}
-          factoryOwner={testFactoryOwner}
+          factoryOwner={factoryOwner}
         />
       )}
       <div className="flex">
@@ -493,12 +498,12 @@ const handleConfirmTransfer = async () => {
               selectedGroupOption={selectedGroupOption}
               setSelectedGroupOption={setSelectedGroupOption}
               globalFilterValue={globalFilterValue}
-              onFilter={activeTab === "Assets" && onFilter}
+              onFilter={activeTab === "Assets" ? onFilter : undefined}
               selectedFilters={selectedFilters}
               setSelectedFilters={setSelectedFilters}
               groupOptions={groupOptions}
               tableData={
-                activeTab === "Assets" && sortedAssetsData
+                activeTab === "Assets" ? sortedAssetsData : []
               }
               activeTab={activeTab}
             />

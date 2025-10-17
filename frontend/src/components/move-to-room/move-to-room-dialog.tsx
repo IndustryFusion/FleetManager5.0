@@ -50,6 +50,7 @@ interface MoveToRoomDialogProps {
   onTransferOwnership?: (
     saveFn: () => Promise<void>,
     assignFn: () => Promise<void>,
+    selectedOwner: Company | null,
   ) => void;
 }
 
@@ -560,6 +561,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
           onTransferOwnership?.(
             handleSave,
             () => handleAssignContract(factoryOwner?.companyIfricId, contract),
+            factoryOwner,
           );
         }}
         disabled={!factoryOwner}
