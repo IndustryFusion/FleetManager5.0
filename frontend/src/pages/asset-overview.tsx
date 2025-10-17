@@ -99,7 +99,7 @@ const AssetOverView: React.FC = () => {
   const [enableReordering, setEnableReordering] = useState(false);
   const [isBlue, setIsBlue] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({});
-  const [selectedGroupOption, setSelectedGroupOption] = useState(null);
+  const [selectedGroupOption, setSelectedGroupOption] = useState<string | null>(null);
   const [companyIfricId, setCompanyIfricId] = useState("");
   const [groupOptions, setGroupOptions] = useState([
     { label: "Product Type", value: "type" },
@@ -158,8 +158,10 @@ const [factoryOwner, setFactoryOwner] = useState<{
     {
     label: "Assign Owner",
     icon: "",
-    command: (rowData:Asset) => {
-      handleMoveToRoom(rowData)
+    command: () => {
+      if (selectedProduct) {
+        handleMoveToRoom(selectedProduct);
+      }
   }
   }
   ]
@@ -443,10 +445,14 @@ const handleConfirmTransfer = async () => {
         <MoveToRoomDialog
           visible={isMoveToRoomDialogVisible}
           onHide={() => setIsMoveToRoomDialogVisible(false)}
-          asset={selectedProduct}
+          asset={selectedProduct ? {
+            id: selectedProduct.id,
+            type: selectedProduct.type,
+            asset_category: selectedProduct.asset_category,
+            name: selectedProduct.product_name
+          } : undefined}
           assetName={selectedProduct?.product_name || "No Asset Name"}
           company_ifric_id={companyIfricId}
-          onClick={() => handleMoveToRoomClick(selectedProduct)}
           assetIfricId={selectedProduct?.id || "No Asset Name"}
           onSave={() => {
             setIsMoveToRoomDialogVisible(false);
@@ -498,12 +504,12 @@ const handleConfirmTransfer = async () => {
               selectedGroupOption={selectedGroupOption}
               setSelectedGroupOption={setSelectedGroupOption}
               globalFilterValue={globalFilterValue}
-              onFilter={activeTab === "Assets" && onFilter}
+              onFilter={activeTab === "Assets" ? onFilter : undefined}
               selectedFilters={selectedFilters}
               setSelectedFilters={setSelectedFilters}
               groupOptions={groupOptions}
               tableData={
-                activeTab === "Assets" && sortedAssetsData
+                activeTab === "Assets" ? sortedAssetsData : []
               }
               activeTab={activeTab}
             />

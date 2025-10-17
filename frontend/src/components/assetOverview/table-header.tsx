@@ -16,11 +16,12 @@ interface TableHeaderProps {
   selectedGroupOption: string | null;
   setSelectedGroupOption: (value: string | null) => void;
   globalFilterValue: string;
-  onFilter: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFilter?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   selectedFilters: any; // You can refine this type based on your filters data structure
   setSelectedFilters: (filters: any) => void;
   groupOptions: GroupOption[];
-  tableData: Asset; // You can refine this type based on your data structure
+  tableData: Asset[]; // You can refine this type based on your data structure
+  activeTab: string;
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({
@@ -33,7 +34,8 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   selectedFilters,
   setSelectedFilters,
   groupOptions,
-  tableData
+  tableData,
+  activeTab
 }) => {
   const { t } = useTranslation(["overview", "placeholder"]);
 
