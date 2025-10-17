@@ -1,0 +1,25 @@
+.confirm-transfer-dialog.p-dialog .p-dialog-header {
+    padding: 16px 24px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: 1px solid var(--Common-Text-Grey-200-Stroke, #e4e7ec);
+    background: var(--White, #fff);
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.25);
+}
+
+.confirm-transfer-dialog.p-dialog .p-dialog-content {
+    padding: 32px 24px;
+}
+
+.confirm-dialog-content{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.counter-parties-container{
+    padding: 8px 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}

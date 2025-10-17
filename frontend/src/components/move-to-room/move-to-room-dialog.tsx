@@ -47,6 +47,10 @@ interface MoveToRoomDialogProps {
   visible: boolean;
   onHide: () => void;
   onSave: () => void;
+  onTransferOwnership?: (
+    saveFn: () => Promise<void>,
+    assignFn: () => Promise<void>,
+  ) => void;
 }
 
 interface OwnerDetails {
@@ -60,7 +64,7 @@ interface OwnerDetails {
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 const IFRIC_REGISTRY_BACKEND_URL = process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
 
-const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,assetIfricId, company_ifric_id, visible, onHide, onSave }) => {
+const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,assetIfricId, company_ifric_id, visible, onHide, onSave ,  onTransferOwnership}) => {
   const [factoryOwner, setFactoryOwner] = useState<Company | null>(null);
   const [factoryOwners, setFactoryOwners] = useState<OwnerDetails[]>([]);
   const [certificate, setCertificate] = useState<Certificate[] | null>([]);
@@ -277,14 +281,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
       });
     }
   };
-  const handleFactoryOwnerChange = (e: DropdownChangeEvent) => {
-    const selectedOwner = e.value;
-    // console.log(selectedOwner,"selectedOnwer")
-    setFactoryOwner(selectedOwner);
-    setOwnerVerified(null);
-    setCompanyIfricId(e.value.companyIfricId);
-    getCompanyCertification(e.value.companyIfricId);
-  };
+  
 
   const calcValidTill = (contract: any): Date | null => {
     // console.log(contract,"calcValidTill Contract")
@@ -450,6 +447,20 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
     }
   };
 
+  console.log("FactoryOnwer",factoryOwners)
+
+  const handleFactoryOwnerChange = (e: DropdownChangeEvent) => {
+    const selectedOwner = e.value;
+    console.log(selectedOwner,"selectedOnwer")
+    setFactoryOwner(selectedOwner);
+    setOwnerVerified(null);
+    setCompanyIfricId(e.value.companyIfricId);
+    getCompanyCertification(e.value.companyIfricId);
+  };
+
+  console.log("FC",factoryOwner)
+
+
   const handleDateChange = (date: Date) => {
     const selectedDate = date as Date;
     const formattedDate = moment(selectedDate)
@@ -545,18 +556,17 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
       <Button
         label="Transfer Ownership"
         icon="pi pi-check"
-        onClick={async () => {
-          await handleSave();
-           await handleAssignContract(
-             factoryOwner?.companyIfricId,
-             contract 
-           );
-       
+        onClick={() => {
+          onTransferOwnership?.(
+            handleSave,
+            () => handleAssignContract(factoryOwner?.companyIfricId, contract),
+          );
         }}
         disabled={!factoryOwner}
-        style={{ backgroundColor: "#E6E6E6", color: "black" }} // Set text color to black
+        style={{ backgroundColor: "#E6E6E6", color: "black" }}
         autoFocus
       />
+
       <div className="mt-2">
         {saveMessage && (
           <Message severity={saveMessage.severity} text={saveMessage.text} />

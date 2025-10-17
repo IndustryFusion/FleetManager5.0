@@ -40,6 +40,7 @@ import { fetchAssetsRedux } from "@/redux/asset/assetsSlice";
 import { FilterMatchMode } from "primereact/api";
 import { getAccessGroupData } from "@/utility/auth";
 import { ContextMenu } from "primereact/contextmenu";
+import ConfirmTransferDialog from "@/components/move-to-room/confirm-dialog";
 
 type ExpandValue = {
   [key: string]: boolean;
@@ -107,9 +108,24 @@ const AssetOverView: React.FC = () => {
   const router = useRouter();
   const [accessgroupIndexDb, setAccessgroupIndexedDb] =useState<any>(null);
   const [isMoveToRoomDialogVisible, setIsMoveToRoomDialogVisible] = useState(false);
+  const [isConfirmDialogVisible, setIsConfirmDialogVisible] = useState(false); 
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState("Assets");
-
+  const [transferAsset, setTransferAsset] = useState<any>(null);
+  const [onAcceptFns, setOnAcceptFns] = useState<{
+  save?: () => Promise<void>;
+  assign?: () => Promise<void>;
+}>({});
+const [factoryOwner, setFactoryOwner] = useState<{
+  id?: string;
+  name?: string;
+  companyIfricId?: string;
+  company_category?: string;
+  country?: string;
+  logoUrl?: string;
+  city?: string;
+} | null>(null);
+ const [testFactoryOwner,setTestFactoryOwner]=useState<any>([])
 
   const menuModel = [
     {
@@ -285,9 +301,58 @@ const AssetOverView: React.FC = () => {
     setSelectedProduct(rowData);
   };
 
+  const handleMoveToRoomClick = (asset: any) => {
+    setTransferAsset(asset);
+    setIsMoveToRoomDialogVisible(true);
+  };
+
+const handleTransferOwnershipClick = (
+  saveFn: () => Promise<void>,
+  assignFn: () => Promise<void>,
+  asset: Asset,
+  selectedOwner: {
+    id?: string;
+    name?: string;
+    companyIfricId?: string;
+    company_category?: string;
+    country?: string;
+    logoUrl?: string;
+    city?: string;
+  } | null
+) => {
+  // if (!selectedOwner) {
+  //   showToast("error", "Missing Owner", "Please select a factory owner before transferring ownership.");
+  //   return;
+  // }
+
+  // ✅ Use it here
+  setFactoryOwner(selectedOwner);
+  setTransferAsset(asset);
+  setOnAcceptFns({ save: saveFn, assign: assignFn });
+  setIsConfirmDialogVisible(true);
+  setIsMoveToRoomDialogVisible(false);
+};
+
+
+
+const handleConfirmTransfer = async () => {
+  if (!transferAsset) return;
+
+  try {
+    setIsConfirmDialogVisible(false); // close dialog
+    if (onAcceptFns.save) await onAcceptFns.save();
+    if (onAcceptFns.assign) await onAcceptFns.assign();
+    showToast("success", "Success", "Ownership transferred successfully");
+    dispatch(fetchAssetsRedux());
+    router.push("/fleet-overview");
+  } catch (error) {
+    showToast("error", "Error", "Failed to transfer ownership");
+  }
+};;
+
   const assetIdBodyTemplate = (rowData: any) => {
     const key = expandValue[rowData?.id] || false;
-  const formatId = (id: string) => {
+    const formatId = (id: string) => {
     if (!id) return "";
     if (key) return id;
     const prefix = id.slice(10, 17);
@@ -365,116 +430,134 @@ const AssetOverView: React.FC = () => {
   );
 
 
+  console.log("transferasset",transferAsset)
+  console.log("selectedprodct",selectedProduct)
+  console.log("selectedasset",selectedAssets)
+  console.log("factory Owner", factoryOwner?.name)
 
   return (
     <div className="container">
       {showContextMenu && (
-                <ContextMenu
-                  model={menuModel}
-                  ref={cm}
-                  // onHide={() => setSelectedProduct(null)}
-                />
-              )}
+        <ContextMenu
+          model={menuModel}
+          ref={cm}
+        // onHide={() => setSelectedProduct(null)}
+        />
+      )}
       <Toast ref={toast} />
       {isMoveToRoomDialogVisible && (
         <MoveToRoomDialog
-        visible={isMoveToRoomDialogVisible}
-        onHide={() => setIsMoveToRoomDialogVisible(false)}
-        asset={selectedProduct}
-        assetName={selectedProduct?.product_name || "No Asset Name"}
-        company_ifric_id={companyIfricId}
-        assetIfricId={selectedProduct?.id || "No Asset Name"}
-        onSave={() => {
-          setIsMoveToRoomDialogVisible(false);
-          showToast("success", "Success", "Asset moved successfully");
-          dispatch(fetchAssetsRedux())
-        }}
-      />
+          visible={isMoveToRoomDialogVisible}
+          onHide={() => setIsMoveToRoomDialogVisible(false)}
+          asset={selectedProduct}
+          assetName={selectedProduct?.product_name || "No Asset Name"}
+          company_ifric_id={companyIfricId}
+          onClick={() => handleMoveToRoomClick(selectedProduct)}
+          assetIfricId={selectedProduct?.id || "No Asset Name"}
+          onSave={() => {
+            setIsMoveToRoomDialogVisible(false);
+            showToast("success", "Success", "Asset moved successfully");
+            dispatch(fetchAssetsRedux());
+          }}
+          onTransferOwnership={(saveFn, assignFn) =>
+             handleTransferOwnershipClick(saveFn, assignFn, selectedProduct!)
+          }
+        />
+      )}
+      {isConfirmDialogVisible && transferAsset && (
+        <ConfirmTransferDialog
+          visible={isConfirmDialogVisible}
+          onHide={() => setIsConfirmDialogVisible(false)}
+          onConfirm={handleConfirmTransfer}
+          assetName={transferAsset.product_name || "No Asset Name"}
+          transferAsset={transferAsset}
+          factoryOwner={testFactoryOwner}
+        />
       )}
       <div className="flex">
-      <Sidebar />
+        <Sidebar />
         <div className="main_content_wrapper">
-        <div className="navbar_wrapper">
-          <Navbar 
-          navHeader={"PDT Overview"}
-          />
-          <OverviewHeader
-            assetCount={ assetCount }
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            accessgroupIndexDb={accessgroupIndexDb}
-          />
-          <TableHeader
-            enableReordering={enableReordering}
-            setEnableReordering={setEnableReordering}
-            selectedGroupOption={selectedGroupOption}
-            setSelectedGroupOption={setSelectedGroupOption}
-            globalFilterValue={globalFilterValue}
-            onFilter={activeTab === "Assets" && onFilter }
-            selectedFilters={selectedFilters}
-            setSelectedFilters={setSelectedFilters}
-            groupOptions={groupOptions}
-            tableData={
-              activeTab === "Assets" && sortedAssetsData
-            }
-            activeTab={activeTab}
-          />
+          <div className="navbar_wrapper">
+            <Navbar
+              navHeader={"PDT Overview"}
+            />
+            <OverviewHeader
+              assetCount={assetCount}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              accessgroupIndexDb={accessgroupIndexDb}
+            />
+            <TableHeader
+              enableReordering={enableReordering}
+              setEnableReordering={setEnableReordering}
+              selectedGroupOption={selectedGroupOption}
+              setSelectedGroupOption={setSelectedGroupOption}
+              globalFilterValue={globalFilterValue}
+              onFilter={activeTab === "Assets" && onFilter}
+              selectedFilters={selectedFilters}
+              setSelectedFilters={setSelectedFilters}
+              groupOptions={groupOptions}
+              tableData={
+                activeTab === "Assets" && sortedAssetsData
+              }
+              activeTab={activeTab}
+            />
 
-          <div
-            style={{
-              paddingLeft: "24px",
-              position: "relative",
-              display: "flex",
-              height: "calc(70vh - 14px)",
-            }}
-          >
-            <div style={{ ...dataTableStyle, width: dataTableCardWidth }}>
+            <div
+              style={{
+                paddingLeft: "24px",
+                position: "relative",
+                display: "flex",
+                height: "calc(70vh - 14px)",
+              }}
+            >
+              <div style={{ ...dataTableStyle, width: dataTableCardWidth }}>
                 {activeTab === "Assets" && (
                   <>
-    
 
-                {checkboxContainer(selectedAssets, showSelectedAsset, setSelectedAssets, filterAssetsData)}
-                <AssetTable
-                  currentPage={currentPage}
-                  selectedRowsPerPage={selectedRowsPerPage}
-                  enableReordering={enableReordering}
-                  selectedAssets={selectedAssets}
-                  setSelectedAssets={setSelectedAssets}
-                  handleSelect={handleSelect}
-                  setShowSelectedAsset={setShowSelectedAsset}
-                  setSelectedProduct={setSelectedProduct}
-                  selectedProduct={selectedProduct}
-                  cm={cm}
-                  selectedGroupOption={selectedGroupOption}
-                  t={t}
-                  toggleColor={toggleColor}
-                  isBlue={isBlue}
-                  assetIdBodyTemplate={assetIdBodyTemplate}
-                  assetsData={filterAssetsData}
-                  loading={assetStatus === "loading"}
-                  activeTab={activeTab}
-                  onMoveToRoom={handleMoveToRoom}
-                  searchFilters={searchFilters}
-                  companyIfricId={companyIfricId} 
-               />
-                 </>
-                 
-              
-              )}
-                  </div>
-                {showExtraCard && (
-                  <div style={{ width: "30%" }}>
-                    <AssetDetailsCard
-                      asset={selectedProduct}
-                      setShowExtraCard={setShowExtraCard}
+
+                    {checkboxContainer(selectedAssets, showSelectedAsset, setSelectedAssets, filterAssetsData)}
+                    <AssetTable
+                      currentPage={currentPage}
+                      selectedRowsPerPage={selectedRowsPerPage}
+                      enableReordering={enableReordering}
+                      selectedAssets={selectedAssets}
+                      setSelectedAssets={setSelectedAssets}
+                      handleSelect={handleSelect}
+                      setShowSelectedAsset={setShowSelectedAsset}
+                      setSelectedProduct={setSelectedProduct}
+                      selectedProduct={selectedProduct}
+                      cm={cm}
+                      selectedGroupOption={selectedGroupOption}
+                      t={t}
+                      toggleColor={toggleColor}
+                      isBlue={isBlue}
+                      assetIdBodyTemplate={assetIdBodyTemplate}
+                      assetsData={filterAssetsData}
+                      loading={assetStatus === "loading"}
+                      activeTab={activeTab}
+                      onMoveToRoom={handleMoveToRoom}
+                      searchFilters={searchFilters}
+                      companyIfricId={companyIfricId}
                     />
-                  </div>
+                  </>
+
+
                 )}
               </div>
+              {showExtraCard && (
+                <div style={{ width: "30%" }}>
+                  <AssetDetailsCard
+                    asset={selectedProduct}
+                    setShowExtraCard={setShowExtraCard}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <Footer />
         </div>
-      
-      <Footer />
-      </div>
       </div>
     </div>
   );
