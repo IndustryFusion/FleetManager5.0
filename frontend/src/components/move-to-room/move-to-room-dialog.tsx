@@ -84,7 +84,8 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
   const [certificationDate, setCertificationDate] = useState<Date | null | undefined>(null);
   const [assetVerified, setAssetVerified] = useState<boolean | null>(null);
   const [ownerVerified, setOwnerVerified] = useState<boolean | null>(null);
-  const [companyVerified, setCompanyVerified] = useState<boolean | null>(null);
+  const [companyVerified, setCompanyVerified] = useState<string>("");
+  const [companyCertified, setCompanyCertified] = useState<boolean | null>(null);
   const [companyIfricId, setCompanyIfricId] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -160,6 +161,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
       const response = await getCompanyDetailsById(company_ifric_id);
       setUserEmail(response?.data[0].email);
       setCompanyName(response?.data[0].company_name)
+      setCompanyVerified(response?.data[0].company_verified ?? "")
     }
     catch (error: any) {
       console.error("Failed to fetch company details");
@@ -205,9 +207,9 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
     try {
       const response = await verifyCompanyAssetCertificate(company_ifric_id, assetIfricId);
       if (response?.data.company_cert === true) {
-        setCompanyVerified(true);
+        setCompanyCertified(true);
       } else {
-        setCompanyVerified(false);
+        setCompanyCertified(false);
       }
       if(response?.data.asset_cert === true) {
         setAssetVerified(true);
@@ -571,8 +573,12 @@ const fetchFactoryOwners = async () => {
             contract
           );
         }}
-        disabled={!factoryOwner}
+        disabled={!factoryOwner || !companyCertified || companyVerified !== "verified"}
         style={{ backgroundColor: "#E6E6E6", color: "black" }}
+        tooltip={ !companyCertified ? "Buy Company certificate in Industry Fusion to Assign New Owner" :
+          (companyVerified !== "verified" ? "Verify the Company In Industry Fusion to Assign New Owner " : "")
+        }
+        tooltipOptions={{ position: 'bottom', showOnDisabled: true }}
         autoFocus
       />
 
@@ -596,10 +602,10 @@ const fetchFactoryOwners = async () => {
         <p className="header_ifric_id">{assetIfricId}</p></div>
       <div className='company_verified_wrapper'>
         <div>{companyName}</div>
-        {(companyVerified !== null && companyVerified === true) && (
+        {(companyCertified !== null && companyCertified === true) && (
           <Image src="/verified_icon.svg" alt='company verified' width={20} height={20}></Image>
         )}
-        {(companyVerified !== null && companyVerified === false) && (
+        {(companyCertified !== null && companyCertified === false) && (
           <Image src="/warning.svg" alt='company verified' width={20} height={20}></Image>
         )}
       </div>
