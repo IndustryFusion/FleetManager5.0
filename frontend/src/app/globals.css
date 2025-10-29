@@ -230,3 +230,20 @@ body{
 .global_dropdown_panel .p-dropdown-header .p-inputtext:is(:focus, :hover) {
   border-color: var(--ifx-shades-900);
 }
+
+/* message styles */
+.global-message {
+  padding: 8px 12px;
+  color: var(--ifx-shades-900);
+  background-color: #D8ECF4;
+  border-radius: 8px;
+  font-size: 16px !important;
+  line-height: 18px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.global-message strong{
+  font-weight: 500;
+}
