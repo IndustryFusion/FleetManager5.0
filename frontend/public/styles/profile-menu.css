@@ -88,6 +88,10 @@
     object-fit: cover;
 }
 
+.profile_avatar_circle:has(img) {
+    padding-top: 0px;
+}
+
 .menu_modal_text_wrapper {
     display: flex;
     gap: 16px;
