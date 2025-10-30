@@ -21,7 +21,8 @@
     "owner":"Owner",
     "id":"Asset ID",
     "qrCode":"QR",
-    "action":"Actions"
+    "action":"Actions",
+    "create_PDT":"Create PDT"
     
 }
 
