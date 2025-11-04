@@ -21,6 +21,8 @@ import { getAssignedContracts, getContracts } from "@/utility/contracts";
 import { createBinding } from "@/utility/contracts";
 import { toDate } from '@/utility/dateformat';
 import { getAccessGroup } from '@/utility/indexed-db';
+import { Skeleton } from 'primereact/skeleton';
+
 interface Company {
   id: string;
   name: string;
@@ -94,6 +96,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
   const [contractLoading, setContractLoading] = useState<boolean>(true);
   const [loading, setLoading] = useState(false);
   const [completeContract, setCompleteContract]= useState<Record<string,any>[]>([]);
+  const [ownersLoading, setOwnersLoading] = useState<boolean>(true);
   const [saveMessage, setSaveMessage] = useState<{
     severity: "success" | "error" | "warn";
     text: string;
@@ -431,6 +434,7 @@ const filterSelectedContractData=(contractNames:Array<string>):any=>{
 }
 
 const fetchFactoryOwners = async () => {
+   setOwnersLoading(true);
   try {
     const response = await getAllCompanies();
     console.log(response, "New Product Owners Response");
@@ -455,8 +459,25 @@ const fetchFactoryOwners = async () => {
   } catch (error) {
     console.error('Error fetching new product owners:', error);
     toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to fetch new product owners' });
+    setFactoryOwners([]);
+  } finally {
+    setOwnersLoading(false);
   }
 };
+
+  const renderSkeletonItems = () => (
+    <>
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="flex align-items-center gap-2 p-1">
+          <Skeleton shape="circle" size="2rem" />
+          <div className="flex flex-column gap-1">
+            <Skeleton width="8rem" height="1rem" />
+            <Skeleton width="6rem" height="0.8rem" />
+          </div>
+        </div>
+      ))}
+    </>
+  );
 
   const handleFactoryOwnerChange = (e: DropdownChangeEvent) => {
     const selectedOwner = e.value;
@@ -698,14 +719,21 @@ const fetchFactoryOwners = async () => {
                   <Dropdown
                     id="factoryOwner"
                     value={factoryOwner}
-                    options={factoryOwners}
+                    options={ownersLoading ? [{}] : factoryOwners} // 👈 supply a dummy item while loading
                     onChange={handleFactoryOwnerChange}
                     optionLabel="name"
                     filter
                     placeholder="Select a new product owner"
                     className="company_dropdown"
                     filterBy="name,country"
-                    itemTemplate={(option) => (
+                    emptyMessage={null} // fully disables default message
+                    showClear={false}
+                    itemTemplate={(option) =>
+                       ownersLoading ? (
+                        <div className="p-2 w-full">
+                          {renderSkeletonItems()}
+                        </div>
+                      ) : (
                       <div className="owner-option">
                         <div className="owner-avatar">
                           {option.logoUrl ? (

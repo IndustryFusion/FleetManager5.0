@@ -41,7 +41,7 @@
 .parties-container {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
     gap: 25px;
 }
@@ -105,7 +105,7 @@
     padding: 12px;
     border-radius: 16px;
     width: 100%;
-    max-width: 400px;
+    /* max-width: 400px; */
     min-width: 260px;
     border-radius: 16px;
     background: var(--Secondary-Grey, #F7F8FA);

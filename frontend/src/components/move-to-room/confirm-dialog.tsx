@@ -65,7 +65,7 @@ export default function ConfirmTransferDialog({
         return <div className="no-product-img">{name ? name[0].toUpperCase() : "?"}</div>;
     };
 
-    console.log("contractssss", contract);
+    // console.log("contractssss", contract);
 
     return (
       <Dialog
@@ -84,7 +84,7 @@ export default function ConfirmTransferDialog({
             </div>
 
             <div className="counter-parties-container">
-              <div className="contract-parties">
+              <div className="contract-parties w-full">
                 <h3 className="contract-parties-header">Contract Parties</h3>
 
                 <div className="parties-container">
@@ -143,7 +143,7 @@ export default function ConfirmTransferDialog({
 
           {contract && contract.length > 0 && (
             <div className="footer-dialog-confirm">
-              <h3 className="contract-header">
+              <h3 className="contract-header pt-1">
                 <img src="/custom-field (1).svg" alt="Contracts Icon" />
                 Contracts
               </h3>
