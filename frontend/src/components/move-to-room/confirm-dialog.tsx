@@ -65,7 +65,7 @@ export default function ConfirmTransferDialog({
         return <div className="no-product-img">{name ? name[0].toUpperCase() : "?"}</div>;
     };
 
-    // console.log("contractssss", contract);
+   const hasContract = Array.isArray(contract) && contract.length > 0;
 
     return (
       <Dialog
@@ -133,30 +133,42 @@ export default function ConfirmTransferDialog({
             </div>
 
             <div className="confirm-heaader-title">
-              This action will assign PDT Asset to the new company with below
-              data sharing contract and new owner can see this PDT Asset in
-              their <strong className="blue">IFX Eco-System </strong>,that is
-              in,{" "}
-              <strong className="blue">Factory Manager & Fleet Manager.</strong>
+            {hasContract ? (
+              <>
+                This action will assign PDT Asset to the new company with the below
+                data sharing contract, and the new owner can see this PDT Asset in
+                their <strong className="blue">IFX Eco-System</strong> — specifically in{" "}
+                <strong className="blue">Factory Manager & Fleet Manager</strong>.
+              </>
+            ) : (
+              <>
+                This action will assign PDT Asset to the new company. The new owner
+                can see this PDT Asset in their{" "}
+                <strong className="blue">IFX Eco-System</strong> — specifically in{" "}
+                <strong className="blue">Factory Manager & Fleet Manager</strong>.
+              </>
+            )}
             </div>
           </div>
 
-          {contract && contract.length > 0 && (
             <div className="footer-dialog-confirm">
               <h3 className="contract-header pt-1">
                 <img src="/custom-field (1).svg" alt="Contracts Icon" />
                 Contracts
               </h3>
               <div className="contract-display">
-                {contract.map((c, index) => (
+            {hasContract ? (
+              contract.map((c, index) => (
                   <span key={index} className="contract-item">
                     {c}
                   </span>
-                ))}
-              </div>
+              ))
+            ) : (
+              <span className="contract-item">---- -----</span>
+            )}
             </div>
-          )}
         </div>
+      </div>
       </Dialog>
     );
 }
