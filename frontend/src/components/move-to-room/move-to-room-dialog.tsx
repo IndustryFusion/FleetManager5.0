@@ -586,12 +586,15 @@ const fetchFactoryOwners = async () => {
         label="Transfer Ownership"
         icon="pi pi-check"
         onClick={() => {
-          if (!factoryOwner || !contract) return;
+          if (!factoryOwner) {
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Please select a new product owner' });
+            return;
+          }
           onTransferOwnership?.(
             handleSave,
             () => handleAssignContract(factoryOwner.companyIfricId, contract),
             factoryOwner,
-            contract
+            contract || null
           );
         }}
         disabled={!factoryOwner || !companyCertified || companyVerified !== "verified"}
@@ -844,7 +847,7 @@ const fetchFactoryOwners = async () => {
                     </div>
                   )}
                 </div>
-              {preCertifyAsset && (
+            {preCertifyAsset && assetVerified === false && (
                 <>
                   <div className="form_field margin_top">
                     <div className="p-field p-float-label">
