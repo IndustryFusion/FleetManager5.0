@@ -22,6 +22,7 @@ import { createBinding } from "@/utility/contracts";
 import { toDate } from '@/utility/dateformat';
 import { getAccessGroup } from '@/utility/indexed-db';
 import { Skeleton } from 'primereact/skeleton';
+import { useTranslation } from "next-i18next";
 
 interface Company {
   id: string;
@@ -109,6 +110,8 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
     []
   );
   const [factoryOwnerSearch, setFactoryOwnerSearch] = useState("");
+  const [accessgroupIndexDb, setAccessgroupIndexedDb] = useState<any>(null);
+  const { t } = useTranslation(["overview", "placeholder"]);
 
   // const certificateOptions: Certificate[] = [
   //   { label: 'contract_Predictive_MIcrostep', value: 'contract_Predictive_MIcrostep' },
@@ -128,6 +131,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
 
       try {
         const accessGroup = await getAccessGroup();
+        setAccessgroupIndexedDb(accessGroup);
         const res = await getAssignedContracts(
           factoryOwner.companyIfricId,
           accessGroup.company_ifric_id,
@@ -597,10 +601,10 @@ const fetchFactoryOwners = async () => {
             contract || null
           );
         }}
-        disabled={!factoryOwner || !companyCertified || companyVerified !== "verified"}
+        disabled={!factoryOwner || !companyCertified || companyVerified !== "verified" || !accessgroupIndexDb?.access_group?.create}
         style={{ backgroundColor: "#E6E6E6", color: "black" }}
         tooltip={ !companyCertified ? "Buy Company certificate in Industry Fusion to Assign New Owner" :
-          (companyVerified !== "verified" ? "Verify the Company In Industry Fusion to Assign New Owner " : "")
+          (companyVerified !== "verified" ? "Verify the Company In Industry Fusion to Assign New Owner " : !accessgroupIndexDb?.access_group?.create ? t("overview:access_permission") : "")
         }
         tooltipOptions={{ position: 'bottom', showOnDisabled: true }}
         autoFocus

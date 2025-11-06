@@ -22,7 +22,7 @@
     "id":"Asset ID",
     "qrCode":"QR",
     "action":"Actions",
-    "create_PDT":"Create PDT"
-    
+    "create_PDT":"Create PDT",
+    "access_permission": "no access rights. Ask your company admin for the access"
 }
 
