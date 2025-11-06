@@ -22,6 +22,6 @@
     "id":"Asset-ID",
     "qrCode":"QR",
     "action":"Aktionen",
-    "create_PDT":"PDT erstellen"
-
+    "create_PDT":"PDT erstellen",
+    "access_permission": "Sie haben keine Zugriffsrechte. Bitten Sie Ihren Firmenadministrator um die Zugriffsrechte"
 }
