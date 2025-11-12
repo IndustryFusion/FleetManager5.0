@@ -339,7 +339,8 @@ display: none;
   gap: 30px;
   width: 100%;
 }
-.form_group_title{
+
+.form_group_title {
   font-size: 1.25rem;
   color: #2b2b2b;
   font-weight: 600;
@@ -558,4 +559,81 @@ cursor: not-allowed;
 
 .p-fileupload .p-button:hover {
   background-color: #3e3d3dac !important;
+}
+.option-wrapper {
+  display: flex;
+  justify-content: space-between !important;
+  align-items: center;
+}
+
+.already-selected {
+  color: var(--ifx-tint-blue-900-primary, #3ca0c9);
+  font-weight: 500;
+  margin-left: 250px;
+  font-size: 14px;
+}
+
+.p-inputtext {
+  border-radius: 10px;
+}
+
+.company_dropdown.p-dropdown {
+  border-radius: 10px !important;
+}
+.option-wrapper>div:first-child{
+  flex-grow: 1;
+}
+.option-wrapper>span{
+  display: block;
+  flex-grow: 0 !important;
+}
+
+.dataspace_contract_panel .p-multiselect-item span:first-of-type{
+  display: block;
+  flex-grow: 1;
+}
+
+.dataspace_contract_panel .p-multiselect-item span .option-wrapper{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.owner-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.no-product-image {
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 500;
+  width: 40px;
+  height: 40px;
+  border-radius: 70px;
+  color: white !important;
+  background-color: #2b2b2b !important;
+}
+.company-item-wrapper.selected {
+  background-color: #f0f8ff;
+  border-radius: 8px;
+}
+.company-item-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.owner-name {
+  color: var(--Common-Text-Grey-900, #10182b);
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.owner-country {
+  color: var(--Common-Text-Grey-600, #475467);
+  font-size: 14px;
+  font-weight: 400;
 }

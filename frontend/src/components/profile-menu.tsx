@@ -104,6 +104,9 @@ export default function ProfileMenu() {
             }, 500);
         }
     };
+
+    const filteredProducts = userData?.products ? userData?.products.filter((product) => product.product_name !== "IFRIC Dashboard" && product.product_name !== "DPP Viewer") : []
+
     let items = [
         {
             template: () => {
@@ -141,8 +144,8 @@ export default function ProfileMenu() {
                         <div className="profile_menu_divider"></div>
                         <div className='menu_title'>Products</div>
                         <div className="profile_menu_products">
-                            {userData?.products.map(product => (
-                                <div className='profile_menu_product_chip' key={product.product_id}>{product.product_name}</div>
+                            {filteredProducts?.map(product => (
+                                <div className='profile_menu_product_chip' key={product.product_id}>{product.product_name === "DPP Creator" ? "Fusion Pass" : product.product_name === "IFX Platform" ? "PDT Manager" : product.product_name}</div>
                             ))}
                         </div>
                         <div className="profile_menu_divider"></div>

@@ -11,11 +11,15 @@ import {
   serialNumberHeader,
   ownerBodyTemplate,
   actionItemsTemplate,
-  ownerHeader
+  ownerHeader,
+  createdDateHeader
 } from "@/utility/assetTable";
+import Image from "next/image";
 import { Column } from "primereact/column";
 
 import { DataTable } from "primereact/datatable";
+import { Dropdown } from "primereact/dropdown";
+import { Skeleton } from "primereact/skeleton";
 import React, { useEffect,useState } from "react";
 
 
@@ -34,68 +38,82 @@ const AssetTable: React.FC<any> = ({
   isBlue,
   assetIdBodyTemplate,
   assetsData,
+  loading,
   activeTab,
   onMoveToRoom,
   searchFilters ,
   selectedProduct,
-  setSelectedProduct
+  setSelectedProduct,
+  companyIfricId,
 }) => {
 
   const [rangeDisplay, setRangeDisplay] = useState('');
+  const rowSkeleton = (width: string = "100%") => (
+    <Skeleton width={width} height="1rem" borderRadius="10px" />
+  );
   const columnConfig = [
     {
       selectionMode: "multiple" as "multiple",
       headerStyle: { width: "3rem" },
       columnKey: "assetSelectCheckBox",
+      body: loading ? () => rowSkeleton("1rem") : undefined,
     },
     {
-      field: "assetData.id",
+      columnKey: "productName",
+      field: "product_name",
+      header: productNameHeader(t, toggleColor, isBlue),
+      body: loading ? () => rowSkeleton("180px") : productNameBodyTemplate,
+      sortable: false,
+    },
+    {
+      columnKey: "id",
+      field: "id",
       header: ifricIdHeader(t),
-      body: assetIdBodyTemplate,
-      columnKey: "ifricId",
+      body: loading ? () => rowSkeleton("100px") : assetIdBodyTemplate,
       sortable: true,
     },
     {
       columnKey: "serialNumber",
-      field: "assetData.asset_serial_number",
+      field: "asset_serial_number",
       header: serialNumberHeader(t),
-      body: serialNumberBodyTemplate,
+      body: loading ? () => rowSkeleton("120px") : serialNumberBodyTemplate,
       sortable: true,
     },
     {
       columnKey: "type",
-      field: "assetData.type",
+      field: "type",
       header: productTypeHeader(t),
-      body: assetTypeBodyTemplate,
+      body: loading ? () => rowSkeleton("100px") : assetTypeBodyTemplate,
       sortable: true,
     },
+    // {
+    //   columnKey: "manufacturer",
+    //   field: "assetData.asset_manufacturer_name",
+    //   header: manufacturerHeader(t),
+    //   body: manufacturerDataTemplate,
+    //   sortable: true,
+    // },
     {
-      columnKey: "productName",
-      field: "assetData.product_name",
-      header: productNameHeader(t, toggleColor, isBlue),
-      body: productNameBodyTemplate,
-      sortable: true,
-    },
-    {
-      columnKey: "manufacturer",
-      field: "assetData.asset_manufacturer_name",
-      header: manufacturerHeader(t),
-      body: manufacturerDataTemplate,
-      sortable: true,
-    },
-  
-     {
       columnKey: "Owner",
-      field: "owner_company_name",
+      field: "company_name",
       header: ownerHeader(t),
-      body: ownerBodyTemplate,
+      body: loading ? () => rowSkeleton("160px") : ownerBodyTemplate,
+      sortable: true,
+    },
+    {
+      columnKey: "Created",
+      field: "creation_date",
+      header: createdDateHeader,
+      body: loading ? () => rowSkeleton("160px"):"",
       sortable: true,
     },
     {
       columnKey: "Action",
       field: "action",
       header: t("overview:action"),
-      body: (rowData: Asset) => actionItemsTemplate(rowData, onMoveToRoom),
+      body: loading
+        ? () => rowSkeleton("80px")
+        : (rowData: Asset) => actionItemsTemplate(rowData, onMoveToRoom, companyIfricId),
     },
   ];
  
@@ -105,13 +123,53 @@ const AssetTable: React.FC<any> = ({
     const endRow = Math.min(startRow + selectedRowsPerPage - 1, assetsData.length);
     setRangeDisplay(`${startRow}-${endRow}`);
   }, [currentPage, selectedRowsPerPage, assetsData]);
+
+  const paginatorTemplate = {
+    layout:
+      "CurrentPageReport PrevPageLink PageLinks NextPageLink RowsPerPageDropdown",
+      RowsPerPageDropdown: (options: any) => {
+      const dropdownOptions = [
+        { label: "5 Records per Page", value: 5 },
+        { label: "10 Records per Page", value: 10 },
+        { label: "20 Records per Page", value: 20 },
+        { label: "40 Records per Page", value: 40 },
+      ];
+
+      return (
+        <div className="flex align-items-center gap-1 ml-auto">
+          <div style={{color: "var(--common-text-grey-400)"}}>Display:</div>
+          <div className="global-button is-grey dropdown">
+            <Dropdown
+              value={options.value}
+              options={dropdownOptions}
+              onChange={(e) => options.onChange(e)}
+              panelClassName="global_dropdown_panel"
+            />
+            <Image className="rotate-180" src="/sidebar/arrow_down.svg" width={16} height={16} alt="dropdown-icon"></Image>
+          </div>
+        </div>
+      );
+    },
+      CurrentPageReport: (options: any) => {
+      return (
+        <span style={{ marginRight: "auto", minWidth: "220px", color: "var(--common-text-grey-400)" }}>
+          {options.first} - {options.last} Assets
+        </span>
+      );
+    },
+  }
  
   return (
     <>   
       <DataTable
-        value={assetsData} // Use the fetched assets as the data source
+        value={
+          loading
+            ? Array.from({ length: Number(selectedRowsPerPage) })
+            : assetsData
+        }
         first={currentPage * Number(selectedRowsPerPage)}
         paginator
+        paginatorTemplate={paginatorTemplate}
         reorderableColumns={enableReordering}
         selectionMode="multiple"
         rows={Number(selectedRowsPerPage)}     
@@ -134,19 +192,19 @@ const AssetTable: React.FC<any> = ({
         }}
         filters={searchFilters}
         globalFilterFields={[
-          "assetData.id",
-          "assetData.asset_serial_number",
-          "assetData.type",
-          "assetData.product_name",
-          "assetData.asset_manufacturer_name",
-          'owner_company_name'
+          "id",
+          "asset_serial_number",
+          "type",
+          "product_name",
+          "asset_manufacturer_name",
+          'company_name'
         ]}
         sortMode="multiple"
         onContextMenu={(e) => cm.current.show(e.originalEvent)}
         contextMenuSelection={selectedProduct}
         onContextMenuSelectionChange={(e) => setSelectedProduct(e.value)}
-         sortField="product_name"
-         sortOrder={-1}
+        sortField="creation_date"
+        sortOrder={-1}
         rowGroupMode={selectedGroupOption !== null ? "subheader" : undefined}
         rowGroupHeaderTemplate={(data) => {      
           let rowHeader;
@@ -165,7 +223,7 @@ const AssetTable: React.FC<any> = ({
         {activeTab === "Assets"
           && columnConfig.map((col) => <Column key={col.columnKey} {...col} />) }
       </DataTable>
-      <span className="pagination-range-display">{rangeDisplay}  Assets </span>
+      {/* <span className="pagination-range-display">{rangeDisplay}  Assets </span> */}
     </>
   );
 };

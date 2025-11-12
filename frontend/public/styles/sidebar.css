@@ -52,9 +52,19 @@ body {
 }
 
 .sidebar_logo_wrapper.logo_small{
-  width: 41px;
   overflow: hidden;
 }
+
+.sidebar_logo {
+  object-fit: contain;
+  object-position: left;
+  transition: width 300ms ease-in-out;
+}
+
+.sidebar_wrapper.collapse .sidebar_logo {
+    width: 159px;
+}
+
 .sidebar_content {
   padding: 20px 15px 20px 15px;
   height: calc(100vh - 99px);

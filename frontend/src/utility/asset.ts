@@ -105,7 +105,7 @@ export const fetchAssets = async () => {
     const responseData = response.data;
     // console.log("responseData",responseData)
     const mappedData = responseData.map((asset: any) => ({
-      owner_company_name: asset.owner_company_name,
+      ...asset,
       assetData: mapBackendDataToAsset(asset.assetData),
     }));
     // console.log("mappedData",mappedData)
@@ -152,6 +152,48 @@ export const getAssetById = async (assetId: string): Promise<Asset | null> => {
     console.log("mappedData here", mappedData);
 
     return mappedData.length > 0 ? mappedData[0] : null;
+  } catch (error: any) {
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+      return null;
+    } else {
+      throw error;
+    }
+  }
+};
+
+export const createPurchasedPdt = async (company_ifric_id: string, asset_ifric_id: string, asset_cert_valid: boolean) => {
+  try {
+    const response = await api.post(`${BACKEND_API_URL}/purchased-pdt-cache/${company_ifric_id}/${asset_ifric_id}/${asset_cert_valid}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+      return null;
+    } else {
+      throw error;
+    }
+  }
+}
+
+export const getAssetsAndOwnerDetails = async (company_ifric_id: string) => {
+  try {
+    const response = await api.get(
+      `${BACKEND_API_URL}/company/get-assets-and-owner-details/${company_ifric_id}`
+      // {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Accept: "application/json",
+      //   },
+      // }
+    ); 
+    console.log("Assets Response:", response.data);
+    return response.data;
   } catch (error: any) {
     if (error?.response && error?.response?.status === 401) {
       updatePopupVisible(true);

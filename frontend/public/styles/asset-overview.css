@@ -140,6 +140,13 @@ body {
 .filter-header {
   margin: 10px 0;
 }
+.profile-picture {
+  aspect-ratio: 1 / 1;
+  border-radius: 70px;
+  overflow: hidden;
+  width: 36px;
+  height: 36px;
+}
 
 .asset-text {
   color: var(--black-primary);
@@ -602,10 +609,64 @@ svg.p-icon {
   text-overflow: ellipsis;
   overflow: hidden;
   height: 25px;
-  width: 197px;
+  width: 150px;
   font-size: 16px;
   margin-top: 14px !important;
   text-wrap: nowrap;
+}
+
+.no-product-image{
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 500;
+  width: 36px;
+  height: 36px;
+  border-radius: 70px;
+  color: white;
+  background-color: #2b2b2b;
+}
+
+.tr-text-black {
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  color: #2B2B2B;
+  line-height: normal;
+  letter-spacing: -0.07px;
+  font-family: "League Spartan";
+}
+
+.tr-text-grey{
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  color: #5F5F5F;
+  line-height: normal;
+  letter-spacing: -0.07px;
+  font-family: "League Spartan";
+}
+
+.navbar_tooltip.p-tooltip.p-component{
+  border-radius: 6px;
+  background-color: #2b2b2b !important;
+  color: white;
+  font-size: 14px;
+  padding: 0px;
+  margin-top: 3px;
+  overflow: hidden;
+}
+
+.navbar_tooltip.p-tooltip.p-component>div{
+  background-color: #2b2b2b !important;
+}
+
+.navbar_tooltip.p-tooltip.p-component>div::before,.navbar_tooltip.p-tooltip.p-component>div::after{
+ display: none !important;
+}
+
+.navbar_tooltip.p-tooltip .p-tooltip-arrow {
+  display: none !important;
 }
 
 .action-menu-icon{
@@ -623,6 +684,12 @@ svg.p-icon {
 .custom-row-padding .expand-id-text {
   word-wrap: break-word;
   width: 271px;
+}
+
+.loader-container{
+  position: absolute;
+  top: 40rem;
+  width: 100%;
 }
 
 .custom-row-padding .p-datatable-tbody > tr > td {

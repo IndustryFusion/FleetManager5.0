@@ -21,13 +21,13 @@ import AssetDetailsCard from "../components/assetOverview/asset-view";
 import Footer from "../components/footer";
 import { Toast, ToastMessage } from "primereact/toast";
 import { Asset } from "@/interfaces/assetTypes";
-import {fetchAssets} from "@/utility/asset";
+import { fetchAssets, getAssetsAndOwnerDetails } from "@/utility/asset";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Sidebar from "@/components/sidebar";
 import Navbar from "@/components/navbar";
 import OverviewHeader from "@/components/assetOverview/overview-header";
-import { checkboxContainer, filterAssets } from "@/utility/assetTable";
+import { actionItemsTemplate, checkboxContainer, filterAssets } from "@/utility/assetTable";
 import AssetTable from "@/components/assetOverview/asset-table";
 import TableHeader from "@/components/assetOverview/table-header";;
 import { fetchTemplates } from '@/redux/templates/templatesSlice';
@@ -40,6 +40,8 @@ import { fetchAssetsRedux } from "@/redux/asset/assetsSlice";
 import { FilterMatchMode } from "primereact/api";
 import { getAccessGroupData } from "@/utility/auth";
 import { ContextMenu } from "primereact/contextmenu";
+import ConfirmTransferDialog from "@/components/move-to-room/confirm-dialog";
+import { showToast } from "@/utility/toast";
 
 type ExpandValue = {
   [key: string]: boolean;
@@ -58,6 +60,8 @@ const AssetOverView: React.FC = () => {
   const [showExtraCard, setShowExtraCard] = useState<boolean>(false);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [showContextMenu, setShowContextMenu] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [selectedContract, setSelectedContract] = useState<any>(null);
   const [searchFilters, setSearchFilters] = useState({
     global: {
       value: null as string | null,
@@ -95,7 +99,7 @@ const AssetOverView: React.FC = () => {
   const [enableReordering, setEnableReordering] = useState(false);
   const [isBlue, setIsBlue] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({});
-  const [selectedGroupOption, setSelectedGroupOption] = useState(null);
+  const [selectedGroupOption, setSelectedGroupOption] = useState<string | null>(null);
   const [companyIfricId, setCompanyIfricId] = useState("");
   const [groupOptions, setGroupOptions] = useState([
     { label: "Product Type", value: "type" },
@@ -106,9 +110,24 @@ const AssetOverView: React.FC = () => {
   const router = useRouter();
   const [accessgroupIndexDb, setAccessgroupIndexedDb] =useState<any>(null);
   const [isMoveToRoomDialogVisible, setIsMoveToRoomDialogVisible] = useState(false);
+  const [isConfirmDialogVisible, setIsConfirmDialogVisible] = useState(false); 
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState("Assets");
-
+  const [transferAsset, setTransferAsset] = useState<any>(null);
+  const [onAcceptFns, setOnAcceptFns] = useState<{
+  save?: () => Promise<void>;
+  assign?: () => Promise<void>;
+}>({});
+const [factoryOwner, setFactoryOwner] = useState<{
+  id?: string;
+  name?: string;
+  companyIfricId?: string;
+  company_category?: string;
+  country?: string;
+  logoUrl?: string;
+  city?: string;
+} | null>(null);
+ const [testFactoryOwner,setTestFactoryOwner]=useState<any>([])
 
   const menuModel = [
     {
@@ -121,13 +140,14 @@ const AssetOverView: React.FC = () => {
     label: "Certificates",
     icon: "",
     command: () => {  
-      if (selectedProduct?.assetData?.id) {
+        if (selectedProduct?.id) {
         router.push({
-          pathname: "/certificates",
-          query: { asset_ifric_id: selectedProduct?.assetData?.id },
+            pathname: "/certificates",
+            query: { asset_ifric_id: selectedProduct?.id },
         });
       } else {
         showToast(
+           toast,
           "error",
           "No Asset Selected",
           "Please select an asset first"
@@ -138,13 +158,28 @@ const AssetOverView: React.FC = () => {
     {
     label: "Assign Owner",
     icon: "",
-    command: (rowData:Asset) => {
-      handleMoveToRoom(rowData)
+    command: () => {
+      if (selectedProduct) {
+        handleMoveToRoom(selectedProduct);
+      }
   }
   }
   ]
 
-  console.log("selectedProduct here is", selectedProduct);
+  // const showToast = (
+  //   severity: ToastMessage["severity"],
+  //   summary: string,
+  //   message: string
+  // ) => {
+  //   toast.current?.show({
+  //     severity: severity,
+  //     summary: summary,
+  //     detail: message,
+  //     life: 8000,
+  //   });
+  // };
+
+  // console.log("selectedProduct here is", selectedProduct);
   
   const getCompanyId = async()=>{
     try {
@@ -153,7 +188,7 @@ const AssetOverView: React.FC = () => {
       setCompanyIfricId(details.company_ifric_id)
     } catch(error: any) {
       console.log("error from catch ",error);
-      showToast("error", "Error", "Failed to fetch access group data");
+      showToast(toast, "error", "Error", "Failed to fetch access group data");
     }
   }
   useEffect(() => {
@@ -171,16 +206,28 @@ const AssetOverView: React.FC = () => {
   
   const fetchAsset = async () => {
     try {
-      const response = await fetchAssets();
-      setAssetCount(response?.length || 0);
+      setLoading(true);
+      const company_ifric_id = (await getAccessGroup()).company_ifric_id;
+      console.log(company_ifric_id);
+      const response = await getAssetsAndOwnerDetails(company_ifric_id);
+      console.log("ftch", response);
+      const normalized = Array.isArray(response)
+        ? response.map((item: any) => {
+          if (item && item.assetData) return item;
+          return { ...item, assetData: item };
+        })
+        : [];
+
+      setAssets(normalized || []);
+      setAssetCount(normalized.length || 0);
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
-        console.error("Error response:", error.response?.data.message);
-        showToast("error", "Error", "Fetching assets");
+        showToast(toast, "error", "Error", "Fetching assets");
       } else {
-        console.error("Error:", error);
-        showToast("error", "Error", error);
+        showToast(toast, "error", "Error", error.message);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -200,15 +247,15 @@ const AssetOverView: React.FC = () => {
     const storedValue = localStorage.getItem("selectedRowsPerPage");
     if (storedValue) {
       setSelectedRowsPerPage(storedValue);
-    } 
-    if(assets.length === 0){
-      fetchAsset();
     }
+    // if (assets.length === 0) {
+    //   fetchAsset();
+    // }
     const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && activeTab === "Assets" ) {
+      if (event.key === "Escape" && activeTab === "Assets") {
         setSelectedAssets([]);
-        setShowSelectedAsset(false);      
-        }
+        setShowSelectedAsset(false);
+      }
     };
     window.addEventListener("keydown", handleEsc);
     return () => {
@@ -272,50 +319,103 @@ const AssetOverView: React.FC = () => {
     setSelectedProduct(rowData);
   };
 
+  const handleMoveToRoomClick = (asset: any) => {
+    setTransferAsset(asset);
+    setIsMoveToRoomDialogVisible(true);
+  };
+
+const handleTransferOwnershipClick = (
+  saveFn: () => Promise<void>,
+  assignFn: () => Promise<void>,
+  asset: Asset,
+  selectedOwner: typeof factoryOwner | null,
+  contract?: any
+) => {
+  if (!selectedOwner) {
+    showToast(toast,"error", "Missing Owner", "Please select a factory owner before transferring ownership.");
+    return;
+  }
+
+  setFactoryOwner(selectedOwner);
+  setTransferAsset(asset);
+  setSelectedContract(contract); // <-- store contract here
+  setOnAcceptFns({ save: saveFn, assign: assignFn });
+  setIsConfirmDialogVisible(true);
+  setIsMoveToRoomDialogVisible(false);
+};
+
+
+
+const handleConfirmTransfer = async () => {
+  if (!transferAsset) return;
+
+  try {
+    setIsConfirmDialogVisible(false);
+    if (onAcceptFns.save) await onAcceptFns.save();
+    if (onAcceptFns.assign) await onAcceptFns.assign();
+    dispatch(fetchAssetsRedux());
+    showToast(toast,"success", "Success", "Ownership transferred successfully");
+    showToast(toast,"success", "Success", "Assigned Contract successfully");
+    router.push("/asset-overview");
+  } catch (error) {
+    showToast(toast,"error", "Error", "Failed to transfer ownership");
+  }
+};
+
   const assetIdBodyTemplate = (rowData: any) => {
-    const key = expandValue[rowData?.assetData?.id] || false;
+    const key = expandValue[rowData?.id] || false;
+    const formatId = (id: string) => {
+    if (!id) return "";
+    if (key) return id;
+    const prefix = id.slice(10, 17);
+    const lastSix = id.slice(-6);
     return (
-      <div>
-        <div
-          className="flex gap-1 justify-content-center align-items-center tr-text"
-          style={{ width: "271px" }}
-        >
-          {rowData?.assetData?.asset_status === "complete" ? (
-            <img src="/complete-icon.jpg" alt="complete-icon" />
-          ) : (
-            <img src="/incomplete-icon.jpg" alt="incomplete-icon" />
-          )}
-          <p className={key ? "expand-id-text" : "id-text"}>{rowData?.assetData?.id}</p>
-          <button
-            onClick={() => toggleExpansion(rowData?.assetData?.id)}
-            className="transparent-btn"
-          >
-            <i className="pi pi-angle-down"></i>
-          </button>
-        </div>
-      </div>
+      <span>
+        <span className="id-prefix">{prefix}</span>
+        <span className="id-dots">....</span>
+        <span className="id-suffix">{lastSix}</span>
+      </span>
     );
   };
 
-  const showToast = (
-    severity: ToastMessage["severity"],
-    summary: string,
-    message: string
-  ) => {
-    toast.current?.show({
-      severity: severity,
-      summary: summary,
-      detail: message,
-      life: 8000,
-    });
+  const handleCopy = (id: string) => {
+    if (id) {
+      navigator.clipboard.writeText(id);
+      toast.current?.show({
+        severity: "success",
+        summary: "Copied",
+        detail: "Industry Fusion ID copied to clipboard",
+        life: 2000,
+      });
+    }
   };
 
-  const sortedAssetsData = [...assets].sort((a, b) => {
-    if (a.assetData.product_name.toUpperCase() < b.assetData.product_name.toUpperCase()) return -1;
-    if (a.assetData.product_name.toUpperCase() > b.assetData.product_name.toUpperCase()) return 1;
-    return 0;
-  });
+    return (
+      <div>
+        <div
+          className="flex gap-1 justify-content-left align-items-center"
+        >
+          {/* {rowData?.assetData?.asset_status === "complete" ? (
+            <img src="/complete-icon.jpg" alt="complete-icon" />
+          ) : (
+            <img src="/incomplete-icon.jpg" alt="incomplete-icon" />
+          )} */}
+          <p className="tr-text-grey">{formatId(rowData?.id)}</p>
+          <button
+            onClick={() => handleCopy(rowData?.id)}
+            className="transparent-btn"
+            title="Copy ID"
+          >
+         <img src="/copy-icon.svg" width={16} height={16} />
+        </button>
+      </div>
+    </div>
+  );
+};
 
+ 
+
+  const sortedAssetsData = assets || [];
 
   const onFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -331,109 +431,144 @@ const AssetOverView: React.FC = () => {
   );
 
 
-
   return (
     <div className="container">
       {showContextMenu && (
-                <ContextMenu
-                  model={menuModel}
-                  ref={cm}
-                  // onHide={() => setSelectedProduct(null)}
-                />
-              )}
+        <ContextMenu
+          model={menuModel}
+          ref={cm}
+        // onHide={() => setSelectedProduct(null)}
+        />
+      )}
       <Toast ref={toast} />
       {isMoveToRoomDialogVisible && (
         <MoveToRoomDialog
-        visible={isMoveToRoomDialogVisible}
-        onHide={() => setIsMoveToRoomDialogVisible(false)}
-        assetName={selectedProduct?.assetData?.product_name || "No Asset Name"}
-        company_ifric_id={companyIfricId}
-        assetIfricId={selectedProduct?.assetData?.id || "No Asset Name"}
-        onSave={() => {
-          setIsMoveToRoomDialogVisible(false);
-          showToast("success", "Success", "Asset moved successfully");
-          dispatch(fetchAssetsRedux())
-        }}
-      />
+          visible={isMoveToRoomDialogVisible}
+          onHide={() => setIsMoveToRoomDialogVisible(false)}
+          asset={selectedProduct ? {
+            id: selectedProduct.id,
+            type: selectedProduct.type,
+            asset_category: selectedProduct.asset_category,
+            name: selectedProduct.product_name
+          } : undefined}
+          assetName={selectedProduct?.product_name || "No Asset Name"}
+          company_ifric_id={companyIfricId}
+          assetIfricId={selectedProduct?.id || "No Asset Name"}
+          onSave={() => {
+            setIsMoveToRoomDialogVisible(false);
+            showToast(toast,"success", "Success", "Asset moved successfully");
+            dispatch(fetchAssetsRedux());
+          }}
+           onTransferOwnership={(saveFn, assignFn, selectedOwner,contract) =>
+           handleTransferOwnershipClick(saveFn, assignFn, selectedProduct!, selectedOwner, contract)
+         }
+        />
+      )}
+      {isConfirmDialogVisible && transferAsset && (
+        <ConfirmTransferDialog
+          visible={isConfirmDialogVisible}
+          onHide={() => setIsConfirmDialogVisible(false)}
+          onConfirm={handleConfirmTransfer}
+          assetName={transferAsset.product_name || "No Asset Name"}
+          transferAsset={transferAsset}
+          factoryOwner={
+            factoryOwner
+              ? {
+                companyName: factoryOwner.name,
+                companyImage: factoryOwner.logoUrl,
+                companyCategory: factoryOwner.company_category,
+                country: factoryOwner.country,
+                city: factoryOwner.city,
+              }
+              : undefined
+          }
+          contract={selectedContract} 
+        />
       )}
       <div className="flex">
-      <Sidebar />
+        <Sidebar />
         <div className="main_content_wrapper">
-        <div className="navbar_wrapper">
-          <Navbar 
-          navHeader={"PDT Overview"}
-          />
-          <OverviewHeader
-            assetCount={ assetCount }
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            accessgroupIndexDb={accessgroupIndexDb}
-          />
-          <TableHeader
-            enableReordering={enableReordering}
-            setEnableReordering={setEnableReordering}
-            selectedGroupOption={selectedGroupOption}
-            setSelectedGroupOption={setSelectedGroupOption}
-            globalFilterValue={globalFilterValue}
-            onFilter={activeTab === "Assets" && onFilter }
-            selectedFilters={selectedFilters}
-            setSelectedFilters={setSelectedFilters}
-            groupOptions={groupOptions}
-            tableData={
-              activeTab === "Assets" && sortedAssetsData
-            }
-            activeTab={activeTab}
-          />
+          <div className="navbar_wrapper">
+            <Navbar
+              navHeader={"PDT Overview"}
+            />
+            <OverviewHeader
+              assetCount={assetCount}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              accessgroupIndexDb={accessgroupIndexDb}
+            />
+            <TableHeader
+              enableReordering={enableReordering}
+              setEnableReordering={setEnableReordering}
+              selectedGroupOption={selectedGroupOption}
+              setSelectedGroupOption={setSelectedGroupOption}
+              globalFilterValue={globalFilterValue}
+              onFilter={activeTab === "Assets" ? onFilter : undefined}
+              selectedFilters={selectedFilters}
+              setSelectedFilters={setSelectedFilters}
+              groupOptions={groupOptions}
+              tableData={
+                activeTab === "Assets" ? sortedAssetsData : []
+              }
+              activeTab={activeTab}
+            />
 
-          <div
-            style={{
-              paddingLeft: "24px",
-              position: "relative",
-              display: "flex",
-              height: "calc(70vh - 14px)",
-            }}
-          >
-            <div style={{ ...dataTableStyle, width: dataTableCardWidth }}>
-              {activeTab === "Assets" &&
-              checkboxContainer(selectedAssets, showSelectedAsset, setSelectedAssets, filterAssetsData)
-              }         
-              {activeTab === "Assets" && (
-                <AssetTable
-                  currentPage={currentPage}
-                  selectedRowsPerPage={selectedRowsPerPage}
-                  enableReordering={enableReordering}
-                  selectedAssets={selectedAssets}
-                  setSelectedAssets={setSelectedAssets}
-                  handleSelect={handleSelect}
-                  setShowSelectedAsset={setShowSelectedAsset}
-                  setSelectedProduct={setSelectedProduct}
-                  selectedProduct={selectedProduct}
-                  cm={cm}
-                  selectedGroupOption={selectedGroupOption}
-                  t={t}
-                  toggleColor={toggleColor}
-                  isBlue={isBlue}
-                  assetIdBodyTemplate={assetIdBodyTemplate}
-                  assetsData={filterAssetsData}
-                  activeTab={activeTab}
-                  onMoveToRoom={handleMoveToRoom}
-                  searchFilters={searchFilters}
-                />
+            <div
+              style={{
+                paddingLeft: "24px",
+                position: "relative",
+                display: "flex",
+                height: "calc(70vh - 14px)",
+              }}
+            >
+              <div style={{ ...dataTableStyle, width: dataTableCardWidth }}>
+                {activeTab === "Assets" && (
+                  <>
+
+
+                    {checkboxContainer(selectedAssets, showSelectedAsset, setSelectedAssets, filterAssetsData)}
+                    <AssetTable
+                      currentPage={currentPage}
+                      selectedRowsPerPage={selectedRowsPerPage}
+                      enableReordering={enableReordering}
+                      selectedAssets={selectedAssets}
+                      setSelectedAssets={setSelectedAssets}
+                      handleSelect={handleSelect}
+                      setShowSelectedAsset={setShowSelectedAsset}
+                      setSelectedProduct={setSelectedProduct}
+                      selectedProduct={selectedProduct}
+                      cm={cm}
+                      selectedGroupOption={selectedGroupOption}
+                      t={t}
+                      toggleColor={toggleColor}
+                      isBlue={isBlue}
+                      assetIdBodyTemplate={assetIdBodyTemplate}
+                      assetsData={filterAssetsData}
+                      loading={assetStatus === "loading"}
+                      activeTab={activeTab}
+                      onMoveToRoom={handleMoveToRoom}
+                      searchFilters={searchFilters}
+                      companyIfricId={companyIfricId}
+                    />
+                  </>
+
+
+                )}
+              </div>
+              {showExtraCard && (
+                <div style={{ width: "30%" }}>
+                  <AssetDetailsCard
+                    asset={selectedProduct}
+                    setShowExtraCard={setShowExtraCard}
+                  />
+                </div>
               )}
             </div>
-            {showExtraCard && (
-              <div style={{ width: "30%" }}>
-                <AssetDetailsCard
-                  asset={selectedProduct}
-                  setShowExtraCard={setShowExtraCard}
-                />
-              </div>
-            )}
           </div>
+
+          <Footer />
         </div>
-      
-      <Footer />
-      </div>
       </div>
     </div>
   );

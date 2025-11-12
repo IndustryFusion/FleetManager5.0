@@ -81,4 +81,13 @@ export class CertificateController {
       throw err;
     }
   }
+
+  @Get('verify-company-asset-certificate/:company_ifric_id/:asset_ifric_id')
+  async verifyCompanyAndAssetCertificate(@Param('asset_ifric_id') asset_ifric_id: string, @Param('company_ifric_id') company_ifric_id: string, @Req() req: Request) {
+    try {
+      return await this.certificateService.verifyCompanyAndAssetCertificate(asset_ifric_id, company_ifric_id, req);
+    } catch(err) {
+      throw err;
+    }
+  }
 }

@@ -1,7 +1,8 @@
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
+import { Button } from "primereact/button";
 import { TabPanel, TabView } from "primereact/tabview";
-
+import "../../../public/styles/overview-page/overview-header.css";
 type overviewHeaderProps = {
   assetCount: number;
   activeTab: string;
@@ -17,6 +18,14 @@ const OverviewHeader: React.FC<overviewHeaderProps> = ({
 }) => {
   const { t } = useTranslation(["overview", "placeholder"]);
   const router = useRouter();
+
+  const handleCreatePDTClick = () => {
+    const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
+    const targetUrl = environment === "dev"
+      ? "https://dev-platform.industryfusion-x.org/dashboard"
+      : "https://platform.industryfusion-x.org/dashboard";
+    router.push(targetUrl);
+  };
 
   return (
     <>
@@ -39,7 +48,15 @@ const OverviewHeader: React.FC<overviewHeaderProps> = ({
                 <TabPanel header="Assets"></TabPanel>
               </TabView>
             </div>
+             
           </div>
+          <Button
+              className="global-button create-pdt-button"
+              type="button"
+              onClick={handleCreatePDTClick}  
+            >
+              <div>{t("overview:create_PDT")}</div>
+            </Button>
         </div>
       </div>
     </>

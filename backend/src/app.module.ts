@@ -29,7 +29,14 @@ import { CertificateController } from './endpoints/certificate/certificate.contr
 import { CertificateService } from './endpoints/certificate/certificate.service';
 import { ConsumerService } from './endpoints/consumer/consumer.service';
 import { ConsumerController } from './endpoints/consumer/consumer.controller';
-
+import { ContractController } from './endpoints/contract/contract.controller';
+import { BindingController } from './endpoints/binding/binding.controller';
+import { ContractService } from './endpoints/contract/contract.service';
+import { BindingService } from './endpoints/binding/binding.service';
+import { PurchasedPdtCacheController } from './endpoints/purchased-pdt-cache/purchased-pdt-cache.controller';
+import { PurchasedPdtCacheService } from './endpoints/purchased-pdt-cache/purchased-pdt-cache.service';
+import { CompanyController } from './endpoints/company/company.controller';
+import { CompanyService } from './endpoints/company/company.service';
 @Module({
   imports: [],
   controllers: [
@@ -39,7 +46,11 @@ import { ConsumerController } from './endpoints/consumer/consumer.controller';
     AssetController,
     FileController,
     CertificateController,
-    ConsumerController
+    ConsumerController,
+    ContractController,
+    BindingController,
+    PurchasedPdtCacheController,
+    CompanyController
   ],
   providers: [
     AppService,
@@ -48,7 +59,11 @@ import { ConsumerController } from './endpoints/consumer/consumer.controller';
     AssetService,
     FileService,
     CertificateService,
-    ConsumerService
+    ConsumerService,
+    ContractService,
+    BindingService,
+    PurchasedPdtCacheService,
+    CompanyService
   ],
 })
 export class AppModule {}

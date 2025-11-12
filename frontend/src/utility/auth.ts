@@ -274,6 +274,22 @@ export const getCategorySpecificCompany = async(categoryName: string) => {
         }
     }
 }
+
+export const getAllCompanies = async () => {
+  try {
+    const response = await api.get(`${REGISTRY_API_URL}/auth/get-all-companies`);
+    console.log("✅ API response: New Response", response.data);
+    return response;
+    } catch (error:any) {
+    console.error("Error getting companies:", error);
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+    } else {
+      throw new Error(error.response?.data?.message || "Error getting companies");
+    }
+  }
+};
+
 export const getAccessGroupData = async(token: string) => {
     try {
         const registryHeader = {
@@ -307,6 +323,20 @@ export const verifyCompanyCertificate = async(company_ifric_id: string) => {
 export const verifyAssetCertificate = async(company_ifric_id: string, asset_ifric_id: string) => {
     try{
         return await api.get(`${FLEET_MANAGER_BACKEND_URL}/certificate/verify-asset-certificate?asset_ifric_id=${asset_ifric_id}&company_ifric_id=${company_ifric_id}`);
+    }
+    catch(error: any){
+        console.log("error getting asset verification", error);
+        if (error?.response && error?.response?.status === 401) {
+        updatePopupVisible(true);
+        } else {
+        throw error;
+        }
+    }
+}
+
+export const verifyCompanyAssetCertificate = async(company_ifric_id: string, asset_ifric_id: string) => {
+    try{
+        return await api.get(`${FLEET_MANAGER_BACKEND_URL}/certificate/verify-company-asset-certificate/${company_ifric_id}/${asset_ifric_id}`);
     }
     catch(error: any){
         console.log("error getting asset verification", error);
