@@ -123,7 +123,6 @@ const AssetTable: React.FC<any> = ({
         scrollable
         scrollHeight={`calc(100vh - 10px)`}
         onRowClick={(e) => setSelectedAssets(e.data as [])}
-        onRowDoubleClick={(e) => handleSelect(e.data as Asset)}
         selection={selectedAssets}
         onSelectionChange={(e) => {
           if (Array.isArray(e.value)) {
