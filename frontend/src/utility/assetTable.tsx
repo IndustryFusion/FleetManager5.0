@@ -5,6 +5,7 @@ import { Asset } from "@/interfaces/assetTypes";
 import "../../public/styles/asset-overview.css"
 import { Checkbox } from "primereact/checkbox";
 import { Tooltip } from "primereact/tooltip";
+import { Button } from "primereact/button";
 
 export const ifricIdHeader = (t: (key: string) => string): React.ReactNode => {
   return (
@@ -237,6 +238,42 @@ export const checkboxContainer = (
       </>
     );
   }
+};
+
+export const certificateHeader = (t: (key: string) => string): React.ReactNode => {
+  return (
+    <div className="flex gap-1 align-items-center">
+      <p>{t("overview:certificate") || "Certificate"}</p>
+    </div>
+  );
+};
+
+export const certificateBodyTemplate = (
+  rowData: Asset,
+  t: (key: string) => string,
+  router: any
+): React.ReactNode => {
+  return (
+    <div>
+      {rowData.asset_cert_valid ? 
+        <Button 
+          className="flex align-items-center justify-content-center overview-certified border-none"
+          onClick={() => { router.push("/certificates?asset_ifric_id=" + rowData.id) }} 
+        >
+          <p className="certified-text">{t("overview:certified")}</p>
+          <img 
+            className="ml-1"
+            src="/certified-icon.svg" 
+            alt="certified-icon" 
+          />
+        </Button>
+        :
+        <p className="overview-uncertified">
+          {t("overview:uncertified")}
+        </p>
+      }
+    </div>
+  );
 };
 
 export const filterAssets = (

@@ -805,3 +805,36 @@ line-height: normal;
     bottom: 12rem;
   }
 }
+
+.overview-certified {
+  color: white;
+  background-color: #3874C9;
+  width: 105px;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.certified-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: "League Spartan";
+}
+
+.overview-uncertified {
+  background-color: #e6e6e6;
+  width: 105px;
+  text-align: center;
+  padding: 5px;
+  border-radius: 4px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #030303;
+  font-family: "League Spartan";
+}
