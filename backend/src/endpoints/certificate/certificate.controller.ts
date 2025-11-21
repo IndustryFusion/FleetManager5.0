@@ -1,11 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Query, UseGuards } from '@nestjs/common';
 import { CertificateService } from './certificate.service';
 import { CreateCompanyCertificateDto, CreateAssetCertificateDto } from './dto/create-certificate.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('certificate')
 export class CertificateController {
   constructor(private readonly certificateService: CertificateService) {}
 
+  @UseGuards(AuthGuard)
   @Post('create-company-certificate')
   async generateCompanyCertificate(@Body() data: CreateCompanyCertificateDto, @Req() req: Request) {
     try {
@@ -20,6 +22,7 @@ export class CertificateController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get('get-company-certificates/:company_ifric_id')
   async getCompanyCertificates(@Param('company_ifric_id') company_ifric_id: string, @Req() req: Request) {
     try {
@@ -29,6 +32,7 @@ export class CertificateController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get('verify-company-certificate/:company_ifric_id')
   async verifyCompanyCertificate(@Param('company_ifric_id') company_ifric_id: string, @Req() req: Request) {
     try {
@@ -44,6 +48,7 @@ export class CertificateController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Post('create-asset-certificate')
   async generateAssetCertificate(@Body() data: CreateAssetCertificateDto, @Req() req: Request) {
     try {
