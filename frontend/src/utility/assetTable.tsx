@@ -268,9 +268,9 @@ export const certificateBodyTemplate = (
           />
         </Button>
         :
-        <p className="overview-uncertified">
+        <Button  className="overview-uncertified border-none" onClick={() => { router.push("/certificates?asset_ifric_id=" + rowData.id) }} >
           {t("overview:uncertified")}
-        </p>
+        </Button>
       }
     </div>
   );
