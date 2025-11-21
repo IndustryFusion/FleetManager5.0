@@ -12,11 +12,13 @@ import {
   ownerBodyTemplate,
   actionItemsTemplate,
   ownerHeader,
-  createdDateHeader
+  createdDateHeader,
+  certificateHeader,
+  certificateBodyTemplate
 } from "@/utility/assetTable";
 import Image from "next/image";
 import { Column } from "primereact/column";
-
+import { useRouter } from "next/router";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
 import { Skeleton } from "primereact/skeleton";
@@ -47,10 +49,16 @@ const AssetTable: React.FC<any> = ({
   companyIfricId,
 }) => {
 
+  const router = useRouter();
   const [rangeDisplay, setRangeDisplay] = useState('');
   const rowSkeleton = (width: string = "100%") => (
     <Skeleton width={width} height="1rem" borderRadius="10px" />
   );
+  
+
+  const certificateBodyTemplateWrapper = (rowData: Asset) => {
+    return certificateBodyTemplate(rowData, t, router);
+  };
   const columnConfig = [
     {
       selectionMode: "multiple" as "multiple",
@@ -106,6 +114,12 @@ const AssetTable: React.FC<any> = ({
       header: createdDateHeader,
       body: loading ? () => rowSkeleton("160px"):"",
       sortable: true,
+    },
+    {
+      columnKey: "Certificate",
+      field: "certificate",
+      header: certificateHeader(t),
+      body: loading ? () => rowSkeleton("100px") : certificateBodyTemplateWrapper,
     },
     {
       columnKey: "Action",

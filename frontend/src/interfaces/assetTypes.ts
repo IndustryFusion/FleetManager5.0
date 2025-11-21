@@ -30,6 +30,7 @@ export interface Asset {
     asset_serial_number: string;
     asset_status?: string;
     asset_category: string;
+    asset_cert_valid?: boolean;
     height: number;
     width: number;
     length: number;
