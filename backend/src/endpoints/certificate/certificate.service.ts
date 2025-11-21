@@ -243,17 +243,10 @@ export class CertificateService {
 
   async getAssetCertificates(asset_ifric_id: string, company_ifric_id: string, req: Request) {
     try {
-      const registryHeaders = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': req.headers['authorization']
-      };
-
-      const encryptedToken = await this.encryptData(req.headers['authorization'].split(" ")[1]);
       const ifxHeaders = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${this.mask(encryptedToken, process.env.MASK_SECRET)}`
+        'Authorization': req.headers['authorization']
       };
 
       const response = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate`,

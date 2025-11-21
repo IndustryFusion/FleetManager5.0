@@ -16,7 +16,7 @@
 
 import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
-import { FindOneAuthDto, FindIndexedDbAuthDto } from './dto/find-auth-dto';
+import { FindOneAuthDto, FindIndexedDbAuthDto, EncryptRouteDto } from './dto/find-auth-dto';
 import * as jwt from 'jsonwebtoken';
 import { CompactEncrypt } from 'jose';
 import { createHash } from 'crypto';
@@ -32,7 +32,7 @@ import { createHash } from 'crypto';
 @Injectable()
 export class AuthService {
   private readonly registryUrl = process.env.IFRIC_REGISTRY_BACKEND_URL;
-  private readonly SECRET_KEY = process.env.JWT_SECRET_KEY!;
+  private readonly SECRET_KEY = process.env.JWT_SECRET!;
   private readonly MASK_SECRET = process.env.MASK_SECRET!;
 
   async logIn(data: FindOneAuthDto) {
@@ -67,7 +67,46 @@ export class AuthService {
     }
   }
 
-  async getIndexedData(data: FindIndexedDbAuthDto) {
+  async encryptRoute(data: EncryptRouteDto) {
+    try { 
+      // check whether the product is installed or not
+      const companyProducts = await axios.get(`${this.registryUrl}/auth/get-company-products/${data.company_ifric_id}`,{
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const installed = Array.isArray(companyProducts.data) &&
+                      companyProducts.data.some((p: any) => p.product_name === data.product_name);
+
+      if (!installed) {
+        throw new HttpException(`product is not installed, please install ${data.product_name}`, HttpStatus.NOT_FOUND);
+      }
+
+      // encrypt the token with 30s expiry
+      const otp = new Date().toISOString();     
+      const maskedJwt = data.token;
+      
+      const routeToken = jwt.sign(
+        { m: maskedJwt, product: data.product_name, otp },
+        this.SECRET_KEY,
+        { expiresIn: '30s' },
+      );
+      
+      // return the route with excrypted token
+      const path = `${data.route}?token=${routeToken}`;
+      return { path };
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
+  async decryptRoute(data: FindIndexedDbAuthDto) {
     try {
       const routeToken = data.token
       const { m: maskedJwt } = jwt.verify(routeToken, this.SECRET_KEY) as { m: string };
@@ -98,7 +137,7 @@ export class AuthService {
           if (registryResponse.data) {
             const encryptedToken = await this.encryptData(registryResponse.data.data.jwt_token);
             registryResponse.data.data.ifricdi = this.mask(encryptedToken, process.env.MASK_SECRET);
-            registryResponse.data.data.jwt_token = registryJwt;
+            delete registryResponse.data.data.jwt_token;
             return registryResponse.data;
           }
         }catch(err) {

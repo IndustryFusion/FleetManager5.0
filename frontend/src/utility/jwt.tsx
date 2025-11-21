@@ -31,8 +31,8 @@ api.interceptors.request.use(
     async (config) => {
         try {
             const accessGroup = await getAccessGroup();
-            if (accessGroup && accessGroup.jwt_token) {
-              config.headers["Authorization"] = `Bearer ${accessGroup.jwt_token}`;
+            if (accessGroup && accessGroup.ifricdi) {
+              config.headers["Authorization"] = `Bearer ${accessGroup.ifricdi}`;
             }
         } catch (error) {
             console.error("Error fetching JWT token from IndexedDB:", error);

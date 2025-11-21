@@ -297,7 +297,7 @@ export const getAccessGroupData = async(token: string) => {
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/get-indexed-db-data`, {token, product_name: "Fleet Manager"}, {
+        const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/decrypt-route`, {token, product_name: "Fleet Manager"}, {
             headers: registryHeader
         });
         await storeAccessGroup(response.data.data);
