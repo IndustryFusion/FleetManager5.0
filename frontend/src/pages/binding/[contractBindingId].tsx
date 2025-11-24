@@ -158,7 +158,7 @@ const CreateBindingPage: React.FC = () => {
   const fetchData = async () => {
     try {
       const userData = await getAccessGroup();
-      if (userData && userData.jwt_token) {
+      if (userData && userData.ifricdi) {
         setCompanyIfricId(userData.company_ifric_id);
         setUserName(userData.user_name);
         // Fetch template data (from backend)

@@ -108,22 +108,6 @@ export const deleteBinding = async (bindingIfricId: string) => {
   }
 };
 
-export const getCompanyDetails =async(companyIfricId:string)=>{
- try{
-  const response =  await api.get(`${IFRIC_REGISTRY_BACKEND_URL}/auth/get-company-details/${companyIfricId}`);
-  return response.data;
- }catch(error: any) {
-  console.error("Error fetching company details:", error);
-  if (error?.response && error?.response?.status === 401) {
-    updatePopupVisible(true);
-  } else {
-    throw new Error(
-      error.response?.data?.message || "Error fetching company details"
-    );
-  }
-}
-}
-
 export const getSharedWithBindingCompanies =async(bindingIfricId: string)=>{
   try{
     const response = await api.get(`${IFX_BACKEND_URL}/binding/get-signed-company-by-binding-id/${bindingIfricId}`);

@@ -46,9 +46,10 @@ const withAuth = (WrappedComponent: NextComponentType<NextPageContext>) => {
               console.error('Failed to decode token:', error);
               updatePopupVisible(true);
             }
-          } else {
-            updatePopupVisible(true);
-          }
+          } 
+          // else {
+          //   updatePopupVisible(true);
+          // }
         } catch (error) {
           console.error('Failed to retrieve login data:', error);
           updatePopupVisible(true);

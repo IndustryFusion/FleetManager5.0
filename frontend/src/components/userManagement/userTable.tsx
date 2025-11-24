@@ -39,7 +39,7 @@ interface User {
   email: string;
 }
 
-const REGISTRY_API_URL = process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
+const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
 const UserTable:React.FC<UserTableProps> = ({filters, accessgroupIndexDb,setUsersCount}) => {
   const cm = useRef(null);
@@ -74,7 +74,7 @@ const UserTable:React.FC<UserTableProps> = ({filters, accessgroupIndexDb,setUser
 
   const handleDelete = async(id:string)=>{
     try{
-      const response = await axios.delete(`${REGISTRY_API_URL}/auth/delete-company-user/${id}`,{
+      const response = await axios.delete(`${FLEET_MANAGER_BACKEND_URL}/auth/delete-company-user/${id}`,{
         headers: {
           "Content-Type": "application/json",
         },
@@ -196,7 +196,7 @@ const UserTable:React.FC<UserTableProps> = ({filters, accessgroupIndexDb,setUser
 
   const fetchUsers = async() => {
     try{
-      const response = await axios.get(`${REGISTRY_API_URL}/auth/get-company-users/${companyIfricId}`,{
+      const response = await axios.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-company-users/${companyIfricId}`,{
         headers: {
           "Content-Type": "application/json",
         },
@@ -216,7 +216,7 @@ const UserTable:React.FC<UserTableProps> = ({filters, accessgroupIndexDb,setUser
             email: response.data[i].user_email
           };
           user.name = response.data[i].user_name;
-          const productAccessResponse = await axios.get(`${REGISTRY_API_URL}/auth/get-user-product-access/${response.data[i]['_id']}`,{
+          const productAccessResponse = await axios.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-user-product-access/${response.data[i]['_id']}`,{
             headers: {
               "Content-Type": "application/json",
             },
@@ -224,7 +224,7 @@ const UserTable:React.FC<UserTableProps> = ({filters, accessgroupIndexDb,setUser
           user.access = [];
           if(productAccessResponse.data.length > 0) {
             for(let j = 0; j < productAccessResponse.data.length; j++) {
-              let accessGroupData = await axios.get(`${REGISTRY_API_URL}/auth/get-access-group/${productAccessResponse.data[j].access_group_id}`,{
+              let accessGroupData = await axios.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-access-group/${productAccessResponse.data[j].access_group_id}`,{
                 headers: {
                   "Content-Type": "application/json",
                 },
