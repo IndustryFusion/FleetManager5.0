@@ -17,6 +17,7 @@
 import { Controller, Post, Body, Get, Req} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { FindOneAuthDto, FindIndexedDbAuthDto, EncryptRouteDto } from './dto/find-auth-dto';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -33,9 +34,9 @@ export class AuthController {
   }
 
   @Post('encrypt-route')
-  encryptRoute(@Body() data: EncryptRouteDto) {
+  encryptRoute(@Body() data: EncryptRouteDto, @Req() req: Request) {
     try {
-      return this.authService.encryptRoute(data);
+      return this.authService.encryptRoute(data, req);
     } catch (err) {
       throw err;
     }
