@@ -39,18 +39,23 @@ function MyApp({ Component, pageProps, router }:AppProps) {
     const handleTokenRouting = async () => {
       if (!router.isReady) return;
 
-      if (router.asPath.includes("?token=")) {
-        try {
-          const [routeUrl, token] = router.asPath.split("?token=");
-          await getAccessGroupData(token);
-          router.replace(routeUrl);
-        } catch (error: any) {
-          if (axios.isAxiosError(error)) {
-            if (error.response?.status === 401) {
-              window.location.href = `${ifxSuiteUrl}/home`;
-            } else {
-              console.error("Error response:", error.response?.data?.message);
-            }
+      const url = new URL(window.location.href);
+      const token = url.searchParams.get("token");
+
+      if (!token) return;
+      
+      try {
+        await getAccessGroupData(token);
+
+        // remove only token and route to url
+        url.searchParams.delete("token");
+        router.replace(url.pathname + url.search);
+      } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            window.location.href = `${ifxSuiteUrl}/home`;
+          } else {
+            console.error("Error response:", error.response?.data?.message);
           }
         }
       }
