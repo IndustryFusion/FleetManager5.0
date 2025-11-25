@@ -21,7 +21,7 @@ import api from "./jwt";
 import axios from "axios";
 import { updatePopupVisible } from './update-popup';
 import { jwtDecode, JwtPayload } from "jwt-decode";
-import { storeAccessGroup } from "./indexed-db";
+import { storeAccessGroup, getAccessGroup } from "./indexed-db";
 
 const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
@@ -252,3 +252,73 @@ export const authenticateToken = async (token: string) => {
     throw error;
   }
 }
+
+export const encryptRoute = async (
+  token: string,
+  productName: string,
+  companyIfricId: string,
+  route: string
+) => {
+  try {
+    return await api.post(
+      `${FLEET_MANAGER_BACKEND_URL}/auth/encrypt-route`,
+      {
+        token,
+        product_name: productName,
+        company_ifric_id: companyIfricId,
+        route
+      }
+    );
+  } catch (error: any) {
+    if (
+      error?.response &&
+      (error.response.status === 401 || error.response.status === 403)
+    ) {
+      updatePopupVisible(true);
+    } else {
+      throw error;
+    }
+  }
+};
+
+export const getEncryptedCertificateRoute = async (assetIfricId: string): Promise<string | null> => {
+  try {
+    const accessGroup = await getAccessGroup();
+    
+    if (!accessGroup?.ifricdi || !accessGroup?.company_ifric_id) {
+      console.error("No token or company_ifric_id found in IndexedDB");
+      return null;
+    }
+
+    const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
+    let baseUrl: string;
+    
+    if (environment === "dev") {
+      baseUrl = "https://dev-platform.industry-fusion.com";
+    } else if (environment === "local") {
+      baseUrl = "http://localhost:3003";
+    } else {
+      baseUrl = "https://platform.industry-fusion.com";
+    }
+
+    const route = `${baseUrl}/certificates?asset_ifric_id=${assetIfricId}`;
+
+    const routeResponse = await encryptRoute(
+      accessGroup.ifricdi,
+      "Fleet Manager",
+      accessGroup.company_ifric_id,
+      route
+    );
+
+    const encryptedPath = routeResponse?.data?.path;
+    if (!encryptedPath) {
+      console.error("Failed to generate encrypted route path");
+      return null;
+    }
+
+    return encryptedPath;
+  } catch (error) {
+    console.error("Error generating encrypted route path:", error);
+    return null;
+  }
+};

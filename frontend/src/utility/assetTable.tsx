@@ -6,6 +6,7 @@ import "../../public/styles/asset-overview.css"
 import { Checkbox } from "primereact/checkbox";
 import { Tooltip } from "primereact/tooltip";
 import { Button } from "primereact/button";
+import { getEncryptedCertificateRoute } from "./auth";
 
 export const ifricIdHeader = (t: (key: string) => string): React.ReactNode => {
   return (
@@ -248,17 +249,23 @@ export const certificateHeader = (t: (key: string) => string): React.ReactNode =
   );
 };
 
-export const certificateBodyTemplate = (
-  rowData: Asset,
-  t: (key: string) => string,
-  router: any
-): React.ReactNode => {
+export const certificateBodyTemplate = (rowData: Asset, t: (key: string) => string, router: any): React.ReactNode => {
+  const handleCertificateClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const assetId = rowData.id;
+    
+    const encryptedPath = await getEncryptedCertificateRoute(assetId);
+    if (encryptedPath) {
+      window.open(encryptedPath, '_blank');
+    }
+  };
+
   return (
     <div>
       {rowData.asset_cert_valid ? 
         <Button 
           className="flex align-items-center justify-content-center overview-certified border-none"
-          onClick={() => { router.push("/certificates?asset_ifric_id=" + rowData.id) }} 
+          onClick={handleCertificateClick}
         >
           <p className="certified-text">{t("overview:certified")}</p>
           <img 
@@ -268,7 +275,7 @@ export const certificateBodyTemplate = (
           />
         </Button>
         :
-        <Button  className="overview-uncertified border-none" onClick={() => { router.push("/certificates?asset_ifric_id=" + rowData.id) }} >
+        <Button  className="overview-uncertified border-none" onClick={handleCertificateClick}>
           {t("overview:uncertified")}
         </Button>
       }

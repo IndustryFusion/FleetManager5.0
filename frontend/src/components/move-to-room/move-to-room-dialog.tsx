@@ -15,7 +15,7 @@ import axios from 'axios';
 import { MultiSelect } from 'primereact/multiselect';
 import OwnerDetailsCard from './owner-details';
 import { postFile, createPurchasedPdt } from '@/utility/asset';
-import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, generateAssetCertificate, getCompanyDetailsById, verifyCompanyAssetCertificate, getAllCompanies } from '@/utility/auth';
+import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, generateAssetCertificate, getCompanyDetailsById, verifyCompanyAssetCertificate, getAllCompanies, getEncryptedCertificateRoute } from '@/utility/auth';
 import moment from 'moment';
 import { getAssignedContracts, getContracts } from "@/utility/contracts";
 import { createBinding } from "@/utility/contracts";
@@ -255,6 +255,16 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
     }
     else {
       console.error("Please select an expiration date.")
+    }
+  }
+
+  const handleCertifyAssetClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const encryptedPath = await getEncryptedCertificateRoute(assetIfricId);
+    if (encryptedPath) {
+      window.open(encryptedPath, '_blank');
     }
   }
   const handleSave = async () => {
@@ -845,8 +855,10 @@ const fetchFactoryOwners = async () => {
                     <div className='mt-3'>
                       <div>certify asset is must to revice access for dataspace room</div>
                       <Button
+                        type="button"
                         label="Certify Asset"
                         style={{ backgroundColor: "#E6E6E6", color: "black", marginTop: "1rem"}} // Set text color to black
+                        onClick={handleCertifyAssetClick}
                       />
                     </div>
                   )}
