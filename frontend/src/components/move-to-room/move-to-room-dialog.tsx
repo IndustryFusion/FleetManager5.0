@@ -15,7 +15,7 @@ import axios from 'axios';
 import { MultiSelect } from 'primereact/multiselect';
 import OwnerDetailsCard from './owner-details';
 import { postFile, createPurchasedPdt } from '@/utility/asset';
-import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, generateAssetCertificate, getCompanyDetailsById, verifyCompanyAssetCertificate, getAllCompanies, encryptRoute } from '@/utility/auth';
+import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, generateAssetCertificate, getCompanyDetailsById, verifyCompanyAssetCertificate, getAllCompanies, getEncryptedCertificateRoute } from '@/utility/auth';
 import moment from 'moment';
 import { getAssignedContracts, getContracts } from "@/utility/contracts";
 import { createBinding } from "@/utility/contracts";
@@ -262,40 +262,9 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
     e.preventDefault();
     e.stopPropagation();
     
-    try {
-      const accessGroup = await getAccessGroup();
-      if (!accessGroup?.ifricdi || !accessGroup?.company_ifric_id) {
-        console.error("No token or company_ifric_id found in IndexedDB");
-        return;
-      }
-
-      const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
-      let baseUrl: string;
-      if (environment === "dev") {
-        baseUrl = "https://dev-platform.industry-fusion.com";
-      } else if (environment === "local") {
-        baseUrl = "http://localhost:3003";
-      } else {
-        baseUrl = "https://platform.industry-fusion.com";
-      }
-
-      const route = `${baseUrl}/certificates?asset_ifric_id=${assetIfricId}`;
-
-      const routeResponse = await encryptRoute(
-        accessGroup.ifricdi,
-        "Fleet Manager",
-        accessGroup.company_ifric_id,
-        route
-      );
-      const encryptedPath = routeResponse?.data?.path;
-      if (!encryptedPath) {
-        console.error("Failed to generate encrypted route path");
-        return;
-      }
-      
+    const encryptedPath = await getEncryptedCertificateRoute(assetIfricId);
+    if (encryptedPath) {
       window.open(encryptedPath, '_blank');
-    } catch (error) {
-      console.error("Error generating encrypted route path:", error);
     }
   }
   const handleSave = async () => {

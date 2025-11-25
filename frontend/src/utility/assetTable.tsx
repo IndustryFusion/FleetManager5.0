@@ -6,8 +6,7 @@ import "../../public/styles/asset-overview.css"
 import { Checkbox } from "primereact/checkbox";
 import { Tooltip } from "primereact/tooltip";
 import { Button } from "primereact/button";
-import { encryptRoute } from "./auth";
-import { getAccessGroup } from "./indexed-db";
+import { getEncryptedCertificateRoute } from "./auth";
 
 export const ifricIdHeader = (t: (key: string) => string): React.ReactNode => {
   return (
@@ -255,39 +254,9 @@ export const certificateBodyTemplate = (rowData: Asset, t: (key: string) => stri
     e.stopPropagation();
     const assetId = rowData.id;
     
-    try {
-      const accessGroup = await getAccessGroup();
-      if (!accessGroup?.ifricdi || !accessGroup?.company_ifric_id) {
-        console.error("No token or company_ifric_id found in IndexedDB");
-        return;
-      }
-
-      const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
-      let baseUrl: string;
-      if (environment === "dev") {
-        baseUrl = "https://dev-platform.industry-fusion.com";
-      } else if (environment === "local") {
-        baseUrl = "http://localhost:3003";
-      } else {
-        baseUrl = "https://platform.industry-fusion.com";
-      }
-
-      const route = `${baseUrl}/certificates?asset_ifric_id=${assetId}`;
-      const routeResponse = await encryptRoute(
-        accessGroup.ifricdi,
-        "Fleet Manager",
-        accessGroup.company_ifric_id,
-        route
-      );
-      
-      const encryptedPath = routeResponse?.data?.path;
-      if (!encryptedPath) {
-        console.error("Failed to generate encrypted route path");
-        return;
-      }
+    const encryptedPath = await getEncryptedCertificateRoute(assetId);
+    if (encryptedPath) {
       window.open(encryptedPath, '_blank');
-    } catch (error) {
-      console.error("Error generating encrypted route path:", error);
     }
   };
 
