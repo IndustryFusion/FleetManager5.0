@@ -99,8 +99,9 @@ export class AuthService {
       );
       
       // return the route with excrypted token
-      const path = `${data.route}?token=${routeToken}`;
-      return { path };
+      const url = new URL(data.route);
+      url.searchParams.set("token", routeToken);
+      return { path: url.toString() };
     } catch(err) {
       if (err instanceof HttpException) {
         throw err;
