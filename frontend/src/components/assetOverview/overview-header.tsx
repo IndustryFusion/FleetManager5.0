@@ -21,9 +21,16 @@ const OverviewHeader: React.FC<overviewHeaderProps> = ({
 
   const handleCreatePDTClick = () => {
     const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
-    const targetUrl = environment === "dev"
-      ? "https://dev-platform.industryfusion-x.org/asset/create/create-pdt"
-      : "https://platform.industryfusion-x.org/asset/create/create-pdt";
+    let targetUrl;
+    
+    if (environment === "local") {
+      targetUrl = "http://localhost:3008/asset/create/create-pdt";
+    } else if (environment === "dev") {
+      targetUrl = "https://dev-platform.industryfusion-x.org/asset/create/create-pdt";
+    } else {
+      targetUrl = "https://platform.industryfusion-x.org/asset/create/create-pdt";
+    }
+    
     router.push(targetUrl);
   };
 
