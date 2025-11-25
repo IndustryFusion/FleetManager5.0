@@ -252,3 +252,31 @@ export const authenticateToken = async (token: string) => {
     throw error;
   }
 }
+
+export const encryptRoute = async (
+  token: string,
+  productName: string,
+  companyIfricId: string,
+  route: string
+) => {
+  try {
+    return await api.post(
+      `${FLEET_MANAGER_BACKEND_URL}/auth/encrypt-route`,
+      {
+        token,
+        product_name: productName,
+        company_ifric_id: companyIfricId,
+        route
+      }
+    );
+  } catch (error: any) {
+    if (
+      error?.response &&
+      (error.response.status === 401 || error.response.status === 403)
+    ) {
+      updatePopupVisible(true);
+    } else {
+      throw error;
+    }
+  }
+};
