@@ -118,7 +118,7 @@ const AddContractPage: React.FC = () => {
         try {
             const userData = await getAccessGroup();
             dispatch(fetchContractsRedux(userData?.company_ifric_id));
-            if (userData && userData.jwt_token) {
+            if (userData && userData.ifricdi) {
 
                 // set User Data
                 setCompanyUser(userData.user_name);

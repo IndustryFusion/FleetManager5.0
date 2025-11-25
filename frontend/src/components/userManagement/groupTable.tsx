@@ -11,7 +11,7 @@ import { Toast } from "primereact/toast";
 import { RiDeleteBinLine } from "react-icons/ri";
 import "../../../public/styles/asset-overview.css";
 
-const REGISTRY_API_URL = process.env.NEXT_PUBLIC_IFRIC_REGISTRY_BACKEND_URL;
+const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
 const GroupTable: React.FC<any> = ({ groups, setGroups, filters,setGroupsCount,accessgroupIndexDb }) => {
   const toast = useRef<Toast>(null);
@@ -50,7 +50,7 @@ const GroupTable: React.FC<any> = ({ groups, setGroups, filters,setGroupsCount,a
   const handleUpdate = async(value) => {
     try {
       if('_id' in value) {
-        const response = await axios.patch(`${REGISTRY_API_URL}/auth/update-access-group/${value['_id']}`,
+        const response = await axios.patch(`${FLEET_MANAGER_BACKEND_URL}/auth/update-access-group/${value['_id']}`,
           value,
           {
             headers: {
@@ -61,7 +61,7 @@ const GroupTable: React.FC<any> = ({ groups, setGroups, filters,setGroupsCount,a
           return true;
         }
       } else {
-        const response = await axios.post(`${REGISTRY_API_URL}/auth/create-access-group/${companyIfricId}`,
+        const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/create-access-group/${companyIfricId}`,
           value,
           {
             headers: {
@@ -191,7 +191,7 @@ const GroupTable: React.FC<any> = ({ groups, setGroups, filters,setGroupsCount,a
 
   const fetchCompanyAccess = async() => {
     try {
-      const response = await axios.get(`${REGISTRY_API_URL}/auth/get-company-access-group/${companyIfricId}`,{
+      const response = await axios.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-company-access-group/${companyIfricId}`,{
         headers: {
           "Content-Type": "application/json",
         },
@@ -212,7 +212,7 @@ const GroupTable: React.FC<any> = ({ groups, setGroups, filters,setGroupsCount,a
     showToast(toast, "success", "Success", "Deleted Company Access group");
   }else{
     try{
-      const response = await axios.delete(`${REGISTRY_API_URL}/auth/delete-access-group/${id}`,{
+      const response = await axios.delete(`${FLEET_MANAGER_BACKEND_URL}/auth/delete-access-group/${id}`,{
         headers: {
           "Content-Type": "application/json",
         },
