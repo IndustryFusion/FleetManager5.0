@@ -20,6 +20,7 @@ import { jwtDecode } from 'jwt-decode';
 import { NextComponentType, NextPageContext } from 'next';
 import { getAccessGroup } from '@/utility/indexed-db';
 import { updatePopupVisible } from '@/utility/update-popup';
+import { authenticateToken } from '@/utility/auth';
 
 interface DecodedToken {
   exp: number; 
@@ -33,13 +34,11 @@ const withAuth = (WrappedComponent: NextComponentType<NextPageContext>) => {
       const checkAuth = async () => {
         try {
           const loginData = await getAccessGroup();
-          if (loginData && loginData.jwt_token) {
-            const token = loginData.jwt_token;
+          if (loginData && loginData.ifricdi) {
+            const token = loginData.ifricdi;
             try {
-              const decoded: DecodedToken = jwtDecode(token);
-              const currentTime = Math.floor(Date.now() / 1000);
-              if (decoded.exp < currentTime) {
-                // Token has expired
+              const response = await authenticateToken(token);
+              if(!response) {
                 updatePopupVisible(true);
               }
             } catch (error) {

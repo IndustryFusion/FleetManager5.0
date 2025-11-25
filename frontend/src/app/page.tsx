@@ -33,22 +33,7 @@ export default function WelcomePage() {
     try {
       // fetch access data and store in indexed db and route to asset-overview.
       await getAccessGroupData(token);
-
-      // Get current full URL
-      const fullUrl = window.location.href;
-      const baseUrl = fullUrl.split("/?token")[0];  // remove query params
-
-      // Check if baseUrl ends with .com or .org
-      const isTopLevelDomain =
-        baseUrl.endsWith(".com") || baseUrl.endsWith(".org");
-
-      if (isTopLevelDomain) {
-        router.push('/asset-overview');
-      } else {
-        // redirect to the base URL
-        window.location.href = baseUrl;
-      }
-      
+      router.push("/asset-overview");
     } catch (error: any) {
       console.log("error inside page ",error);
       if (axios.isAxiosError(error)) {

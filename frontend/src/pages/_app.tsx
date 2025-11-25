@@ -27,9 +27,38 @@ import { appWithTranslation } from "next-i18next";
 import { UnauthorizedPopup } from '../utility/jwt';
 import withAuth from "@/app/withAuth";
 import Head from "next/head";
+import { getAccessGroupData } from "@/utility/auth";
+import axios from "axios";
+import { useEffect } from "react";
 
 // Import your custom components or layout components
 function MyApp({ Component, pageProps, router }:AppProps) {
+  const ifxSuiteUrl = process.env.NEXT_PUBLIC_IFX_SUITE_FRONTEND_URL;
+
+  useEffect(() => {
+    const handleTokenRouting = async () => {
+      if (!router.isReady) return;
+
+      if (router.asPath.includes("?token=")) {
+        try {
+          const [routeUrl, token] = router.asPath.split("?token=");
+          await getAccessGroupData(token);
+          router.replace(routeUrl);
+        } catch (error: any) {
+          if (axios.isAxiosError(error)) {
+            if (error.response?.status === 401) {
+              window.location.href = `${ifxSuiteUrl}/home`;
+            } else {
+              console.error("Error response:", error.response?.data?.message);
+            }
+          }
+        }
+      }
+    };
+
+    handleTokenRouting();
+  }, [router.isReady, router.asPath]);
+
   const AuthComponent =
     ["/auth/login", "/auth/register", "/recover-password", "/auth/reset/update-password", "/privacy", "/terms-and-conditions"].includes(router.pathname)
         ? Component

@@ -16,11 +16,12 @@
 
 import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
-import { FindOneAuthDto, FindIndexedDbAuthDto, EncryptRouteDto } from './dto/find-auth-dto';
+import { FindOneAuthDto, FindIndexedDbAuthDto, EncryptRouteDto, CompanyTwinDto } from './dto/find-auth-dto';
 import * as jwt from 'jsonwebtoken';
 import { CompactEncrypt } from 'jose';
 import { createHash } from 'crypto';
 import { Request } from 'express';
+import { compactDecrypt } from 'jose';
 
 /**
  * Retrieves tokens from the keylock service.
@@ -206,6 +207,337 @@ export class AuthService {
       }
     }
   }
+
+  async getUserDetailsByEmail(email: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.get(`${this.registryUrl}/auth/get-user-details-by-email/${email}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async getCompanyDetails(company_ifric_id: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.get(`${this.registryUrl}/auth/get-company-details/${company_ifric_id}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async getCompanyDetailsbyRecord(id: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.get(`${this.registryUrl}/auth/get-company-details-id/${id}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async getCategorySpecificCompanies(categoryName: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.get(`${this.registryUrl}/auth/get-category-specific-company/${categoryName}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async getUserDetails(user_email, company_ifric_id, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.get(`${this.registryUrl}/auth/get-user-details`, {
+            headers: registryHeader,
+            params: {
+              user_email, 
+              company_ifric_id
+            },
+        });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async getCompanyProducts(company_ifric_id: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.get(`${this.registryUrl}/auth/get-company-products/${company_ifric_id}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async updateCompanyTwin(data: CompanyTwinDto, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.patch(`${this.registryUrl}/auth/update-company-twin`, data,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async createAccessGroup(company_ifric_id: string, data: Record<string,any>, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.post(`${this.registryUrl}/auth/create-access-group/${company_ifric_id}`, data, {headers: registryHeader })
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async updateAccessGroup(id: string, data: Record<string,any>, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.patch(`${this.registryUrl}/auth/update-access-group/${id}`, data,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async deleteAccessgroup(id: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.delete(`${this.registryUrl}/auth/delete-access-group/${id}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async getCompanyAccessGroup(company_ifric_id: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.get(`${this.registryUrl}/auth/get-company-access-group/${company_ifric_id}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async getCompanyUsers(company_ifric_id: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.get(`${this.registryUrl}/auth/get-company-users/${company_ifric_id}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async getUserProductAccess(id: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.get(`${this.registryUrl}/auth/get-user-product-access/${id}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async getAccessGroup(id: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.get(`${this.registryUrl}/auth/get-access-group/${id}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async authenticateToken(ifricdi: string) {
+    try {
+      // unMask the token
+      const unMaskedToken = this.unmask(ifricdi, this.MASK_SECRET);
+
+      // Decrypt the token
+      const ENCRYPTION_KEY = this.deriveKey(process.env.JWT_SECRET!);
+      const { plaintext } = await compactDecrypt(unMaskedToken, ENCRYPTION_KEY);
+      const decryptedToken = new TextDecoder().decode(plaintext);
+
+      // verify the token and return true if autheticated
+      const response = await axios.get(`${this.registryUrl}/auth/authenticate-token/${decryptedToken}`);
+      return response.data;
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if(err.response) {
+        throw new HttpException(err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
+  async deleteCompanyUser(id: string, req: Request) {
+    try {
+      const registryHeader = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': req.headers['authorization'],
+      };
+      const response = await axios.delete(`${this.registryUrl}/auth/delete-company-user/${id}`,{ headers: registryHeader });
+      return response.data;
+    } catch(err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
 }
 
   

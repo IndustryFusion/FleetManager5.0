@@ -73,7 +73,7 @@ const CreateBinding: React.FC = () => {
     const fetchData = async () => {
         try {
             const userData = await getAccessGroup();
-            if (userData && userData.jwt_token && contractIfricId) {
+            if (userData && userData.ifricdi && contractIfricId) {
                 setCompanyIfricId(userData.company_ifric_id);
                 setUserName(userData.user_name)
 
