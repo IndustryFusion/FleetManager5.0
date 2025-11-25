@@ -281,7 +281,6 @@ export const certificateBodyTemplate = (rowData: Asset, t: (key: string) => stri
       );
       
       const encryptedPath = routeResponse?.data?.path;
-      console.log("encryptedPath",encryptedPath)
       if (!encryptedPath) {
         console.error("Failed to generate encrypted route path");
         return;
