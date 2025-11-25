@@ -252,3 +252,20 @@ export const authenticateToken = async (token: string) => {
     throw error;
   }
 }
+
+export const encryptRoute = async (data: { token: string; product_name: string; company_ifric_id: string; route: string }) => {
+  try {
+    return await api.post(`${FLEET_MANAGER_BACKEND_URL}/auth/encrypt-route`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+  } catch(error: any) {
+    console.log('err from encrypt route', error);
+    if (error?.response && error?.response?.status === 401) {
+      updatePopupVisible(true);
+    } else {
+      throw error;
+    }
+  }
+}

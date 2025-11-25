@@ -3,6 +3,8 @@ import { useRouter } from "next/router";
 import { Button } from "primereact/button";
 import { TabPanel, TabView } from "primereact/tabview";
 import "../../../public/styles/overview-page/overview-header.css";
+import { encryptRoute } from "@/utility/auth";
+import { getAccessGroup } from "@/utility/indexed-db";
 type overviewHeaderProps = {
   assetCount: number;
   activeTab: string;
@@ -19,19 +21,42 @@ const OverviewHeader: React.FC<overviewHeaderProps> = ({
   const { t } = useTranslation(["overview", "placeholder"]);
   const router = useRouter();
 
-  const handleCreatePDTClick = () => {
-    const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
-    let targetUrl;
-    
-    if (environment === "local") {
-      targetUrl = "http://localhost:3008/asset/create/create-pdt";
-    } else if (environment === "dev") {
-      targetUrl = "https://dev-platform.industryfusion-x.org/asset/create/create-pdt";
-    } else {
-      targetUrl = "https://platform.industryfusion-x.org/asset/create/create-pdt";
+  const handleCreatePDTClick = async () => {
+    try {
+      const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
+      let targetUrl;
+      
+      if (environment === "local") {
+        targetUrl = "http://localhost:3008/asset/create/create-pdt";
+      } else if (environment === "dev") {
+        targetUrl = "https://dev-platform.industryfusion-x.org/asset/create/create-pdt";
+      } else {
+        targetUrl = "https://platform.industryfusion-x.org/asset/create/create-pdt";
+      }
+
+      const accessGroup = accessgroupIndexDb || await getAccessGroup();
+      
+      if (!accessGroup?.ifricdi || !accessGroup?.company_ifric_id) {
+        console.error("Missing required access group data");
+        return;
+      }
+
+
+      const response = await encryptRoute({
+        token: accessGroup.ifricdi,
+        product_name: "Fleet Manager",
+        company_ifric_id: accessGroup.company_ifric_id,
+        route: targetUrl
+      });
+
+      if (response?.data?.path) {
+        window.location.href = response.data.path;
+      } else {
+        router.push(targetUrl);
+      }
+    } catch (error: any) {
+      console.error("Error encrypting route:", error);
     }
-    
-    router.push(targetUrl);
   };
 
   return (
