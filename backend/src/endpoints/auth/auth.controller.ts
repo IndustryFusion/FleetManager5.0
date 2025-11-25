@@ -124,6 +124,11 @@ export class AuthController {
     return this.authService.getAccessGroup(id, req);
   }
 
+  @Get('authenticate-token/:ifricdi')
+  authenticateToken(@Param('ifricdi') ifricdi: string) {
+    return this.authService.authenticateToken(ifricdi);
+  }
+
   @UseGuards(AuthGuard)
   @Patch('/update-access-group/:id')
   updateAccessGroup(@Param('id') id: string, @Body() data: Record<string,any>, @Req() req: Request) {

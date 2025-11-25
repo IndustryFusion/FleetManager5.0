@@ -21,6 +21,7 @@ import * as jwt from 'jsonwebtoken';
 import { CompactEncrypt } from 'jose';
 import { createHash } from 'crypto';
 import { Request } from 'express';
+import { compactDecrypt } from 'jose';
 
 /**
  * Retrieves tokens from the keylock service.
@@ -489,6 +490,30 @@ export class AuthService {
         throw new HttpException(err.response.data.title || err.response.data.message, err.response.status);
       } else {
         throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      }
+    }
+  }
+
+  async authenticateToken(ifricdi: string) {
+    try {
+      // unMask the token
+      const unMaskedToken = this.unmask(ifricdi, this.MASK_SECRET);
+
+      // Decrypt the token
+      const ENCRYPTION_KEY = this.deriveKey(process.env.JWT_SECRET!);
+      const { plaintext } = await compactDecrypt(unMaskedToken, ENCRYPTION_KEY);
+      const decryptedToken = new TextDecoder().decode(plaintext);
+
+      // verify the token and return true if autheticated
+      const response = await axios.get(`${this.registryUrl}/auth/authenticate-token/${decryptedToken}`);
+      return response.data;
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if(err.response) {
+        throw new HttpException(err.response.data.message, err.response.status);
+      } else {
+        throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
   }

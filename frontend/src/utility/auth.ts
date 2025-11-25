@@ -243,3 +243,12 @@ export const getUserDetailsByEmail = async (dataToSend: Record<string, string>) 
         }
     }
 };
+
+export const authenticateToken = async (token: string) => {
+  try {
+    const response = await api.get(`${FLEET_MANAGER_BACKEND_URL}/auth/authenticate-token/${token}`);
+    return response.data;
+  } catch(error: any) {
+    throw error;
+  }
+}
