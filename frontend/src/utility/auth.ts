@@ -287,11 +287,11 @@ export const getEncryptedRouteForPDTCreation = async (accessgroupIndexDb?: any):
     let targetUrl;
     
     if (environment === "local") {
-      targetUrl = "http://localhost:3008/asset/create/create-pdt";
+      targetUrl = "http://localhost:3008/asset/create/create-pdt?product_name=Fleet%20Manager";
     } else if (environment === "dev") {
-      targetUrl = "https://dev-platform.industryfusion-x.org/asset/create/create-pdt";
+      targetUrl = "https://dev-platform.industryfusion-x.org/asset/create/create-pdt?product_name=Fleet%20Manager";
     } else {
-      targetUrl = "https://platform.industryfusion-x.org/asset/create/create-pdt";
+      targetUrl = "https://platform.industryfusion-x.org/asset/create/create-pdt?product_name=Fleet%20Manager";
     }
 
     const accessGroup = accessgroupIndexDb || await getAccessGroup();
