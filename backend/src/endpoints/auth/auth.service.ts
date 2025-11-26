@@ -116,9 +116,16 @@ export class AuthService {
   async decryptRoute(data: FindIndexedDbAuthDto) {
     try {
       const routeToken = data.token
-      const { m: maskedJwt } = jwt.verify(routeToken, this.SECRET_KEY) as { m: string };
-      const registryJwt = this.unmask(maskedJwt, this.MASK_SECRET);
-      const decoded = jwt.decode(registryJwt) as
+      const { m: ifricdi } = jwt.verify(routeToken, this.SECRET_KEY) as { m: string };
+      
+      // unMask the ifricdi to get jwt_token
+      const unMaskedToken = this.unmask(ifricdi, this.MASK_SECRET);
+
+      // Decrypt the token
+      const ENCRYPTION_KEY = this.deriveKey(process.env.JWT_SECRET!);
+      const { plaintext } = await compactDecrypt(unMaskedToken, ENCRYPTION_KEY);
+      const decryptedToken = new TextDecoder().decode(plaintext);
+      const decoded = jwt.decode(decryptedToken) as
         | { sub?: string; user?: string; iat?: number; exp?: number }
         | null;
     
@@ -130,7 +137,7 @@ export class AuthService {
           const registryHeader = {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            Authorization: `Bearer ${registryJwt}`,
+            Authorization: `Bearer ${decryptedToken}`,
           };
             const registryResponse = await axios.post(
         `${this.registryUrl}/auth/get-indexed-db-data`,

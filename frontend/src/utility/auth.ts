@@ -21,7 +21,7 @@ import api from "./jwt";
 import axios from "axios";
 import { updatePopupVisible } from './update-popup';
 import { jwtDecode, JwtPayload } from "jwt-decode";
-import { storeAccessGroup } from "./indexed-db";
+import { storeAccessGroup, getAccessGroup } from "./indexed-db";
 
 const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
 
@@ -253,19 +253,99 @@ export const authenticateToken = async (token: string) => {
   }
 }
 
-export const encryptRoute = async (data: { token: string; product_name: string; company_ifric_id: string; route: string }) => {
+export const encryptRoute = async (
+  token: string,
+  productName: string,
+  companyIfricId: string,
+  route: string
+) => {
   try {
-    return await api.post(`${FLEET_MANAGER_BACKEND_URL}/auth/encrypt-route`, data, {
-      headers: {
-        "Content-Type": "application/json",
+    return await api.post(
+      `${FLEET_MANAGER_BACKEND_URL}/auth/encrypt-route`,
+      {
+        token,
+        product_name: productName,
+        company_ifric_id: companyIfricId,
+        route
       }
-    });
-  } catch(error: any) {
-    console.log('err from encrypt route', error);
-    if (error?.response && error?.response?.status === 401) {
+    );
+  } catch (error: any) {
+    if (
+      error?.response &&
+      (error.response.status === 401 || error.response.status === 403)
+    ) {
       updatePopupVisible(true);
     } else {
       throw error;
     }
   }
-}
+};
+
+export const getEncryptedRouteForPDTCreation = async (accessgroupIndexDb?: any): Promise<{ targetUrl: string; accessGroup: any } | null> => {
+  try {
+    const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
+    let targetUrl;
+    
+    if (environment === "local") {
+      targetUrl = "http://localhost:3008/asset/create/create-pdt";
+    } else if (environment === "dev") {
+      targetUrl = "https://dev-platform.industryfusion-x.org/asset/create/create-pdt";
+    } else {
+      targetUrl = "https://platform.industryfusion-x.org/asset/create/create-pdt";
+    }
+
+    const accessGroup = accessgroupIndexDb || await getAccessGroup();
+    
+    if (!accessGroup?.ifricdi || !accessGroup?.company_ifric_id) {
+      console.error("Missing required access group data");
+      return null;
+    }
+
+    return { targetUrl, accessGroup };
+  } catch (error) {
+    console.error("Error preparing PDT creation route:", error);
+    return null;
+  }
+};
+
+export const getEncryptedCertificateRoute = async (assetIfricId: string): Promise<string | null> => {
+  try {
+    const accessGroup = await getAccessGroup();
+    
+    if (!accessGroup?.ifricdi || !accessGroup?.company_ifric_id) {
+      console.error("No token or company_ifric_id found in IndexedDB");
+      return null;
+    }
+
+    const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
+    let baseUrl: string;
+    
+    if (environment === "dev") {
+      baseUrl = "https://dev-platform.industry-fusion.com";
+    } else if (environment === "local") {
+      baseUrl = "http://localhost:3003";
+    } else {
+      baseUrl = "https://platform.industry-fusion.com";
+    }
+
+    const route = `${baseUrl}/certificates?asset_ifric_id=${assetIfricId}`;
+
+    const routeResponse = await encryptRoute(
+      accessGroup.ifricdi,
+      "Fleet Manager",
+      accessGroup.company_ifric_id,
+      route
+    );
+
+    const encryptedPath = routeResponse?.data?.path;
+    if (!encryptedPath) {
+      console.error("Failed to generate encrypted route path");
+      return null;
+    }
+
+    return encryptedPath;
+  } catch (error) {
+    console.error("Error generating encrypted route path:", error);
+    return null;
+  }
+};
