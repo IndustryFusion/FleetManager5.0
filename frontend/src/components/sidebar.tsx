@@ -233,59 +233,87 @@ function Sidebar() {
               Binding Request
             </div>
           </Button> */}
-         <div style= {{marginTop:"auto", paddingBlock: "30px"}}>
-         <Button
-            tooltip={!sidebarOpen ? "Help Center" : undefined}
-            tooltipOptions={{ position: "right", event: "both" }}
-            className={`sidebar_navlink ${
-              router.pathname === "/help-center" ? "is_active" : ""
-            }`}
-            onClick={() => handleRoute("help-center")}
-          >
-            <Image
-              src="/sidebar/help_center_icon.svg"
-              width={18}
-              height={18}
-              alt="dashboard_icon"
-            />
-            <div
-              className={`sidebar_navlink_text ${
-                !sidebarOpen ? "sidebar_collapse_fade" : ""
-              }`}
-              style={{ color: "#95989A" }}
-            >
-              Help Center
-            </div>
-          </Button>
-          <Button
-            tooltip={!sidebarOpen ? "Settings" : undefined}
-            tooltipOptions={{ position: "right", event: "both" }}
-            className="sidebar_navlink"
-            onClick={() => setVisible(true)}
-          >
-            <Image
-              src="/sidebar/settings_icon.svg"
-              width={18}
-              height={18}
-              alt="dashboard_icon"
-            />
-            <div
-              className={`sidebar_navlink_text ${
-                !sidebarOpen ? "sidebar_collapse_fade" : ""
-              }`}
-              style={{ color: "#95989A" }}
-            >
-              Settings
-            </div>
-          </Button>
-         </div>
-          
-
-          {visible && (
-            <SettingsDialog visible={visible} setVisible={setVisible} />
-          )}
         </div>
       </div>
+      <div className="sidebar_actions">
+        <Button
+          tooltip={!sidebarOpen ? "Help Center" : undefined}
+          tooltipOptions={{ position: "right", event: "both" }}
+          className={`sidebar_navlink ${
+            router.pathname === "/help-center" ? "is_active" : ""
+          }`}
+          onClick={() => handleRoute("help-center")}
+        >
+          <Image
+            src="/sidebar/help_center_icon.svg"
+            width={18}
+            height={18}
+            alt="dashboard_icon"
+          />
+          <div
+            className={`sidebar_navlink_text ${
+              !sidebarOpen ? "sidebar_collapse_fade" : ""
+            }`}
+            style={{ color: "#95989A" }}
+          >
+            Help Center
+          </div>
+        </Button>
+        <Button
+          tooltip={!sidebarOpen ? "Settings" : undefined}
+          tooltipOptions={{ position: "right", event: "both" }}
+          className="sidebar_navlink"
+          onClick={() => setVisible(true)}
+        >
+          <Image
+            src="/sidebar/settings_icon.svg"
+            width={18}
+            height={18}
+            alt="dashboard_icon"
+          />
+          <div
+            className={`sidebar_navlink_text ${
+              !sidebarOpen ? "sidebar_collapse_fade" : ""
+            }`}
+            style={{ color: "#95989A" }}
+          >
+            Settings
+          </div>
+        </Button>
+      </div>
+      {visible && (
+        <SettingsDialog visible={visible} setVisible={setVisible} />
+      )}
+      <div className="sidebar-bottom">
+            <Button
+              className={`sidebar_navlink if_button ${!sidebarOpen ? 'mini_version' : ''}`}
+              tooltip={!sidebarOpen ? t("sidebar.back_to_if") : undefined}
+              tooltipOptions={{ position: "right", event: "both", className: "sidebar_tooltip" }}
+              onClick={() => {
+                router.push("https://dev-platform.industry-fusion.com/dashboard-new")
+              }}
+          >
+            <img
+              src="/hive (1).svg"
+              width={40}
+              height={40}
+              alt="Buy Components Icon"
+            />
+            <div
+              className={`sidebar_navlink_text ${!sidebarOpen ? "sidebar_collapse_fade" : ""
+                }`}
+            >
+              IndustryFusion
+            </div>
+            <img
+              src="/arrow-left-02.svg"
+              width={16}
+              height={16}
+              alt="Back arrow"
+              style={{marginLeft: 'auto'}}
+            />
+          </Button>
+        </div>
     </div>
   );
 }

@@ -751,6 +751,40 @@ svg.p-icon {
   line-height: normal;
 }
 
+.cancel-btn {
+  text-align: center;
+  font-size: 16px;
+  border-radius: 8px;
+  background-color: #c5c4c4;
+  color: rgb(5, 3, 3);
+  box-shadow: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.action-btn-save {
+  text-align: center;
+  font-size: 16px;
+  border-radius: 8px;
+  background: #2b2b2b;
+  box-shadow: none;
+  color: white;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.clone-dialog.p-dialog .p-dialog-header {
+  padding: 16px !important;
+  border-bottom: 1px solid #e9ecef
+}
+
+.clone-dialog.p-dialog .p-dialog-footer {
+  padding: 16px;
+  border-top: 1px solid #e9ecef
+}
+
 .p-rowgroup-header-name {
   font-size: 20px;
   text-transform: capitalize;
