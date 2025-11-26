@@ -15,14 +15,16 @@
 // 
 
 
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, Req, Res, Session, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, Req, Res, Session, Query, UseGuards } from '@nestjs/common';
 import { AssetService } from './asset.service';
 import { Request } from 'express';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('asset')
 export class AssetController {
   constructor(private readonly assetService: AssetService) {}
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   async getAssetData(@Param('id') id: string, @Req() req: Request) {
     try {
@@ -60,6 +62,7 @@ export class AssetController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get('get-company-manufacturer-asset/:id')
   async getManufacturerCompanyAsset(@Param('id') id: string, @Req() req: Request) {
     try {
