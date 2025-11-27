@@ -254,7 +254,7 @@ export const certificateBodyTemplate = (rowData: Asset, t: (key: string) => stri
     e.stopPropagation();
     const assetId = rowData.id;
     
-    const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
+
     const result = await encryptRoute(environment, "/certificates", "DPP Creator", assetId, t);
     if (result.success && result.url) {
       window.open(result.url, '_blank');
