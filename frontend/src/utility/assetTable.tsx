@@ -6,8 +6,8 @@ import "../../public/styles/asset-overview.css"
 import { Checkbox } from "primereact/checkbox";
 import { Tooltip } from "primereact/tooltip";
 import { Button } from "primereact/button";
-import { getEncryptedCertificateRoute } from "./auth";
-
+import { encryptRoute } from "./auth";
+const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
 export const ifricIdHeader = (t: (key: string) => string): React.ReactNode => {
   return (
     <div className="flex gap-1 align-items-center">
@@ -249,14 +249,34 @@ export const certificateHeader = (t: (key: string) => string): React.ReactNode =
   );
 };
 
-export const certificateBodyTemplate = (rowData: Asset, t: (key: string) => string, router: any): React.ReactNode => {
+export const certificateBodyTemplate = (rowData: Asset, t: (key: string) => string, router: any, toast?: any): React.ReactNode => {
   const handleCertificateClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const assetId = rowData.id;
     
-    const encryptedPath = await getEncryptedCertificateRoute(assetId);
-    if (encryptedPath) {
-      window.open(encryptedPath, '_blank');
+    const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
+    const result = await encryptRoute(environment, "/certificates", "DPP Creator", assetId, t);
+    if (result.success && result.url) {
+      window.open(result.url, '_blank');
+      if (toast) {
+        toast.current?.show({
+          severity: 'success',
+          summary: t('common:success'),
+          detail: t('common:redirecting'),
+          life: 3000
+        });
+      }
+    } else {
+      if (toast) {
+        toast.current?.show({
+          severity: 'error',
+          summary: t('common:error'),
+          detail: result.errorMessage || t('common:auth.routeError'),
+          life: 5000
+        });
+      } else {
+        console.error(result.errorMessage || 'Failed to encrypt route');
+      }
     }
   };
 

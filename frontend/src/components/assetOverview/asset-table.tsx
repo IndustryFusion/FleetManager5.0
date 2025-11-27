@@ -22,7 +22,8 @@ import { useRouter } from "next/router";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
 import { Skeleton } from "primereact/skeleton";
-import React, { useEffect,useState } from "react";
+import { Toast } from "primereact/toast";
+import React, { useEffect, useState, useRef } from "react";
 
 
 const AssetTable: React.FC<any> = ({
@@ -50,6 +51,7 @@ const AssetTable: React.FC<any> = ({
 }) => {
 
   const router = useRouter();
+  const toast = useRef<Toast>(null);
   const [rangeDisplay, setRangeDisplay] = useState('');
   const rowSkeleton = (width: string = "100%") => (
     <Skeleton width={width} height="1rem" borderRadius="10px" />
@@ -57,7 +59,7 @@ const AssetTable: React.FC<any> = ({
   
 
   const certificateBodyTemplateWrapper = (rowData: Asset) => {
-    return certificateBodyTemplate(rowData, t, router);
+    return certificateBodyTemplate(rowData, t, router, toast);
   };
   const columnConfig = [
     {
@@ -175,6 +177,7 @@ const AssetTable: React.FC<any> = ({
  
   return (
     <>   
+      <Toast ref={toast} />
       <DataTable
         value={
           loading

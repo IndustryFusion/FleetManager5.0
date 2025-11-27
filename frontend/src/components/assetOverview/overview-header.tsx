@@ -2,6 +2,9 @@ import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { Button } from "primereact/button";
 import { TabPanel, TabView } from "primereact/tabview";
+import { Toast } from "primereact/toast";
+import { useRef } from "react";
+import { encryptRoute } from "@/utility/auth";
 import "../../../public/styles/overview-page/overview-header.css";
 type overviewHeaderProps = {
   assetCount: number;
@@ -16,19 +19,43 @@ const OverviewHeader: React.FC<overviewHeaderProps> = ({
   setActiveTab,
   accessgroupIndexDb 
 }) => {
-  const { t } = useTranslation(["overview", "placeholder"]);
+  const { t } = useTranslation(["overview", "placeholder", "common"]);
   const router = useRouter();
-
-  const handleCreatePDTClick = () => {
-    const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
-    const targetUrl = environment === "dev"
-      ? "https://dev-platform.industryfusion-x.org/dashboard"
-      : "https://platform.industryfusion-x.org/dashboard";
-    router.push(targetUrl);
+  const toast = useRef<Toast>(null);
+  const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
+  
+  const handleCreatePDTClick = async () => {
+    try {
+      const result = await encryptRoute(environment, "/asset/create/create-pdt", "IFX Platform", undefined, t);
+      if (result.success && result.url) {
+        window.open(result.url, '_blank');
+        toast.current?.show({
+          severity: 'success',
+          summary: t('common:success'),
+          detail: t('common:redirecting'),
+          life: 3000
+        });
+      } else {
+        toast.current?.show({
+          severity: 'error',
+          summary: t('common:error'),
+          detail: result.errorMessage || t('common:auth.routeError'),
+          life: 5000
+        });
+      }
+    } catch (error) {
+      toast.current?.show({
+        severity: 'error',
+        summary: t('common:error'),
+        detail: t('common:auth.routeError'),
+        life: 5000
+      });
+    }
   };
 
   return (
     <>
+      <Toast ref={toast} />
       <div className="asset-header">
         <div className="flex justify-content-between">
           <div className="flex">
