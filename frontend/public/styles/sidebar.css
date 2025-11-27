@@ -65,10 +65,14 @@ body {
     width: 159px;
 }
 
+.sidebar_wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .sidebar_content {
   padding: 20px 15px 20px 15px;
-  height: calc(100vh - 99px);
-  overflow-y: auto;
+  flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 10px;
@@ -77,9 +81,9 @@ body {
   overflow: hidden;
   min-width: 40px;
   background-color: white;
-  min-height: calc(100vh - 139px);
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
 }
 .sidebar_navlink {
   border: none;
@@ -279,4 +283,60 @@ body {
 }
 .grey_button_hover:hover {
   background-color: #dadada;
+}
+
+.sidebar_actions {
+  padding: 12px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background-color: white;
+}
+
+.sidebar-bottom {
+  padding: 12px 15px 20px 15px;
+  display: flex;
+  align-items: center;
+  background-color: white;
+}
+
+.sidebar-bottom .if_button {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.sidebar-bottom .mini_version img:first-child {
+  width: 28px;
+  height: 28px;
+}
+
+.sidebar_navlink.if_button {
+  margin-top: auto;
+  background-color: var(--common-text-grey-100);
+  transition: padding 200ms ease;
+  margin-bottom: 0px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.sidebar_navlink.if_button:is(:hover, :focus-visible) {
+  background-color: var(--common-text-grey-200);
+}
+
+.sidebar_navlink.if_button img:first-child {
+  transition: all 200ms ease;
+}
+
+.sidebar_navlink.if_button.mini_version {
+  padding: 7px;
+  border-radius: 8px;
+}
+
+.sidebar_navlink.if_button.mini_version img:first-child {
+  width: 27px;
+  height: 27px;
 }
