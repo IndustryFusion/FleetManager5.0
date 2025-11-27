@@ -340,13 +340,29 @@ export const getBaseUrl = (environment: string | undefined, productName: string)
       } else {
         return "https://platform.industryfusion-x.org";
       }
+    case "Contract Manager":
+      if (environment === "dev") {
+        return "https://dev-contract.industryfusion-x.org";
+      } else if (environment === "local") {
+        return "http://localhost:3020";
+      } else {
+        return "https://contract.industryfusion-x.org";
+      }
+    case "Factory Manager":
+      if (environment === "dev") {
+        return "https://dev-factory.industry-fusion.com";
+      } else if (environment === "local") {
+        return "http://localhost:3002";
+      } else {
+        return "https://factory.industry-fusion.com";
+      }
     default:
       if (environment === "dev") {
-        return "https://dev-platform.industry-fusion.com";
+        return "https://dev-fleet.industry-fusion.com";
       } else if (environment === "local") {
-        return "http://localhost:3003";
+        return "http://localhost:3001";
       } else {
-        return "https://platform.industry-fusion.com";
+        return "https://fleet.industry-fusion.com";
       }
   }
 };
