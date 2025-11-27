@@ -348,6 +348,14 @@ export const getBaseUrl = (environment: string | undefined, productName: string)
       } else {
         return "https://contract.industryfusion-x.org";
       }
+    case "Fleet Manager":
+      if (environment === "dev") {
+          return "https://dev-fleet.industry-fusion.com";
+      } else if (environment === "local") {
+          return "http://localhost:3001";
+      } else {
+          return "https://fleet.industry-fusion.com";
+      }
     case "Factory Manager":
       if (environment === "dev") {
         return "https://dev-factory.industry-fusion.com";
