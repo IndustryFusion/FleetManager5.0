@@ -63,6 +63,7 @@ export class CertificateController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get('get-asset-certificates') 
   async getAssetCertificates(@Query('asset_ifric_id') asset_ifric_id: string, @Query('company_ifric_id') company_ifric_id: string, @Req() req: Request) {
     try {
@@ -77,6 +78,7 @@ export class CertificateController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get('verify-asset-certificate')
   async verifyAssetCertificate(@Query('asset_ifric_id') asset_ifric_id: string, @Query('company_ifric_id') company_ifric_id: string, @Req() req: Request) {
     try {
@@ -87,6 +89,7 @@ export class CertificateController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get('verify-company-asset-certificate/:company_ifric_id/:asset_ifric_id')
   async verifyCompanyAndAssetCertificate(@Param('asset_ifric_id') asset_ifric_id: string, @Param('company_ifric_id') company_ifric_id: string, @Req() req: Request) {
     try {

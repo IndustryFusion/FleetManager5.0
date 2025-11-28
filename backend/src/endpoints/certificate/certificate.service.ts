@@ -150,16 +150,9 @@ export class CertificateService {
         'Authorization': req.headers['authorization']
       };
 
-      const encryptedToken = await this.encryptData(req.headers['authorization'].split(" ")[1]);
-      const ifxHeaders = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${this.mask(encryptedToken, process.env.MASK_SECRET)}`
-      };
-
       // check whether the last created certificate is valid or expired or not
       //in get asset certificate we are verifiying the company cert
-      const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate?asset_ifric_id=${asset_ifric_id}&company_ifric_id=${company_ifric_id}`, { headers: ifxHeaders });
+      const checkLastCertificate = await axios.get(`${this.ifxPlatformUrl}/certificate/get-asset-certificate?asset_ifric_id=${asset_ifric_id}&company_ifric_id=${company_ifric_id}`, { headers: registryHeaders });
       console.log("checkLastCertificate", checkLastCertificate.data)
       if (checkLastCertificate.data.length > 0) {
         if (!checkLastCertificate.data[0].vc_id) {
@@ -232,7 +225,7 @@ export class CertificateService {
         expiry,
         privateKey: "test"
       }, {
-        headers: ifxHeaders
+        headers: registryHeaders
       });
 
       return response.data;

@@ -34,11 +34,10 @@ export class ContractService {
 
   async findAll(company_ifric_id: string, req: Request) {
     try {
-      const encryptedToken = await this.encryptData(req.headers['authorization'].split(" ")[1]);
       const contractHeaders = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${this.mask(encryptedToken, process.env.MASK_SECRET)}`
+        'Authorization': req.headers['authorization']
       };
 
       const response = await axios.get(`${this.contractUrl}/contract/get-company-contract/${company_ifric_id}`, {headers: contractHeaders});
