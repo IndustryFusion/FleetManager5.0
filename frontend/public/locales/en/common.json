@@ -1,0 +1,10 @@
+{
+  "success": "Success",
+  "error": "Error",
+  "redirecting": "Redirecting....",
+  "auth": {
+    "missingAccessGroup": "No token or company ID found in IndexedDB",
+    "encryptionFailed": "Failed to generate encrypted route path",
+    "routeError": "Failed to generate secure route. Please try again."
+  }
+}

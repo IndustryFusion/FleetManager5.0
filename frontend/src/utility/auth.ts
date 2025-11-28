@@ -253,22 +253,60 @@ export const authenticateToken = async (token: string) => {
   }
 }
 
+/**
+ * Encrypts a route for secure navigation between platform products
+ * 
+ * @param {string | undefined} environment - Environment ('dev', 'local', or production)
+ * @param {string} pageName - Target page path (e.g., '/dashboard', '/certificates')
+ * @param {string} productName - Product name ('Fleet Manager', 'DPP Creator', 'IFX Platform')
+ * @param {string} [assetIfricId] - Optional asset IFRIC ID
+ * @param {Function} [t] - Optional translation function for error messages
+ * @returns {Promise<{success: boolean, url?: string, errorMessage?: string}>} Result object with success status, URL, and error message
+ */
 export const encryptRoute = async (
-  token: string,
+  environment: string | undefined,
+  pageName: string,
   productName: string,
-  companyIfricId: string,
-  route: string
+  assetIfricId?: string,
+  t?: (key: string) => string
 ) => {
   try {
-    return await api.post(
+    const accessGroup = await getAccessGroup();
+    
+    if (!accessGroup?.ifricdi || !accessGroup?.company_ifric_id) {
+      const errorMessage = t ? t('common:auth.missingAccessGroup') : "No token or company_ifric_id found in IndexedDB";
+      console.error(errorMessage);
+      return { success: false, errorMessage };
+    }
+
+    const baseUrl = getBaseUrl(environment, productName);
+    let route = `${baseUrl}`;
+    
+    if (assetIfricId) {
+      route += `${pageName}?asset_ifric_id=${assetIfricId}`;
+    }
+    else{
+      route += `${pageName}`;
+    }
+
+    const response = await api.post(
       `${FLEET_MANAGER_BACKEND_URL}/auth/encrypt-route`,
       {
-        token,
+        token: accessGroup.ifricdi,
         product_name: productName,
-        company_ifric_id: companyIfricId,
+        company_ifric_id: accessGroup.company_ifric_id,
         route
       }
     );
+
+    const encryptedPath = response?.data?.path;
+    if (!encryptedPath) {
+      const errorMessage = t ? t('common:auth.encryptionFailed') : "Failed to generate encrypted route path";
+      console.error(errorMessage);
+      return { success: false, errorMessage };
+    }
+
+    return { success: true, url: encryptedPath };
   } catch (error: any) {
     if (
       error?.response &&
@@ -276,49 +314,63 @@ export const encryptRoute = async (
     ) {
       updatePopupVisible(true);
     } else {
-      throw error;
+      const errorMessage = t ? t('common:auth.routeError') : "Error encrypting route";
+      console.error(`${errorMessage}:`, error);
+      return { success: false, errorMessage };
     }
+    return { success: false, errorMessage: t ? t('common:auth.routeError') : "Error encrypting route" };
   }
 };
 
-export const getEncryptedCertificateRoute = async (assetIfricId: string): Promise<string | null> => {
-  try {
-    const accessGroup = await getAccessGroup();
-    
-    if (!accessGroup?.ifricdi || !accessGroup?.company_ifric_id) {
-      console.error("No token or company_ifric_id found in IndexedDB");
-      return null;
-    }
-
-    const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
-    let baseUrl: string;
-    
-    if (environment === "dev") {
-      baseUrl = "https://dev-platform.industry-fusion.com";
-    } else if (environment === "local") {
-      baseUrl = "http://localhost:3003";
-    } else {
-      baseUrl = "https://platform.industry-fusion.com";
-    }
-
-    const route = `${baseUrl}/certificates?asset_ifric_id=${assetIfricId}`;
-
-    const routeResponse = await encryptRoute(
-      accessGroup.ifricdi,
-      "Fleet Manager",
-      accessGroup.company_ifric_id,
-      route
-    );
-
-    const encryptedPath = routeResponse?.data?.path;
-    if (!encryptedPath) {
-      console.error("Failed to generate encrypted route path");
-      return null;
-    }
-
-    return encryptedPath;
-  } catch (error) {
-    console.error("Error generating encrypted route path:", error);
-    return null;
+export const getBaseUrl = (environment: string | undefined, productName: string): string => {
+  switch (productName) {
+    case "DPP Creator":
+      if (environment === "dev") {
+        return "https://dev-platform.industry-fusion.com";
+      } else if (environment === "local") {
+        return "http://localhost:3003";
+      } else {
+        return "https://platform.industry-fusion.com";
+      }
+    case "IFX Platform":
+      if (environment === "dev") {
+        return "https://dev-platform.industryfusion-x.org";
+      } else if (environment === "local") {
+        return "http://localhost:3008";
+      } else {
+        return "https://platform.industryfusion-x.org";
+      }
+    case "Contract Manager":
+      if (environment === "dev") {
+        return "https://dev-contract.industryfusion-x.org";
+      } else if (environment === "local") {
+        return "http://localhost:3020";
+      } else {
+        return "https://contract.industryfusion-x.org";
+      }
+    case "Fleet Manager":
+      if (environment === "dev") {
+          return "https://dev-fleet.industry-fusion.com";
+      } else if (environment === "local") {
+          return "http://localhost:3001";
+      } else {
+          return "https://fleet.industry-fusion.com";
+      }
+    case "Factory Manager":
+      if (environment === "dev") {
+        return "https://dev-factory.industry-fusion.com";
+      } else if (environment === "local") {
+        return "http://localhost:3002";
+      } else {
+        return "https://factory.industry-fusion.com";
+      }
+    default:
+      if (environment === "dev") {
+        return "https://dev-fleet.industry-fusion.com";
+      } else if (environment === "local") {
+        return "http://localhost:3001";
+      } else {
+        return "https://fleet.industry-fusion.com";
+      }
   }
 };

@@ -1,0 +1,10 @@
+{
+  "success": "Erfolg",
+  "error": "Fehler",
+  "redirecting": "Weiterleiten...",
+  "auth": {
+    "missingAccessGroup": "Kein Token oder Firmen-ID in IndexedDB gefunden",
+    "encryptionFailed": "Fehler beim Generieren des verschlüsselten Routenpfads",
+    "routeError": "Fehler beim Generieren der sicheren Route. Bitte versuchen Sie es erneut."
+  }
+}

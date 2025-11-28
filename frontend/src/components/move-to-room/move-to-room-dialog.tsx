@@ -15,7 +15,7 @@ import axios from 'axios';
 import { MultiSelect } from 'primereact/multiselect';
 import OwnerDetailsCard from './owner-details';
 import { postFile, createPurchasedPdt } from '@/utility/asset';
-import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, generateAssetCertificate, getCompanyDetailsById, verifyCompanyAssetCertificate, getAllCompanies, getEncryptedCertificateRoute } from '@/utility/auth';
+import { updateCompanyTwin, getCategorySpecificCompany, verifyCompanyCertificate, generateAssetCertificate, getCompanyDetailsById, verifyCompanyAssetCertificate, getAllCompanies, encryptRoute } from '@/utility/auth';
 import moment from 'moment';
 import { getAssignedContracts, getContracts } from "@/utility/contracts";
 import { createBinding } from "@/utility/contracts";
@@ -262,9 +262,17 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
     e.preventDefault();
     e.stopPropagation();
     
-    const encryptedPath = await getEncryptedCertificateRoute(assetIfricId);
-    if (encryptedPath) {
-      window.open(encryptedPath, '_blank');
+    const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
+    const result = await encryptRoute(environment, "/certificates", "DPP Creator", assetIfricId, t);
+    if (result.success && result.url) {
+      window.open(result.url, '_blank');
+    } else {
+      toast.current?.show({
+        severity: 'error',
+        summary: t('common:error'),
+        detail: result.errorMessage || t('common:auth.routeError'),
+        life: 5000
+      });
     }
   }
   const handleSave = async () => {
