@@ -267,7 +267,6 @@ export const encryptRoute = async (
   environment: string | undefined,
   pageName: string,
   productName: string,
-  assetIfricId?: string,
   t?: (key: string) => string
 ) => {
   try {
@@ -280,14 +279,8 @@ export const encryptRoute = async (
     }
 
     const baseUrl = getBaseUrl(environment, productName);
-    let route = `${baseUrl}`;
+    let route = `${baseUrl}${pageName}`;
     
-    if (assetIfricId) {
-      route += `${pageName}?asset_ifric_id=${assetIfricId}`;
-    }
-    else{
-      route += `${pageName}`;
-    }
 
     const response = await api.post(
       `${FLEET_MANAGER_BACKEND_URL}/auth/encrypt-route`,
