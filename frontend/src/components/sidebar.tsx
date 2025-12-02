@@ -141,32 +141,6 @@ function Sidebar() {
               Contracts
             </div>
           </Button> */}
-          <Button
-            className={`sidebar_navlink ${
-              router.pathname.startsWith("/certificates")
-                ? "is_active"
-                : ""
-            }`}
-            tooltip={!sidebarOpen ? "Certificates" : undefined}
-            tooltipOptions={{ position: "right", event: "both" }}
-            onClick={() =>
-              handleRoute("certificates")
-            }
-          >
-            <Image
-              src="/sidebar/certificate_icon.svg"
-              width={18}
-              height={18}
-              alt="dashboard_icon"
-            />
-            <div
-              className={`sidebar_navlink_text ${
-                !sidebarOpen ? "sidebar_collapse_fade" : ""
-              }`}
-            >
-              Certificates
-            </div>
-          </Button>
           {/* <Button
             className={`sidebar_navlink ${
               router.pathname === "/contract-manager" ? "is_active" : ""
