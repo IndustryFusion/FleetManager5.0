@@ -42,13 +42,16 @@ function MyApp({ Component, pageProps, router }:AppProps) {
       const url = new URL(window.location.href);
       const token = url.searchParams.get("token");
       const from = url.searchParams.get("from") ?? undefined;
+      const isIFXSuite = url.searchParams.get("isIFXSuite") ?? undefined;
       if (!token) return;
       
       try {
-        await getAccessGroupData(token, from);
+        await getAccessGroupData(token, from,isIFXSuite);
 
         // remove only token and route to url
         url.searchParams.delete("token");
+        url.searchParams.delete("from");
+        url.searchParams.delete("isIFXSuite");
         router.replace(url.pathname + url.search);
       } catch (error: any) {
         if (axios.isAxiosError(error)) {
