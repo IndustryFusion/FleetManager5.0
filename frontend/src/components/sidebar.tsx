@@ -49,7 +49,7 @@ function Sidebar() {
       const product_name = "DPP Creator";
       const data = await getAccessGroup();
       
-      if(data?.from && !data?.isIFXSuite){
+      if(data?.from && data?.isIFXSuite === true ){
         window.open(data.from, '_blank');
         return;
       }

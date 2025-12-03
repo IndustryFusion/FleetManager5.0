@@ -42,7 +42,8 @@ function MyApp({ Component, pageProps, router }:AppProps) {
       const url = new URL(window.location.href);
       const token = url.searchParams.get("token");
       const from = url.searchParams.get("from") ?? undefined;
-      const isIFXSuite = url.searchParams.get("isIFXSuite") ?? undefined;
+      const isIFXSuiteParam = url.searchParams.get("isIFXSuite");
+      const isIFXSuite = isIFXSuiteParam ? isIFXSuiteParam === "true" : undefined;
       if (!token) return;
       
       try {
