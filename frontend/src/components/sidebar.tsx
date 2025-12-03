@@ -8,6 +8,8 @@ import { Button } from "primereact/button";
 import { AppDispatch, RootState } from "@/redux/store";
 import SettingsDialog from "./settings/settings-dialog";
 import "../../public/styles/sidebar.css";
+import { encryptRoute } from "@/utility/auth";
+import { getAccessGroup } from "@/utility/indexed-db";
 
 // interface SideBarProps {
 //   isOpen: boolean;
@@ -22,7 +24,7 @@ function Sidebar() {
   const [quota, setQuota] = useState<number | null>(null);
   const assets = useSelector((state: RootState) => state.assetsSlice.assets);
   const dispatch = useDispatch<AppDispatch>();
-
+  const environment = process.env.NEXT_PUBLIC_ENVIRONMENT ||"" ;
   useEffect(() => {
     dispatch(fetchAssetsRedux());
   }, [dispatch]);
@@ -40,6 +42,36 @@ function Sidebar() {
     // // Fetch quota immediately on mount
     fetchQuota();
   }, [assets]); // Empty dependency array ensures this runs once on mount
+  
+  const handleIFNavigation = async () => {
+    try {
+      const pageName = "/ifx-dashboard";
+      const product_name = "DPP Creator";
+      const data = await getAccessGroup();
+      
+      if (data?.from) {
+        window.open(data.from, '_blank');
+        return;
+      }
+      
+      const routeResponse = await encryptRoute(
+        environment,
+        pageName,
+        product_name,
+        t
+    );
+      
+      const encryptedPath = routeResponse?.path;
+
+      if (encryptedPath) {
+        window.open(encryptedPath, '_blank');
+      } else {
+        console.error("Failed to generate encrypted route path");
+      }
+    } catch (error) {
+      console.error("Error generating encrypted route:", error);
+    }
+  }
 
   function handleSidebarClose() {
     setSidebarOpen(false);
@@ -264,7 +296,7 @@ function Sidebar() {
               tooltip={!sidebarOpen ? t("sidebar.back_to_if") : undefined}
               tooltipOptions={{ position: "right", event: "both", className: "sidebar_tooltip" }}
               onClick={() => {
-                router.push("https://dev-platform.industry-fusion.com/dashboard-new")
+               handleIFNavigation();
               }}
           >
             <img

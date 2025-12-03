@@ -135,7 +135,7 @@ export const getAllCompanies = async () => {
   }
 };
 
-export const getAccessGroupData = async(token: string) => {
+export const getAccessGroupData = async(token: string, from?: string) => {
     try {
         const registryHeader = {
             'Content-Type': 'application/json',
@@ -145,7 +145,11 @@ export const getAccessGroupData = async(token: string) => {
         const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/decrypt-route`, {token, product_name: "Fleet Manager"}, {
             headers: registryHeader
         });
-        await storeAccessGroup(response.data.data);
+        const loginData = {
+            ...response.data.data,
+            from: from
+        };
+        await storeAccessGroup(loginData);
         return { status: 200, message: "stored data successfully"}
     } catch(error: any) {
         throw error;
