@@ -135,7 +135,7 @@ export const getAllCompanies = async () => {
   }
 };
 
-export const getAccessGroupData = async(token: string, from?: string, isIFXSuite?:boolean) => {
+export const getAccessGroupData = async(token: string, from?: string) => {
     try {
         const registryHeader = {
             'Content-Type': 'application/json',
@@ -148,7 +148,6 @@ export const getAccessGroupData = async(token: string, from?: string, isIFXSuite
         const loginData = {
             ...response.data.data,
             from: from,
-            isIFXSuite: isIFXSuite
         };
         await storeAccessGroup(loginData);
         return { status: 200, message: "stored data successfully"}

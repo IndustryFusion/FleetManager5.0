@@ -39,7 +39,6 @@ interface LoginData {
     access_group_Ifric_Dashboard: string;
     user_email: string;
     from?: string;
-    isIFXSuite?: boolean;
 }
 
 interface AccessGroupData extends Omit<LoginData, 'jwt_token'> {
@@ -121,7 +120,6 @@ export async function storeAccessGroup(loginData: LoginData) : Promise<void> {
             access_group_Ifric_Dashboard: loginData.access_group_Ifric_Dashboard,
             user_email: loginData.user_email,
             from: loginData.from,
-            isIFXSuite: loginData.isIFXSuite
         };
 
         const request = objectStore.put(dataToStore);

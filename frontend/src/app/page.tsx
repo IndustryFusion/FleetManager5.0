@@ -29,10 +29,10 @@ export default function WelcomePage() {
   const router = useRouter();
   const toast = useRef<Toast>(null);
 
-  const setIndexedDb = async (token: string, from?: string, isIFXSuite?: boolean) => {
+  const setIndexedDb = async (token: string, from?: string) => {
     try {
       // fetch access data and store in indexed db and route to asset-overview.
-      await getAccessGroupData(token, from, isIFXSuite);
+      await getAccessGroupData(token, from);
       router.push("/asset-overview");
     } catch (error: any) {
       console.log("error inside page ",error);
@@ -54,10 +54,8 @@ export default function WelcomePage() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const from = urlParams.get('from') ?? undefined;
-    const isIFXSuiteParam = urlParams.get('isIFXSuite');
-    const isIFXSuite = isIFXSuiteParam ? isIFXSuiteParam === "true" : undefined;
     if (token) {
-     setIndexedDb(token, from, isIFXSuite)
+     setIndexedDb(token, from)
     }
   }, []);
   
