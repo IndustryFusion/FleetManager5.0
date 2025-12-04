@@ -367,7 +367,7 @@ export const getBaseUrl = (environment: string | undefined, productName: string)
         } else if (environment === "local") {
           return "http://localhost:3009";
         } else {
-          return "https://dev-suite.industryfusion-x.org";
+          return "https://suite.industryfusion-x.org";
         }  
     default:
       if (environment === "dev") {
