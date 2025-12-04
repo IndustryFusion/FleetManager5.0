@@ -41,14 +41,16 @@ function MyApp({ Component, pageProps, router }:AppProps) {
 
       const url = new URL(window.location.href);
       const token = url.searchParams.get("token");
+      const from = url.searchParams.get("from") ?? undefined;
 
       if (!token) return;
       
       try {
-        await getAccessGroupData(token);
+        await getAccessGroupData(token, from);
 
         // remove only token and route to url
         url.searchParams.delete("token");
+        url.searchParams.delete("from");
         router.replace(url.pathname + url.search);
       } catch (error: any) {
         if (axios.isAxiosError(error)) {
