@@ -362,6 +362,14 @@ export const getBaseUrl = (environment: string | undefined, productName: string)
       } else {
         return "https://factory.industry-fusion.com";
       }
+      case "IFRIC Dashboard":
+       if (environment === "dev") {
+          return "https://dev-suite.industryfusion-x.org";
+        } else if (environment === "local") {
+          return "http://localhost:3009";
+        } else {
+          return "https://dev-suite.industryfusion-x.org";
+        }  
     default:
       if (environment === "dev") {
         return "https://dev-fleet.industry-fusion.com";
