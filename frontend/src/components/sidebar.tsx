@@ -24,7 +24,7 @@ function Sidebar() {
   const [quota, setQuota] = useState<number | null>(null);
   const assets = useSelector((state: RootState) => state.assetsSlice.assets);
   const dispatch = useDispatch<AppDispatch>();
-  const environment = process.env.NEXT_PUBLIC_ENVIRONMENT ||"" ;
+  const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
   useEffect(() => {
     dispatch(fetchAssetsRedux());
   }, [dispatch]);
