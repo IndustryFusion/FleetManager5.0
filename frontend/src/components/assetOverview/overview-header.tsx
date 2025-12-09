@@ -26,7 +26,7 @@ const OverviewHeader: React.FC<overviewHeaderProps> = ({
   
   const handleCreatePDTClick = async () => {
     try {
-      const result = await encryptRoute(environment, "/asset/create/create-pdt", "IFX Platform", t);
+      const result = await encryptRoute("/asset/create/create-pdt", "IFX Platform", t);
       if (result.success && result.url) {
         window.open(result.url, '_blank');
         toast.current?.show({

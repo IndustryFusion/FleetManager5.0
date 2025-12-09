@@ -263,7 +263,7 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
     e.stopPropagation();
     
     const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
-    const result = await encryptRoute(environment, `/certificates?asset_ifric_id=${assetIfricId}`, "DPP Creator", t);
+    const result = await encryptRoute( `/certificates?asset_ifric_id=${assetIfricId}`, "DPP Creator", t);
     if (result.success && result.url) {
       window.open(result.url, '_blank');
     } else {
