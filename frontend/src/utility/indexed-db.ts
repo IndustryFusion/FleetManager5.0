@@ -119,7 +119,7 @@ export async function storeAccessGroup(loginData: LoginData) : Promise<void> {
             access_group: loginData.access_group,
             access_group_Ifric_Dashboard: loginData.access_group_Ifric_Dashboard,
             user_email: loginData.user_email,
-            ...(loginData.from !== undefined ? { from: btoa(loginData.from) } : {})
+            ...(loginData.from !== undefined ? { from: (loginData.from) } : {})
         };
 
         const request = objectStore.put(dataToStore);
