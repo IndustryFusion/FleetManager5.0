@@ -29,15 +29,22 @@ export default function WelcomePage() {
   const router = useRouter();
   const toast = useRef<Toast>(null);
 
-  const setIndexedDb = async (token: string) => {
+  const setIndexedDb = async (token: string, from?: string) => {
     try {
       // fetch access data and store in indexed db and route to asset-overview.
-      await getAccessGroupData(token);
+      await getAccessGroupData(token, from);
       router.push("/asset-overview");
     } catch (error: any) {
       console.log("error inside page ",error);
       if (axios.isAxiosError(error)) {
         if (error?.response && error?.response?.status === 401) {
+          toast?.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Route token mismatch from Suite",
+          });
+
+
           window.location.href = `${ifxSuiteUrl}/home`;   
         } else {
           console.error("Error response:", error.response?.data.message);
@@ -53,8 +60,9 @@ export default function WelcomePage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
+    const from = urlParams.get('from') ?? undefined;
     if (token) {
-      setIndexedDb(token);
+     setIndexedDb(token, from)
     }
   }, []);
   

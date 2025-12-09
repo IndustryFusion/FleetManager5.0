@@ -255,7 +255,7 @@ export const certificateBodyTemplate = (rowData: Asset, t: (key: string) => stri
     const assetId = rowData.id;
     
 
-    const result = await encryptRoute(environment, `/certificates?asset_ifric_id=${assetId}`, "DPP Creator", t);
+    const result = await encryptRoute( `/certificates?asset_ifric_id=${assetId}`, "DPP Creator", t);
     if (result.success && result.url) {
       window.open(result.url, '_blank');
       if (toast) {

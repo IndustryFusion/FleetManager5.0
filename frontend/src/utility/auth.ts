@@ -24,7 +24,7 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import { storeAccessGroup, getAccessGroup } from "./indexed-db";
 
 const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
-
+const environment = process.env.NEXT_PUBLIC_ENVIRONMENT ;
 interface CustomJwtPayload extends JwtPayload {
     user: string;  
 }
@@ -135,7 +135,7 @@ export const getAllCompanies = async () => {
   }
 };
 
-export const getAccessGroupData = async(token: string) => {
+export const getAccessGroupData = async(token: string, from?: string) => {
     try {
         const registryHeader = {
             'Content-Type': 'application/json',
@@ -145,7 +145,11 @@ export const getAccessGroupData = async(token: string) => {
         const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/decrypt-route`, {token, product_name: "Fleet Manager"}, {
             headers: registryHeader
         });
-        await storeAccessGroup(response.data.data);
+        const loginData = {
+            ...response.data.data,
+            ...(from  ? { from } : undefined)
+        };
+        await storeAccessGroup(loginData);
         return { status: 200, message: "stored data successfully"}
     } catch(error: any) {
         throw error;
@@ -264,7 +268,6 @@ export const authenticateToken = async (token: string) => {
  * @returns {Promise<{success: boolean, url?: string, errorMessage?: string}>} Result object with success status, URL, and error message
  */
 export const encryptRoute = async (
-  environment: string | undefined,
   pageName: string,
   productName: string,
   t?: (key: string) => string
@@ -278,9 +281,17 @@ export const encryptRoute = async (
       return { success: false, errorMessage };
     }
 
-    const baseUrl = getBaseUrl(environment, productName);
-    let route = `${baseUrl}${pageName}`;
-    
+      let route =""   ;
+      if(pageName === 'ifxRoute'){ 
+          if (accessGroup.from && accessGroup !== null && accessGroup.from !== undefined) {
+            route = atob(accessGroup.from);
+          } else {
+              route = `${getBaseUrl("DPP Creator")}/ifx-dashboard`;
+          }
+        }
+       else{
+          route = `${getBaseUrl(productName)}${pageName}`;
+      }
 
     const response = await api.post(
       `${FLEET_MANAGER_BACKEND_URL}/auth/encrypt-route`,
@@ -315,7 +326,7 @@ export const encryptRoute = async (
   }
 };
 
-export const getBaseUrl = (environment: string | undefined, productName: string): string => {
+export const getBaseUrl = ( productName: string): string => {
   switch (productName) {
     case "DPP Creator":
       if (environment === "dev") {
@@ -357,6 +368,7 @@ export const getBaseUrl = (environment: string | undefined, productName: string)
       } else {
         return "https://factory.industry-fusion.com";
       }
+
     default:
       if (environment === "dev") {
         return "https://dev-fleet.industry-fusion.com";
