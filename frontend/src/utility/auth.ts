@@ -147,7 +147,7 @@ export const getAccessGroupData = async(token: string, from?: string) => {
         });
         const loginData = {
             ...response.data.data,
-           ...(from !== undefined ? { from } : {})
+            ...(from  ? { from } : undefined)
         };
         await storeAccessGroup(loginData);
         return { status: 200, message: "stored data successfully"}
