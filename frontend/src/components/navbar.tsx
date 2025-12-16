@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Button } from "primereact/button";
 import ProfileMenu from "./profile-menu";
 import { Message } from "primereact/message";
+import Cookies from "js-cookie";
 
 type NavbarProps = {
   navHeader?: string;
@@ -124,7 +125,31 @@ const Navbar: React.FC<NavbarProps> = ({ navHeader }) => {
       </div>
     ),
   };
+    const deleteCookie = (name: string) => {
+      Cookies.remove(name);
+    };
+    
+    const cookieMap: Record<string, any> = {
+      "PDT Overview":"pdt_overview_tour",
+      "PDT Übersicht":"pdt_overview_tour"
+    };
 
+    const handleStartTour = () => {
+      if (navHeader) {
+          const cookieName = cookieMap[navHeader];
+        if (Array.isArray(cookieName)) {
+            cookieName.forEach((cookie) => {
+                deleteCookie(cookie);
+                window.dispatchEvent(new CustomEvent('startTour', { detail: { cookieName: cookie } }));
+            });
+            return;
+        } else if (cookieName) {
+            deleteCookie(cookieName);
+            window.dispatchEvent(new CustomEvent('startTour', { detail: { cookieName } }));
+            return;
+        }
+      }
+    };
   return (
     <>
       <div className="flex gap-3 align-items-center asset-overview-header justify-content-between">
@@ -146,6 +171,18 @@ const Navbar: React.FC<NavbarProps> = ({ navHeader }) => {
             </div>} className="global-message" severity="info"/>
         <div className="flex gap-4 nav-items">
           <button className="nav_icon_button"><img src="/notification-icon.svg" alt="notification-icon" /></button>
+          <Button
+              className="nav_icon_button"
+              onClick={handleStartTour}
+              tooltip={t("enableGuideMode")}
+              tooltipOptions={{ event: 'hover', position: 'bottom', className: 'navbar_tooltip' }}
+              >
+                <img
+                  src="/dashboard-images/help_icon.svg"
+                  alt="info-icon"
+                  className="info-icon-nav"
+                />
+            </Button>
           <button className="nav_icon_button"><img src="/app-icon.svg" alt="app-icon" /></button>
           <ProfileMenu />
         </div>

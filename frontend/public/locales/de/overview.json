@@ -26,5 +26,30 @@
     "access_permission": "Sie haben keine Zugriffsrechte. Bitten Sie Ihren Firmenadministrator um die Zugriffsrechte",
     "certificate": "Zertifikat",
     "certified": "Zertifiziert",
-    "uncertified": "Nicht zertifiziert"
+    "uncertified": "Nicht zertifiziert",
+    "enableGuideMode":"UI-Anleitung aktivieren",
+    "ui-guide": {
+        "welcome_title": "Willkommen bei der PDT-Übersicht",
+        "welcome_message": "Hier können Sie Ihre PDT-Produkte sehen und verwalten",
+        "tabs_title": "Anlagen & Modelle",
+        "tabs_step_1": "Wechseln Sie zwischen den Registerkarten Anlagen und Modelle.",
+        "create_btn_title": "PDT erstellen",
+        "create_btn_content": "Klicken Sie hier, um PDT zu erstellen",
+        "search_title": "Suche",
+        "search_content": "Suchen Sie nach bestimmten Anlagen anhand ihrer ID, ihres Namens oder anderer Eigenschaften.",
+        "filter_title": "Filter",
+        "filter_content": "Filtern Sie die Anlagenliste nach bestimmten Kriterien.",
+        "group_title": "Gruppieren nach",
+        "group_content": "Gruppieren Sie Anlagen nach Produkttyp oder Hersteller.",
+        "certificate_title": "Zertifikate",
+        "certificate_content": "Klicken Sie darauf, um Zertifikate für jedes Produkt anzuzeigen und zu verwalten.",
+        "assign_owner_title": "Eigentümer zuweisen",
+        "assign_owner_content": "Klicken Sie darauf, um Ihrem Produkt einen neuen Eigentümer zuzuweisen.",
+        "ownership_data_title": "Eigentumsdaten",
+        "ownership_data_content": "Klicken Sie darauf, um Eigentumsdaten einzusehen.",
+        "table_title": "Produkttabelle",
+        "table_content": "Detaillierte Informationen zu jedem Produkt anzeigen.",
+        "congratulations_title": "Sie sind startklar!",
+        "congratulations_message": "Sie können nun mit der Verwaltung Ihrer Produkte beginnen."
+    }
 }

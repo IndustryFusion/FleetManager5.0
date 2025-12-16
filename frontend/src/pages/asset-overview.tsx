@@ -42,6 +42,7 @@ import { getAccessGroupData } from "@/utility/auth";
 import { ContextMenu } from "primereact/contextmenu";
 import ConfirmTransferDialog from "@/components/move-to-room/confirm-dialog";
 import { showToast } from "@/utility/toast";
+import { PdtOverviewTour } from "@/components/ui-navigation-guide/pdt-overview-tour";
 
 type ExpandValue = {
   [key: string]: boolean;
@@ -570,6 +571,7 @@ const handleConfirmTransfer = async () => {
           <Footer />
         </div>
       </div>
+      <PdtOverviewTour hasData={(assetCount || 0) > 0}> </PdtOverviewTour>
     </div>
   );
 };
@@ -581,7 +583,8 @@ export async function getStaticProps({ locale }: { locale: string }) {
         "header",
         "overview",
         "placeholder",
-        "common"
+        "common",
+        "ui-guide-custom-tooltip"
       ])),
     },
   };
