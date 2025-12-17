@@ -38,7 +38,7 @@ function MyApp({ Component, pageProps, router }:AppProps) {
 
   useEffect(() => {
     const handleTokenRouting = async () => {
-      if (!router.isReady) return;
+      if (router.isReady) {
 
       const url = new URL(window.location.href);
       const token = url.searchParams.get("token");
@@ -68,7 +68,7 @@ function MyApp({ Component, pageProps, router }:AppProps) {
         setIsReady(true);
       }
     };
-
+  }
     handleTokenRouting();
   }, [router.isReady, router.asPath]);
 
