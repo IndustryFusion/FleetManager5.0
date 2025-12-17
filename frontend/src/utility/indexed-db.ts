@@ -13,21 +13,10 @@
 // limitations under the License.
 //
 
-import { CompactEncrypt, compactDecrypt } from 'jose';
-import { createHash } from 'crypto';
+
 import axios from 'axios';
 
-//get a consistent 256-bit key
-function deriveKey(secret: string): Uint8Array {
-    const hash = createHash('sha256');
-    hash.update(secret);
-    return new Uint8Array(hash.digest());
-}
-const ENCRYPTION_KEY: Uint8Array =deriveKey(process.env.NEXT_PUBLIC_JWT_SECRET);
 const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL;
-if (!process.env.NEXT_PUBLIC_JWT_SECRET) {
-    console.warn('WARNING: JWT_SECRET is not set. This is a security risk.');
-}
 
 interface LoginData {
     ifricdi: string;
@@ -44,19 +33,6 @@ interface LoginData {
 interface AccessGroupData extends Omit<LoginData, 'jwt_token'> {
     id: string;
     jwt_token: string; 
-}
-
-async function encryptJWT(jwt: string) {
-    const encoder = new TextEncoder();
-    const jwe = await new CompactEncrypt(encoder.encode(jwt))
-        .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
-        .encrypt(ENCRYPTION_KEY);
-    return jwe;
-}
-
-async function decryptJWT(encryptedJWT: string) {
-    const { plaintext } = await compactDecrypt(encryptedJWT, ENCRYPTION_KEY);
-    return new TextDecoder().decode(plaintext);
 }
 
 function openDatabase(): Promise<IDBDatabase> {
