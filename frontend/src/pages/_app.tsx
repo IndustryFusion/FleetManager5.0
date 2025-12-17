@@ -29,11 +29,12 @@ import withAuth from "@/app/withAuth";
 import Head from "next/head";
 import { getAccessGroupData } from "@/utility/auth";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // Import your custom components or layout components
 function MyApp({ Component, pageProps, router }:AppProps) {
   const ifxSuiteUrl = process.env.NEXT_PUBLIC_IFX_SUITE_FRONTEND_URL;
+   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const handleTokenRouting = async () => {
@@ -43,15 +44,19 @@ function MyApp({ Component, pageProps, router }:AppProps) {
       const token = url.searchParams.get("token");
       const from = url.searchParams.get("from") ?? undefined;
 
-      if (!token) return;
+      if (!token) {
+        setIsReady(true);
+        return;
+      }
       
       try {
         await getAccessGroupData(token, from);
-
+        
         // remove only token and route to url
         url.searchParams.delete("token");
         url.searchParams.delete("from");
         router.replace(url.pathname + url.search);
+        setIsReady(true);
       } catch (error: any) {
         if (axios.isAxiosError(error)) {
           if (error.response?.status === 401) {
@@ -60,6 +65,7 @@ function MyApp({ Component, pageProps, router }:AppProps) {
             console.error("Error response:", error.response?.data?.message);
           }
         }
+        setIsReady(true);
       }
     };
 
@@ -75,10 +81,12 @@ function MyApp({ Component, pageProps, router }:AppProps) {
       <Head>
         <link rel="icon" type="image/x-icon" href="favicon.ico"></link>
       </Head>
+        {isReady && (
     <div>
       <AuthComponent {...pageProps} />
       <UnauthorizedPopup />
     </div>
+        )}
     </Provider>
   );
 }
