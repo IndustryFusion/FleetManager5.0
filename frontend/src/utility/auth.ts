@@ -342,7 +342,7 @@ export const getBaseUrl = ( productName: string): string => {
       } else if (environment === "local") {
         return "http://localhost:3008";
       } else {
-        return "https://platform.industryfusion-x.org";
+        return "https://fusionx.industry-fusion.com";
       }
     case "Contract Manager":
       if (environment === "dev") {
@@ -350,7 +350,7 @@ export const getBaseUrl = ( productName: string): string => {
       } else if (environment === "local") {
         return "http://localhost:3020";
       } else {
-        return "https://contract.industryfusion-x.org";
+        return "https://contract.industry-fusion.com";
       }
     case "Fleet Manager":
       if (environment === "dev") {
@@ -358,7 +358,7 @@ export const getBaseUrl = ( productName: string): string => {
       } else if (environment === "local") {
           return "http://localhost:3001";
       } else {
-          return "https://fleet.industry-fusion.com";
+          return "https://fleet-local.industry-fusion.com";
       }
     case "Factory Manager":
       if (environment === "dev") {
@@ -366,7 +366,7 @@ export const getBaseUrl = ( productName: string): string => {
       } else if (environment === "local") {
         return "http://localhost:3002";
       } else {
-        return "https://factory.industry-fusion.com";
+        return "https://factory-local.industry-fusion.com";
       }
 
     default:
@@ -375,7 +375,7 @@ export const getBaseUrl = ( productName: string): string => {
       } else if (environment === "local") {
         return "http://localhost:3001";
       } else {
-        return "https://fleet.industry-fusion.com";
+        return "https://fleet-local.industry-fusion.com";
       }
   }
 };
