@@ -19,7 +19,6 @@ import authReducer from "./auth/authSlice";
 import templatesReducer from './templates/templatesSlice';
 import assetsSliceReducer from "./asset/assetsSlice";
 import contractsSliceReducer from "./contract/contractSlice"
-import bindingsSliceReducer from "./binding/bindingsSlice";
 import { persistStore } from 'redux-persist';
 
 export const appReducer = combineReducers({
@@ -27,7 +26,6 @@ export const appReducer = combineReducers({
     templates: templatesReducer,
     assetsSlice:assetsSliceReducer,
     contracts: contractsSliceReducer,
-    bindings: bindingsSliceReducer,
 });
 
 const rootReducer = (state: any, action: any) => {
