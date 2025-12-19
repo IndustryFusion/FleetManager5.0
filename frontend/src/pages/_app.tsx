@@ -38,38 +38,40 @@ function MyApp({ Component, pageProps, router }:AppProps) {
 
   useEffect(() => {
     const handleTokenRouting = async () => {
-      if (router.isReady) {
-
       const url = new URL(window.location.href);
       const token = url.searchParams.get("token");
       const from = url.searchParams.get("from") ?? undefined;
-
-      if (!token) {
-        setIsReady(true);
-        return;
-      }
-      
       try {
         await getAccessGroupData(token, from);
-        
         // remove only token and route to url
         url.searchParams.delete("token");
-        url.searchParams.delete("from");
-        router.replace(url.pathname + url.search);
         setIsReady(true);
+        router.replace(url.pathname + url.search);
       } catch (error: any) {
+        setIsReady(true);
         if (axios.isAxiosError(error)) {
           if (error.response?.status === 401) {
+           if(isReady){
             window.location.href = `${ifxSuiteUrl}/home`;
+           }
           } else {
             console.error("Error response:", error.response?.data?.message);
           }
         }
-        setIsReady(true);
       }
     };
-  }
-    handleTokenRouting();
+
+    if (router.isReady) {
+      const url = new URL(window.location.href);
+      const token = url.searchParams.get("token");
+
+      if (!token) {
+        setIsReady(true);
+        return;
+      } else {
+        handleTokenRouting();
+      }
+    }
   }, [router.isReady, router.asPath]);
 
   const AuthComponent =
