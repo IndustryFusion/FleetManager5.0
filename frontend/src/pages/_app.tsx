@@ -45,6 +45,7 @@ function MyApp({ Component, pageProps, router }:AppProps) {
         await getAccessGroupData(token, from);
         // remove only token and route to url
         url.searchParams.delete("token");
+        url.searchParams.delete("from");
         setIsReady(true);
         router.replace(url.pathname + url.search);
       } catch (error: any) {
