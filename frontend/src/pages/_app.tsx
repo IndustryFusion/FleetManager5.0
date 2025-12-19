@@ -37,9 +37,9 @@ function MyApp({ Component, pageProps, router }:AppProps) {
    const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const handleTokenRouting = async () => {
+    const handleTokenRouting = async (token) => {
       const url = new URL(window.location.href);
-      const token = url.searchParams.get("token");
+
       const from = url.searchParams.get("from") ?? undefined;
       try {
         await getAccessGroupData(token, from);
@@ -64,13 +64,13 @@ function MyApp({ Component, pageProps, router }:AppProps) {
 
     if (router.isReady) {
       const url = new URL(window.location.href);
-      const token = url.searchParams.get("token");
+      const token = url.searchParams.get("token")?? undefined ;
 
-      if (!token) {
+      if (token === undefined) {
         setIsReady(true);
         return;
       } else {
-        handleTokenRouting();
+        handleTokenRouting(token);
       }
     }
   }, [router.isReady, router.asPath]);
