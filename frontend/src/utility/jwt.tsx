@@ -63,8 +63,6 @@ export const UnauthorizedPopup: React.FC = (popupVisible) => {
   useEffect(() => {
     if (popupVisible) {
       setVisible(true);
-    } else{
-       setVisible(false);
     }
   }, [popupVisible]);
   
