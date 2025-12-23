@@ -46,7 +46,7 @@ api.interceptors.request.use(
 
 export default api;
 
-export const UnauthorizedPopup: React.FC = (popupVisible) => {
+export const UnauthorizedPopup: React.FC = () => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
 
@@ -60,11 +60,6 @@ export const UnauthorizedPopup: React.FC = (popupVisible) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (popupVisible) {
-      setVisible(true);
-    }
-  }, [popupVisible]);
   
   const handleLogin = async () => {
     await clearIndexedDbOnLogout();

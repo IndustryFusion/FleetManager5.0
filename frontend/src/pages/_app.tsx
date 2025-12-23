@@ -36,10 +36,9 @@ import { updatePopupVisible } from "@/utility/update-popup";
 function MyApp({ Component, pageProps, router }:AppProps) {
   const ifxSuiteUrl = process.env.NEXT_PUBLIC_IFX_SUITE_FRONTEND_URL;
    const [isReady, setIsReady] = useState(false);
-   const [popupVisible, setPopupVisible] = useState(false)
 
   useEffect(() => {
-    const handleTokenRouting = async (token) => {
+    const handleTokenRouting = async (token:string) => {
       const url = new URL(window.location.href);
 
       const from = url.searchParams.get("from") ?? undefined;
@@ -55,7 +54,7 @@ function MyApp({ Component, pageProps, router }:AppProps) {
         if (axios.isAxiosError(error)) {
           if (error.response?.status === 401) {
            if(isReady){
-              setPopupVisible(true)
+              updatePopupVisible(true)
            }
           } else {
             console.error("Error response:", error.response?.data?.message);
@@ -87,11 +86,9 @@ function MyApp({ Component, pageProps, router }:AppProps) {
         <link rel="icon" type="image/x-icon" href="favicon.ico"></link>
       </Head>
         {isReady && (
-    <div>
-      <AuthComponent {...pageProps} />
-       <UnauthorizedPopup popupVisible={popupVisible}/>
-    </div>
+          <AuthComponent {...pageProps} />
         )}
+      <UnauthorizedPopup/>
     </Provider>
   );
 }
