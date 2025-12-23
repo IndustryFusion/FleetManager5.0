@@ -60,6 +60,7 @@ export const UnauthorizedPopup: React.FC = () => {
     };
   }, []);
 
+  
   const handleLogin = async () => {
     await clearIndexedDbOnLogout();
     window.location.href = `${ifxSuiteUrl}/home`;

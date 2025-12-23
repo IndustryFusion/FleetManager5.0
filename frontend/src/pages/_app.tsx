@@ -29,33 +29,33 @@ import withAuth from "@/app/withAuth";
 import Head from "next/head";
 import { getAccessGroupData } from "@/utility/auth";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { updatePopupVisible } from "@/utility/update-popup";
 
 // Import your custom components or layout components
 function MyApp({ Component, pageProps, router }:AppProps) {
   const ifxSuiteUrl = process.env.NEXT_PUBLIC_IFX_SUITE_FRONTEND_URL;
+   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const handleTokenRouting = async () => {
-      if (!router.isReady) return;
-
+    const handleTokenRouting = async (token:string) => {
       const url = new URL(window.location.href);
-      const token = url.searchParams.get("token");
-      const from = url.searchParams.get("from") ?? undefined;
 
-      if (!token) return;
-      
+      const from = url.searchParams.get("from") ?? undefined;
       try {
         await getAccessGroupData(token, from);
-
         // remove only token and route to url
         url.searchParams.delete("token");
         url.searchParams.delete("from");
+        setIsReady(true);
         router.replace(url.pathname + url.search);
       } catch (error: any) {
+        setIsReady(true);
         if (axios.isAxiosError(error)) {
           if (error.response?.status === 401) {
-            window.location.href = `${ifxSuiteUrl}/home`;
+           if(isReady){
+              updatePopupVisible(true)
+           }
           } else {
             console.error("Error response:", error.response?.data?.message);
           }
@@ -63,7 +63,17 @@ function MyApp({ Component, pageProps, router }:AppProps) {
       }
     };
 
-    handleTokenRouting();
+    if (router.isReady) {
+      const url = new URL(window.location.href);
+      const token = url.searchParams.get("token")?? undefined ;
+
+      if (token === undefined) {
+        setIsReady(true);
+        return;
+      } else {
+        handleTokenRouting(token);
+      }
+    }
   }, [router.isReady, router.asPath]);
 
   const AuthComponent =
@@ -75,10 +85,10 @@ function MyApp({ Component, pageProps, router }:AppProps) {
       <Head>
         <link rel="icon" type="image/x-icon" href="favicon.ico"></link>
       </Head>
-    <div>
-      <AuthComponent {...pageProps} />
-      <UnauthorizedPopup />
-    </div>
+        {isReady && (
+          <AuthComponent {...pageProps} />
+        )}
+      <UnauthorizedPopup/>
     </Provider>
   );
 }
