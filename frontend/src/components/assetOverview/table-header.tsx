@@ -74,7 +74,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
             </div>
             <div className="right-content">
               <ul>
-                <div>
+                <div className="ui-guide-filter-dropdown">
                 <img src="/filter_icon.jpg" alt="group-icon" style={{marginRight:"8px"}} />
                 <DropdownWithCustomOptions
                   filterProp={selectedFilters}
@@ -83,7 +83,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
                  
                 />
                 </div>             
-                <div>
+                <div className="ui-guide-group-dropdown">
                 <img src="/group_icon.svg" alt="group-icon" style={{marginRight:"8px"}} />
                 <Dropdown
                   optionLabel="label"
@@ -94,6 +94,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
                 />
                 </div>
                 <li
+                  className="ui-guide-manage-columns"
                   onClick={() => setEnableReordering(!enableReordering)}
                   style={{ color: getStrokeColor() }}
                 >

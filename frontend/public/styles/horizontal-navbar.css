@@ -77,3 +77,8 @@ cursor: pointer;
 .nav_icon_button:focus {
   background-color: #f3f3f5;
 }
+
+.info-icon-nav{
+  width: 24px;
+  height: 24px;
+}

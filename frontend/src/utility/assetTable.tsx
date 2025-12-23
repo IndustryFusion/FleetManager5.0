@@ -149,7 +149,7 @@ export const actionItemsTemplate = (
   return (
     <button
       onClick={isDifferentOwner ? undefined : () => onMoveToRoom(rowData)}
-      className="action-menu-icon cursor-pointer"
+      className={`action-menu-icon cursor-pointer ${buttonLabel === "Assign Owner" ? "ui-guide-assign-owner" : "ui-guide-ownership-data"}`}
     >
       <img src="/move-icon.svg" alt="move-icon" className="mr-2" />
       {buttonLabel}
@@ -284,7 +284,7 @@ export const certificateBodyTemplate = (rowData: Asset, t: (key: string) => stri
     <div>
       {rowData.asset_cert_valid ? 
         <Button 
-          className="flex align-items-center justify-content-center overview-certified border-none"
+          className="flex align-items-center justify-content-center overview-certified border-none ui-guide-certificate-btn"
           onClick={handleCertificateClick}
         >
           <p className="certified-text">{t("overview:certified")}</p>
@@ -295,7 +295,7 @@ export const certificateBodyTemplate = (rowData: Asset, t: (key: string) => stri
           />
         </Button>
         :
-        <Button  className="overview-uncertified border-none" onClick={handleCertificateClick}>
+        <Button  className="overview-uncertified border-none ui-guide-certificate-btn" onClick={handleCertificateClick}>
           {t("overview:uncertified")}
         </Button>
       }

@@ -26,6 +26,31 @@
     "access_permission": "no access rights. Ask your company admin for the access",
     "certificate": "Certificate",
     "certified": "Certified",
-    "uncertified": "Uncertified"
+    "uncertified": "Uncertified",
+    "enableGuideMode":"Enable UI guide",
+    "ui-guide": {
+        "welcome_title": "Welcome to PDT Overview",
+        "welcome_message": "Here you can see your PDT products and manage your PDT Products",
+        "tabs_title": "Assets & Models",
+        "tabs_step_1": "Switch between Assets and Models tabs.",
+        "create_btn_title": "Create PDT",
+        "create_btn_content": "Click here to create new PDT",
+        "search_title": "Search",
+        "search_content": "Search for specific assets by their ID, Name or other properties.",
+        "filter_title": "Filter",
+        "filter_content": "Filter the asset list based on specific criteria.",
+        "group_title": "Group By",
+        "group_content": "Group assets by Product Type or Manufacturer.",
+        "certificate_title": "Certificates",
+        "certificate_content": "Click on it to view and manage certificates for each product.",
+        "assign_owner_title": "Assign Owner",
+        "assign_owner_content": "Click on it to assign new owner of your product.",
+        "ownership_data_title": "Ownership Data",
+        "ownership_data_content": "Click on it to see Ownership Data.",
+        "table_title": "Product table",
+        "table_content": "View detailed information about each product.",
+        "congratulations_title": "You are all set!",
+        "congratulations_message": "You can now start managing your products."
+    }
 }
 

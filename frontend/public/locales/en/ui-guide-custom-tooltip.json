@@ -1,0 +1,11 @@
+{
+
+    "step_counter": "({{current}} of {{total}})",
+    "dont_show": "Don't show",
+    "skip_tour": "Skip tour",
+    "back": "Back",
+    "start_tour": "Start Tour",
+    "finish": "Finish",
+    "next_step": "Next Step"
+
+}
