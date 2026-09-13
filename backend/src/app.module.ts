@@ -37,6 +37,7 @@ import { PurchasedPdtCacheController } from './endpoints/purchased-pdt-cache/pur
 import { PurchasedPdtCacheService } from './endpoints/purchased-pdt-cache/purchased-pdt-cache.service';
 import { CompanyController } from './endpoints/company/company.controller';
 import { CompanyService } from './endpoints/company/company.service';
+import { RouteHandoffService } from './endpoints/auth/route-handoff.service';
 @Module({
   imports: [],
   controllers: [
@@ -56,6 +57,7 @@ import { CompanyService } from './endpoints/company/company.service';
     AppService,
     TemplatesService,
     AuthService,
+    RouteHandoffService,
     AssetService,
     FileService,
     CertificateService,

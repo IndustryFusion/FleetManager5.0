@@ -20,6 +20,10 @@ const FLEET_MANAGER_BACKEND_URL = process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_
 
 interface LoginData {
     ifricdi: string;
+    // The masked refresh token minted alongside ifricdi at login. Optional so
+    // a session stored before refresh support still type-checks, and because
+    // an SSO-arrived session has no refresh token at all.
+    ifricdr?: string;
     company_ifric_id: string;
     user_name: string;
     jwt_token: string;
@@ -91,6 +95,7 @@ export async function storeAccessGroup(loginData: LoginData) : Promise<void> {
             company_ifric_id: loginData.company_ifric_id,
             user_name: loginData.user_name,
             ifricdi: loginData.ifricdi,
+            ifricdr: loginData.ifricdr,
             user_role: loginData.user_role,
             access_group: loginData.access_group,
             access_group_Ifric_Dashboard: loginData.access_group_Ifric_Dashboard,
@@ -137,6 +142,55 @@ export async function getAccessGroup(): Promise<AccessGroupData> {
         });
     } catch (error) {
         console.error(error);
+        throw error;
+    }
+}
+
+/**
+ * Writes a refreshed access/refresh token pair in a single transaction.
+ *
+ * Deliberately not two updateAccessGroupField calls: those are separate
+ * read-modify-write cycles, and a failure between them would leave an ifricdi
+ * from one refresh beside an ifricdr from another. Keycloak rotates refresh
+ * tokens, so a torn pair is unrecoverable — the next refresh would present a
+ * refresh token that has already been spent.
+ */
+export async function storeTokenPair(ifricdi: string, ifricdr: string): Promise<void> {
+    try {
+        const db = await openDatabase();
+        const transaction = db.transaction(["accessGroupStore"], "readwrite");
+        const objectStore = transaction.objectStore("accessGroupStore");
+
+        const request = objectStore.get("accessGroup");
+
+        return new Promise<void>((resolve, reject) => {
+            request.onsuccess = function () {
+                const data = request.result;
+
+                if (!data) {
+                    reject(new Error("No data found to update"));
+                    return;
+                }
+
+                data.ifricdi = ifricdi;
+                data.ifricdr = ifricdr;
+
+                const updateRequest = objectStore.put(data);
+
+                updateRequest.onsuccess = function () {
+                    resolve();
+                };
+
+                updateRequest.onerror = function () {
+                    reject(new Error("Failed to store refreshed token pair"));
+                };
+            };
+
+            request.onerror = function () {
+                reject(new Error("Failed to retrieve access group data"));
+            };
+        });
+    } catch (error) {
         throw error;
     }
 }
