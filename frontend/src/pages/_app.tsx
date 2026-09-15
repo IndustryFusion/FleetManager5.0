@@ -77,7 +77,7 @@ function MyApp({ Component, pageProps, router }:AppProps) {
   }, [router.isReady, router.asPath]);
 
   const AuthComponent =
-    ["/auth/login", "/auth/register", "/recover-password", "/auth/reset/update-password", "/privacy", "/terms-and-conditions"].includes(router.pathname)
+    ["/login", "/auth/login", "/auth/register", "/recover-password", "/auth/reset/update-password", "/privacy", "/terms-and-conditions"].includes(router.pathname)
         ? Component
         : withAuth(Component);
   return (

@@ -14,12 +14,12 @@
 // limitations under the License. 
 // 
 
-import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
 import { FindOneAuthDto, FindIndexedDbAuthDto, EncryptRouteDto, CompanyTwinDto } from './dto/find-auth-dto';
 import * as jwt from 'jsonwebtoken';
 import { CompactEncrypt } from 'jose';
-import { createHash } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { Request } from 'express';
 import { compactDecrypt } from 'jose';
 import { RouteHandoffService } from './route-handoff.service';
@@ -35,6 +35,8 @@ import { RouteHandoffService } from './route-handoff.service';
 @Injectable()
 export class AuthService {
   constructor(private readonly routeHandoffService: RouteHandoffService) {}
+
+  private readonly logger = new Logger(AuthService.name);
 
   private readonly registryUrl = process.env.IFRIC_REGISTRY_BACKEND_URL;
   private readonly SECRET_KEY = process.env.JWT_SECRET!;
@@ -116,12 +118,22 @@ export class AuthService {
       // encrypt the token with 30s expiry
       const otp = new Date().toISOString();     
       const maskedJwt = data.token;
-      
+
+      // The refresh token goes to the target app server-to-server, keyed by a
+      // one-time handoff id carried in the route token (`h`), exactly as IFX
+      // Suite does. Without it the session opened in the target app cannot
+      // refresh and ends with the 5-minute access token.
+      const handoffId = data.refresh_token ? randomBytes(24).toString('hex') : undefined;
+
       const routeToken = jwt.sign(
-        { m: maskedJwt, product: data.product_name, otp },
+        { m: maskedJwt, product: data.product_name, otp, ...(handoffId ? { h: handoffId } : {}) },
         this.SECRET_KEY,
         { expiresIn: '30s' },
       );
+
+      if (handoffId) {
+        await this.pushRefreshHandoff(data.product_name, routeToken, data.refresh_token);
+      }
       
       // return the route with excrypted token
       const url = new URL(data.route);
@@ -137,6 +149,49 @@ export class AuthService {
       }
     }
   }
+  /**
+   * Hands the refresh token to the target app before the browser is sent
+   * there. Never fatal: if the push fails the redirect still works, the
+   * session there just cannot refresh.
+   */
+  private async pushRefreshHandoff(productName: string, routeToken: string, ifricdr: string) {
+    const targetBackend = this.getProductBackendUrl(productName);
+    if (!targetBackend) {
+      this.logger.warn(`No backend URL configured for ${productName}: its session will not refresh.`);
+      return;
+    }
+    try {
+      await axios.post(
+        `${targetBackend}/auth/receive-route-handoff`,
+        { routeToken, ifricdr },
+        { headers: { 'Content-Type': 'application/json' }, timeout: 3000 },
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Could not hand the refresh token to ${productName}: ${err.message}. ` +
+          `The session will work but will not refresh.`,
+      );
+    }
+  }
+
+  /** Backend of a target app, for the handoff. Same variable names as IFX Suite. */
+  private getProductBackendUrl(productName: string): string | undefined {
+    switch (productName) {
+      case 'IFX Platform':
+        return process.env.IFX_PLATFORM_BACKEND_URL;
+      case 'DPP Creator':
+        return process.env.FUSION_PASS_BACKEND_URL;
+      case 'DPP Viewer':
+        return process.env.DPP_BACKEND_URL;
+      case 'Contract Manager':
+        return process.env.CONTRACT_BACKEND_URL;
+      case 'Factory Manager':
+        return process.env.FACTORY_BACKEND_URL;
+      default:
+        return undefined;
+    }
+  }
+
   /**
    * Records a refresh token that IFX Suite is pushing ahead of an SSO
    * redirect, so `decryptRoute` can hand it on when the user arrives.

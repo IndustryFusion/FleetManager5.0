@@ -35,9 +35,10 @@ const withAuth = (WrappedComponent: NextComponentType<NextPageContext>) => {
         try {
           const loginData = await getAccessGroup();
           if (loginData && loginData.ifricdi) {
-            const token = loginData.ifricdi;
             try {
-              const response = await authenticateToken(token);
+              // Reads the current token itself and refreshes an expired one,
+              // so a session resumes after the tab was closed for a while.
+              const response = await authenticateToken();
               if(!response) {
                 updatePopupVisible(true);
               }
