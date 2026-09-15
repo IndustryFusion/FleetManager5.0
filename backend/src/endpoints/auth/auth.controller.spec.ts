@@ -18,13 +18,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Request } from 'express';
+import { RouteHandoffService } from './route-handoff.service';
 describe('TemplatesController', () => {
   let controller: AuthController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [AuthService],
+      providers: [AuthService, RouteHandoffService],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);

@@ -22,6 +22,7 @@ import { CompactEncrypt } from 'jose';
 import { createHash } from 'crypto';
 import { Request } from 'express';
 import { compactDecrypt } from 'jose';
+import { RouteHandoffService } from './route-handoff.service';
 
 /**
  * Retrieves tokens from the keylock service.
@@ -33,6 +34,8 @@ import { compactDecrypt } from 'jose';
  */
 @Injectable()
 export class AuthService {
+  constructor(private readonly routeHandoffService: RouteHandoffService) {}
+
   private readonly registryUrl = process.env.IFRIC_REGISTRY_BACKEND_URL;
   private readonly SECRET_KEY = process.env.JWT_SECRET!;
   private readonly MASK_SECRET = process.env.MASK_SECRET!;
@@ -51,6 +54,28 @@ export class AuthService {
         },
       );
       if (registryResponse.data.status == '200') {
+        // Wrap the tokens the way every other consumer does. Without this the
+        // response reaches the browser with no `ifricdi`, so storeAccessGroup
+        // persists undefined and the request interceptor sends no
+        // Authorization header at all — the direct-login path could not
+        // authenticate anything.
+        const encryptedToken = await this.encryptData(registryResponse.data.data.jwt_token);
+        registryResponse.data.data.ifricdi = this.mask(encryptedToken, process.env.MASK_SECRET);
+        delete registryResponse.data.data.jwt_token;
+
+        // The registry's access token now expires in minutes rather than 60
+        // days (change register B-02), so the refresh token has to survive the
+        // login response. Carried the same way, and never returned raw.
+        if (registryResponse.data.data.refresh_token) {
+          const encryptedRefreshToken = await this.encryptData(
+            registryResponse.data.data.refresh_token,
+          );
+          registryResponse.data.data.ifricdr = this.mask(
+            encryptedRefreshToken,
+            process.env.MASK_SECRET,
+          );
+          delete registryResponse.data.data.refresh_token;
+        }
         return registryResponse.data;
       } else {
         return {
@@ -112,11 +137,45 @@ export class AuthService {
       }
     }
   }
+  /**
+   * Records a refresh token that IFX Suite is pushing ahead of an SSO
+   * redirect, so `decryptRoute` can hand it on when the user arrives.
+   *
+   * Authenticated by the route token itself: only IFX Suite can produce one
+   * that verifies against the shared secret, so an unsigned or forged push is
+   * rejected before anything is stored. The handoff id is read from inside
+   * that verified token rather than trusted from the body.
+   */
+  async receiveRouteHandoff(data: { routeToken: string; ifricdr: string }) {
+    try {
+      if (!data?.routeToken || !data?.ifricdr) {
+        throw new HttpException('Missing routeToken or ifricdr', HttpStatus.BAD_REQUEST);
+      }
+      const { h: handoffId } = jwt.verify(data.routeToken, this.SECRET_KEY) as {
+        h?: string;
+      };
+      if (!handoffId) {
+        throw new HttpException('Route token carries no handoff id', HttpStatus.BAD_REQUEST);
+      }
+      this.routeHandoffService.put(handoffId, data.ifricdr);
+      return { success: true };
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      // A token that does not verify is the only other outcome.
+      throw new HttpException('Invalid route token', HttpStatus.UNAUTHORIZED);
+    }
+  }
+
 
   async decryptRoute(data: FindIndexedDbAuthDto) {
     try {
       const routeToken = data.token
-      const { m: ifricdi } = jwt.verify(routeToken, this.SECRET_KEY) as { m: string };
+      const { m: ifricdi, h: handoffId } = jwt.verify(routeToken, this.SECRET_KEY) as {
+        m: string;
+        h?: string;
+      };
       
       // unMask the ifricdi to get jwt_token
       const unMaskedToken = this.unmask(ifricdi, this.MASK_SECRET);
@@ -125,13 +184,29 @@ export class AuthService {
       const ENCRYPTION_KEY = this.deriveKey(process.env.JWT_SECRET!);
       const { plaintext } = await compactDecrypt(unMaskedToken, ENCRYPTION_KEY);
       const decryptedToken = new TextDecoder().decode(plaintext);
+      // Keycloak claims. `sub` is the Keycloak user id (it used to be the
+      // company record _id) and there is no `user` claim — the email arrives
+      // as `email`, and the company as `company_ifric_id`, projected by a
+      // realm protocol mapper.
       const decoded = jwt.decode(decryptedToken) as
-        | { sub?: string; user?: string; iat?: number; exp?: number }
+        | {
+            sub?: string;
+            email?: string;
+            company_ifric_id?: string;
+            iat?: number;
+            exp?: number;
+          }
         | null;
     
 
       if (!decoded) {
         throw new HttpException('Cannot decode registryJwt', HttpStatus.UNAUTHORIZED);
+      }
+      if (!decoded.email || !decoded.company_ifric_id) {
+        throw new HttpException(
+          'Registry token is missing the email or company_ifric_id claim',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
           const registryHeader = {
@@ -139,18 +214,48 @@ export class AuthService {
             'Accept': 'application/json',
             Authorization: `Bearer ${decryptedToken}`,
           };
+      // IFX Suite pushed the refresh token here just before redirecting, so it
+      // is already in hand — no call back to IFX Suite, which a cloud-hosted
+      // deployment could not make anyway. A miss (expired, already taken, or
+      // pushed to another replica) is not a failure: the session simply
+      // behaves as it did before, with no refresh.
+      const handedOverRefreshToken = handoffId
+        ? this.routeHandoffService.take(handoffId)
+        : null;
+
+      // get-indexed-db-data is keyed on the company *record* id, which the
+      // token does not carry — only the IFRIC id. Resolve one to the other.
+      const companyDetails = await axios.get(
+        `${this.registryUrl}/auth/get-company-details/${decoded.company_ifric_id}`,
+        { headers: registryHeader },
+      );
+      const companyRecordId = companyDetails.data?.[0]?._id;
+      if (!companyRecordId) {
+        throw new HttpException(
+          'No company found with the provided ID',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
             const registryResponse = await axios.post(
         `${this.registryUrl}/auth/get-indexed-db-data`,
         {
-          company_id:   decoded.sub,
-          email:        decoded.user,
+          company_id:   companyRecordId,
+          email:        decoded.email,
           product_name:data.product_name,
         },
         { headers: registryHeader },
       );
           if (registryResponse.data) {
-            const encryptedToken = await this.encryptData(registryResponse.data.data.jwt_token);
+            // get-indexed-db-data returns no token of its own — the compat
+            // layer's jwt_token alias is added only on POST /auth/login. Wrap
+            // the access token already in hand instead, which is the same one
+            // the route token carried.
+            const encryptedToken = await this.encryptData(decryptedToken);
             registryResponse.data.data.ifricdi = this.mask(encryptedToken, process.env.MASK_SECRET);
+            if (handedOverRefreshToken) {
+              registryResponse.data.data.ifricdr = handedOverRefreshToken;
+            }
             delete registryResponse.data.data.jwt_token;
             return registryResponse.data;
           }
@@ -169,6 +274,67 @@ export class AuthService {
     return input.split('').map((char, i) =>
       (char.charCodeAt(0) ^ key.charCodeAt(i % key.length)).toString(16).padStart(2, '0')
     ).join('');
+  }
+
+  /**
+   * Exchanges a stored refresh token for a fresh access/refresh pair.
+   *
+   * Proxies the registry's @Public POST /auth/refresh, which needs no bearer
+   * token — by the time this is called the access token has already expired,
+   * so there is nothing left to authenticate with. Registry change register
+   * B-10.
+   *
+   * Keycloak rotates refresh tokens: the response carries a *new* one, and
+   * the caller must store it or the second refresh fails.
+   */
+  async refreshSession(ifricdr: string) {
+    try {
+      if (!ifricdr) {
+        throw new HttpException('Refresh token is missing', HttpStatus.UNAUTHORIZED);
+      }
+
+      const unMaskedToken = this.unmask(ifricdr, this.MASK_SECRET);
+      const ENCRYPTION_KEY = this.deriveKey(process.env.JWT_SECRET!);
+      const { plaintext } = await compactDecrypt(unMaskedToken, ENCRYPTION_KEY);
+      const refreshToken = new TextDecoder().decode(plaintext);
+
+      const registryResponse = await axios.post(
+        `${this.registryUrl}/auth/refresh`,
+        { refresh_token: refreshToken },
+        { headers: { 'Content-Type': 'application/json' } },
+      );
+
+      const { access_token, refresh_token } = registryResponse.data ?? {};
+      if (!access_token || !refresh_token) {
+        throw new HttpException(
+          'Registry returned an incomplete token pair',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      const encryptedAccessToken = await this.encryptData(access_token);
+      const encryptedRefreshToken = await this.encryptData(refresh_token);
+
+      // Only the wrapped forms leave this method; the raw Keycloak tokens
+      // never reach the browser.
+      return {
+        status: 200,
+        data: {
+          ifricdi: this.mask(encryptedAccessToken, process.env.MASK_SECRET),
+          ifricdr: this.mask(encryptedRefreshToken, process.env.MASK_SECRET),
+        },
+      };
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      } else if (err.response) {
+        throw new HttpException(err.response.data.message, err.response.status);
+      } else {
+        // A malformed or tampered ifricdr fails in unmask/compactDecrypt.
+        // That is an authentication failure, not a server fault.
+        throw new HttpException('Invalid refresh token', HttpStatus.UNAUTHORIZED);
+      }
+    }
   }
 
   private unmask(masked: string, key: string): string {
