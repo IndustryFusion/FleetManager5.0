@@ -17,7 +17,7 @@
 
 
 
-import api from "./jwt";
+import api, { sharedRefresh } from "./jwt";
 import axios from "axios";
 import { updatePopupVisible } from './update-popup';
 import { jwtDecode, JwtPayload } from "jwt-decode";
@@ -248,11 +248,33 @@ export const getUserDetailsByEmail = async (dataToSend: Record<string, string>) 
     }
 };
 
-export const authenticateToken = async (token: string) => {
-  try {
-    const response = await api.get(`${FLEET_MANAGER_BACKEND_URL}/auth/authenticate-token/${token}`);
+/**
+ * Whether the stored session is still valid — and resumes it if it can be.
+ *
+ * The endpoint takes the token in its path, so it cannot go through `api`: the
+ * 401 interceptor refreshes and replays the *same URL*, which still carries the
+ * expired token and fails again. That signed users out whenever the tab had
+ * been closed longer than the access token lives (5 minutes), although the
+ * refresh token was still valid. So: validate the token stored now; on a 401,
+ * refresh once and validate again with the token stored after the refresh.
+ */
+export const authenticateToken = async () => {
+  const validate = async () => {
+    const stored = await getAccessGroup();
+    if (!stored?.ifricdi) {
+      return false;
+    }
+    const response = await axios.get(
+      `${FLEET_MANAGER_BACKEND_URL}/auth/authenticate-token/${stored.ifricdi}`,
+    );
     return response.data;
-  } catch(error: any) {
+  };
+  try {
+    return await validate();
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response?.status === 401 && (await sharedRefresh())) {
+      return await validate();
+    }
     throw error;
   }
 }
@@ -297,6 +319,9 @@ export const encryptRoute = async (
       `${FLEET_MANAGER_BACKEND_URL}/auth/encrypt-route`,
       {
         token: accessGroup.ifricdi,
+        // Pushed server-to-server to the target app, never put in the URL, so
+        // the session there can refresh instead of ending with the access token.
+        refresh_token: accessGroup.ifricdr,
         product_name: productName,
         company_ifric_id: accessGroup.company_ifric_id,
         route

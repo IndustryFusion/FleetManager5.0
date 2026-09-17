@@ -62,13 +62,15 @@ api.interceptors.request.use(
 let refreshPromise: Promise<boolean> | null = null;
 
 const runRefresh = async (): Promise<boolean> => {
+  let startedWith: string | undefined;
   try {
     const accessGroup = await getAccessGroup();
     if (!accessGroup?.ifricdr) {
       // Nothing to refresh with. Either a session stored before refresh
-      // support, or one that arrived over SSO, which carries no refresh token.
+      // support, or one that arrived over SSO without a refresh token.
       return false;
     }
+    startedWith = accessGroup.ifricdr;
     const result = await refreshSession(accessGroup.ifricdr);
     const { ifricdi, ifricdr } = result?.data ?? {};
     if (!ifricdi || !ifricdr) {
@@ -78,11 +80,26 @@ const runRefresh = async (): Promise<boolean> => {
     await storeTokenPair(ifricdi, ifricdr);
     return true;
   } catch (error) {
+    // Refused (401): the session is over, so remove it. Otherwise a stale
+    // session stays in IndexedDB and every page keeps treating the user as
+    // signed in. A network failure is not a refusal and clears nothing.
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      // Another tab may have rotated the pair while this call was out; its
+      // new token is valid even though ours was refused. IndexedDB is shared
+      // between tabs, so clearing here would sign that tab out too.
+      const latest = await getAccessGroup().catch(() => null);
+      if (latest?.ifricdr && latest.ifricdr !== startedWith) {
+        return true;
+      }
+      await clearIndexedDbOnLogout().catch(() => undefined);
+    }
     return false;
   }
 };
 
-const sharedRefresh = (): Promise<boolean> => {
+// Exported for the session check in `authenticateToken`, which must share this
+// single in-flight refresh rather than start its own.
+export const sharedRefresh = (): Promise<boolean> => {
   if (!refreshPromise) {
     refreshPromise = runRefresh().finally(() => {
       refreshPromise = null;
@@ -218,7 +235,7 @@ export const UnauthorizedPopup: React.FC = () => {
 
   if (!visible) {
     return null;
-  } else if (["/auth/login", "/auth/register", "/recover-password", "/auth/reset/update-password", "/privacy", "/terms-and-conditions", "/thankyou", "/forgot-password"].includes(router.pathname)) {
+  } else if (["/login", "/auth/login", "/auth/register", "/recover-password", "/auth/reset/update-password", "/privacy", "/terms-and-conditions", "/thankyou", "/forgot-password"].includes(router.pathname)) {
     return null;
   }
 
