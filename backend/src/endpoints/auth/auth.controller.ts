@@ -28,6 +28,15 @@ export class AuthController {
   // *because* its access token has expired, so requiring one would make it
   // unreachable exactly when it is needed. The ifricdr in the body is the
   // credential.
+  /**
+   * Ends the session in Keycloak as well as here. Public: by the time a user
+   * logs out their access token may already have expired.
+   */
+  @Post('logout')
+  logout(@Body() data: { email: string; ifricdr?: string }) {
+    return this.authService.logOut(data);
+  }
+
   @Post('refresh')
   refreshSession(@Body('ifricdr') ifricdr: string) {
     return this.authService.refreshSession(ifricdr);

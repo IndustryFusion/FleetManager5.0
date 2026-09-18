@@ -28,7 +28,9 @@ export const login = async (email: string, password: string) => {
         const response = await axios.post(loginUrl, {
             email,
             password,
-            product_name:"DPP Creator"
+            // This app is Fleet Manager. Logging in as "DPP Creator" asked
+            // the registry for another product's access group.
+            product_name:"Fleet Manager"
         });
         return response;
     } catch (error) {

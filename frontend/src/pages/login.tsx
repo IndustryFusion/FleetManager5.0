@@ -28,6 +28,7 @@ import 'primeicons/primeicons.css';
 import { redirect, useRouter } from 'next/navigation';
 import { showToast } from "@/utility/toast";
 import { storeAccessGroup } from "@/utility/indexed-db";
+import { updatePopupVisible } from "@/utility/update-popup";
 
 const Login: React.FC = () => {
     // states
@@ -85,6 +86,9 @@ const Login: React.FC = () => {
             try {
                 const response = await login(username, password);
                 if (response.data && response.data.status === 200 && response.data.data) {
+                    // Clear any session-expired popup the previous session
+                    // left set, or it renders again after the redirect.
+                    updatePopupVisible(false);
                     const loginData = response.data.data;
                     await storeAccessGroup(loginData);
                     showToast(toast, "success", "Success", "Login successful!");

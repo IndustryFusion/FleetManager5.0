@@ -20,7 +20,8 @@ import { Dialog } from "primereact/dialog";
 import { Dispatch, SetStateAction, useEffect, useRef,useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "primereact/button";
-import { clearIndexedDbOnLogout ,getAccessGroup} from "@/utility/indexed-db";
+import { getAccessGroup } from "@/utility/indexed-db";
+import { endSession } from "@/utility/end-session";
 import { showToast } from "@/utility/toast";
 import router from "next/router";
 import { Toast } from "primereact/toast";
@@ -78,7 +79,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ profileDetailProp,
     const handleLogout = async () => {
         try {
             if (userData?.user_email) {
-                await clearIndexedDbOnLogout();
+                await endSession();
                 showToast(toast, 'success', 'Logout Successful', 'You have been logged out');
                 setTimeout(() => {
                     window.location.href = `${ifxSuiteUrl}/home`; 

@@ -103,18 +103,43 @@ export async function storeAccessGroup(loginData: LoginData) : Promise<void> {
             ...(loginData.from !== undefined ? { from: (loginData.from) } : {})
         };
 
-        const request = objectStore.put(dataToStore);
-
         return new Promise<void>((resolve, reject) => {
-            const request  = objectStore.put(dataToStore);
-            request.onsuccess = function () {
-                console.log("Access group data stored successfully");
-                resolve();
+            // Read first, then merge: a payload that does not carry a field
+            // must not blank it. An SSO arrival with no refresh-token handoff
+            // has no ifricdr, and overwriting the stored one would leave a
+            // session that cannot refresh and dies at the next expiry.
+            const existing = objectStore.get("accessGroup");
+
+            existing.onerror = function () {
+                reject(new Error("Failed to read access group data"));
             };
 
-            request.onerror = function (event) {
-                console.error("Error storing access group data: " + (event.target as IDBRequest).error);
-                reject(new Error("Failed to store access group data"));
+            existing.onsuccess = function () {
+                const previous =
+                    (existing.result as Record<string, unknown>) ?? {};
+                // Merging is only right for the same person: a different user
+                // signing in must not inherit anything from the last one.
+                const sameUser =
+                    !previous.user_email ||
+                    !dataToStore.user_email ||
+                    previous.user_email === dataToStore.user_email;
+                const merged = {
+                    ...(sameUser ? previous : {}),
+                    ...Object.fromEntries(
+                        Object.entries(dataToStore).filter(
+                            ([, value]) => value !== undefined,
+                        ),
+                    ),
+                };
+                const request = objectStore.put(merged);
+
+                request.onsuccess =  function () {
+                    resolve();
+                };
+
+                request.onerror = function () {
+                    reject(new Error("Failed to store access group data"));
+                };
             };
         });
     } catch (error) {
