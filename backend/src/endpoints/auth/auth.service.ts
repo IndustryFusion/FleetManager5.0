@@ -177,6 +177,11 @@ export class AuthService {
   /** Backend of a target app, for the handoff. Same variable names as IFX Suite. */
   private getProductBackendUrl(productName: string): string | undefined {
     switch (productName) {
+      // IFX Suite. Every app sends the user back to it with this product
+      // name, and it was in no map — so the trip home handed over no refresh
+      // token and the Suite session died about five minutes later.
+      case 'IFRIC Dashboard':
+        return process.env.IFX_SUITE_BACKEND_URL;
       case 'IFX Platform':
         return process.env.IFX_PLATFORM_BACKEND_URL;
       case 'DPP Creator':
@@ -342,6 +347,50 @@ export class AuthService {
    * Keycloak rotates refresh tokens: the response carries a *new* one, and
    * the caller must store it or the second refresh fails.
    */
+  /**
+   * Ends the user's session, here and in Keycloak.
+   *
+   * Clearing the browser's storage only hid the session: the Keycloak session
+   * stayed alive until it idled out, which with a four-week idle window is a
+   * long time to leave a signed-out session usable. The registry revokes it,
+   * and that needs the refresh token — passing only the address (as this used
+   * to) revoked nothing.
+   *
+   * The Keycloak session belongs to the user, so this signs that user out of
+   * the apps they opened from this login. No other user is affected.
+   *
+   * Never fails: a user pressing "log out" must always end up signed out
+   * locally, even when Keycloak cannot be reached.
+   */
+  async logOut(data: { email: string; ifricdr?: string }) {
+    let refresh_token: string | undefined;
+    if (data?.ifricdr) {
+      try {
+        const unMaskedToken = this.unmask(data.ifricdr, this.MASK_SECRET);
+        const { plaintext } = await compactDecrypt(
+          unMaskedToken,
+          this.deriveKey(process.env.JWT_SECRET!),
+        );
+        refresh_token = new TextDecoder().decode(plaintext);
+      } catch {
+        // A token we cannot read cannot be revoked; the local sign-out stands.
+      }
+    }
+
+    try {
+      await axios.post(
+        `${this.registryUrl}/auth/logout`,
+        { email: data?.email, refresh_token },
+        { headers: { 'Content-Type': 'application/json' }, timeout: 5000 },
+      );
+    } catch (err) {
+      this.logger?.warn?.(
+        `Keycloak session for ${data?.email} may still be open: ${err.message}`,
+      );
+    }
+    return { status: 200, message: 'Logged out' };
+  }
+
   async refreshSession(ifricdr: string) {
     try {
       if (!ifricdr) {

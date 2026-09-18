@@ -61,11 +61,24 @@ api.interceptors.request.use(
 // those would spend a token the others still hold.
 let refreshPromise: Promise<boolean> | null = null;
 
+/**
+ * Why the last refresh did not produce a new token.
+ *
+ * "session-over" is a refusal — Keycloak says the session is finished, and the
+ * user has to sign in again. "unreachable" is the backend being unreachable or
+ * broken: the session may well still be valid, so telling the user it expired
+ * is wrong and costs them a login for a passing network blip.
+ */
+export type RefreshOutcome = 'refreshed' | 'session-over' | 'unreachable';
+let lastRefreshOutcome: RefreshOutcome = 'refreshed';
+export const getLastRefreshOutcome = (): RefreshOutcome => lastRefreshOutcome;
+
 const runRefresh = async (): Promise<boolean> => {
   let startedWith: string | undefined;
   try {
     const accessGroup = await getAccessGroup();
     if (!accessGroup?.ifricdr) {
+      lastRefreshOutcome = 'session-over';
       // Nothing to refresh with. Either a session stored before refresh
       // support, or one that arrived over SSO without a refresh token.
       return false;
@@ -74,10 +87,12 @@ const runRefresh = async (): Promise<boolean> => {
     const result = await refreshSession(accessGroup.ifricdr);
     const { ifricdi, ifricdr } = result?.data ?? {};
     if (!ifricdi || !ifricdr) {
+      lastRefreshOutcome = 'session-over';
       return false;
     }
     // Store the rotated refresh token too, or the *second* refresh fails.
     await storeTokenPair(ifricdi, ifricdr);
+    lastRefreshOutcome = 'refreshed';
     return true;
   } catch (error) {
     // Refused (401): the session is over, so remove it. Otherwise a stale
@@ -89,9 +104,14 @@ const runRefresh = async (): Promise<boolean> => {
       // between tabs, so clearing here would sign that tab out too.
       const latest = await getAccessGroup().catch(() => null);
       if (latest?.ifricdr && latest.ifricdr !== startedWith) {
+        lastRefreshOutcome = 'refreshed';
         return true;
       }
+      lastRefreshOutcome = 'session-over';
       await clearIndexedDbOnLogout().catch(() => undefined);
+    } else {
+      // Network error, timeout, 5xx: nothing is known about the session.
+      lastRefreshOutcome = 'unreachable';
     }
     return false;
   }
@@ -193,7 +213,11 @@ api.interceptors.response.use(
 
     const refreshed = await sharedRefresh();
     if (!refreshed) {
-      updatePopupVisible(true);
+      // Only a refusal means the session is over. A backend that could not be
+      // reached leaves the request to fail on its own, with its own message.
+      if (getLastRefreshOutcome() !== 'unreachable') {
+        updatePopupVisible(true);
+      }
       return Promise.reject(error);
     }
 
@@ -222,8 +246,11 @@ export const UnauthorizedPopup: React.FC = () => {
   
   const handleLogin = async () => {
     await clearIndexedDbOnLogout();
-    window.location.href = `${ifxSuiteUrl}/home`;
     setVisible(false);
+    // This app's own login page. Bouncing to IFX Suite sent the user to an
+    // app that may still hold a live session and route them straight back,
+    // with no session here — a loop with no way to sign in.
+    router.push('/login');
   }
 
   const footerContent = (

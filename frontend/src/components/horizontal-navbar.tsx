@@ -24,7 +24,7 @@ import { CSSProperties } from "react";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { resetTimer, logout } from "@/redux/auth/authSlice";
-import { clearIndexedDbOnLogout } from "@/utility/indexed-db";
+import { endSession } from "@/utility/end-session";
 import ProfileDialog from "./profile-dialog";
 import Language from "./language";
 import { useTranslation } from "next-i18next";
@@ -91,7 +91,7 @@ const HorizontalNavbar: React.FC = () => {
 
   const handleLogout = async () => {
     // Clear first: the login page must not find the old session still stored.
-    await clearIndexedDbOnLogout().catch(() => undefined);
+    await endSession().catch(() => undefined);
     router.push("/login", undefined, {locale: 'en'});
     dispatch(resetTimer());
     dispatch(logout());

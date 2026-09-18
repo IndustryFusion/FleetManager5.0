@@ -339,7 +339,7 @@ export const encryptRoute = async (
   } catch (error: any) {
     if (
       error?.response &&
-      (error.response.status === 401 || error.response.status === 403)
+      (error.response.status === 401)
     ) {
       updatePopupVisible(true);
     } else {

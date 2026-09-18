@@ -15,46 +15,56 @@
 //
 
 import { useEffect } from 'react';
+import axios from 'axios';
 import { useRouter } from 'next/router';
-import { jwtDecode } from 'jwt-decode'; 
 import { NextComponentType, NextPageContext } from 'next';
 import { getAccessGroup } from '@/utility/indexed-db';
 import { updatePopupVisible } from '@/utility/update-popup';
 import { authenticateToken } from '@/utility/auth';
+import { sharedRefresh } from '@/utility/jwt';
 
-interface DecodedToken {
-  exp: number; 
-}
-
+/**
+ * The session check every protected page runs.
+ *
+ * Three rules, learned from users being asked to sign in when they were still
+ * signed in:
+ *
+ *  - a missing access token is not the end of a session: the refresh token may
+ *    still be good, so it is tried first;
+ *  - `authenticateToken` already refreshes an expired token and re-checks, so
+ *    reaching the catch with a 401 means the session really is over;
+ *  - anything else — no network, CORS, a 500, a slow backend — says nothing
+ *    about the session, and must not put "your session expired" on screen.
+ */
 const withAuth = (WrappedComponent: NextComponentType<NextPageContext>) => {
   const AuthComponent: NextComponentType<NextPageContext> = (props) => {
     const router = useRouter();
 
-   useEffect(() => {
+    useEffect(() => {
       const checkAuth = async () => {
         try {
           const loginData = await getAccessGroup();
-          if (loginData && loginData.ifricdi) {
-            try {
-              // Reads the current token itself and refreshes an expired one,
-              // so a session resumes after the tab was closed for a while.
-              const response = await authenticateToken();
-              if(!response) {
-                updatePopupVisible(true);
-              }
-            } catch (error) {
-              console.error('Failed to decode token:', error);
+          if (!loginData?.ifricdi) {
+            const resumed = loginData?.ifricdr ? await sharedRefresh() : false;
+            if (!resumed) {
               updatePopupVisible(true);
+              return;
             }
-          } else {
+          }
+
+          const valid = await authenticateToken();
+          if (!valid) {
             updatePopupVisible(true);
           }
-        } catch (error) {
-          console.error('Failed to retrieve login data:', error);
-          updatePopupVisible(true);
+        } catch (err) {
+          if (axios.isAxiosError(err) && err.response?.status === 401) {
+            updatePopupVisible(true);
+          } else {
+            console.error('Session check could not be completed:', err);
+          }
         }
       };
-      
+
       checkAuth();
     }, [router]);
 
