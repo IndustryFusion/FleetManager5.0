@@ -83,6 +83,17 @@ function MyApp({ Component, pageProps, router }:AppProps) {
   return (
     <Provider store={store}>
       <Head>
+        <title>Fleet Management</title>
+        <meta name="description" content="IndustryFusion-X" key="description" />
+        <meta property="og:title" content="Fleet Management" key="og:title" />
+        <meta property="og:description" content="IndustryFusion-X" key="og:description" />
+        <meta property="og:type" content="website" key="og:type" />
+        <meta property="og:site_name" content="Fleet Management" key="og:site_name" />
+        <meta property="og:image:width" content="1200" key="og:image:width" />
+        <meta property="og:image:height" content="630" key="og:image:height" />
+        <meta name="twitter:card" content="summary_large_image" key="twitter:card" />
+        <meta name="twitter:title" content="Fleet Management" key="twitter:title" />
+        <meta name="twitter:description" content="IndustryFusion-X" key="twitter:description" />
         <link rel="icon" type="image/x-icon" href="favicon.ico"></link>
       </Head>
         {isReady && (

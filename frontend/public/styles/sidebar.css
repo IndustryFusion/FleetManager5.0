@@ -14,6 +14,11 @@ body {
   font-family: "League Spartan", sans-serif;
   flex-shrink: 0;
 }
+/* The page footer is fixed across the full width at the bottom. On pages that
+   show it, end the sidebar above it so its last buttons are not covered. */
+body:has(.footer-container) .sidebar_wrapper {
+  height: calc(100vh - var(--app-footer-height));
+}
 .sidebar_wrapper.collapse {
   width: 70px;
 }

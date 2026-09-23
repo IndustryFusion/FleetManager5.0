@@ -86,11 +86,13 @@ export const getCompanyDetailsByIfricId = async(company_ifric_id: string) => {
 export const updateCompanyTwin = async(dataToSend: Record<string, any>) => {
     try {
         const ownerCertVerification = await verifyCompanyCertificate(dataToSend.owner_company_ifric_id);
-        if(!ownerCertVerification?.data.status) {
+        // Only "Company Verified" (success: true, status 201) counts; the backend also
+        // answers 400 (no certificate) or an error status, which must block too.
+        if(!(ownerCertVerification?.data?.success === true && ownerCertVerification.data.status === 201)) {
             throw new Error('Owner Certificate is not verified');
         }
-        const manufacturerCertVerification = await verifyCompanyCertificate(dataToSend.maufacturer_ifric_id);
-        if(!manufacturerCertVerification?.data.status) {
+        const manufacturerCertVerification = await verifyCompanyCertificate(dataToSend.manufacturer_ifric_id);
+        if(!(manufacturerCertVerification?.data?.success === true && manufacturerCertVerification.data.status === 201)) {
             throw new Error('Manufacturer Certificate is not verified');
         }
         return await api.patch(

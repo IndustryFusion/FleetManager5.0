@@ -309,6 +309,8 @@ const MoveToRoomDialog: React.FC<MoveToRoomDialogProps> = ({asset, assetName ,as
         severity: "error",
         text: error.message || "Failed to update asset assignment",
       });
+      // Let the confirm step know, so it neither assigns the contract nor reports success.
+      throw error;
     }
   };
   

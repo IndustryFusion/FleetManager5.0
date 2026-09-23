@@ -89,15 +89,21 @@ export const manufacturerDataTemplate = (rowData: any): React.ReactNode => {
 };
 
 
+// product_image is a list of images; legacy rows may still hold a single string
+export const firstImage = (value: any): string => {
+  const image = Array.isArray(value) ? value[0] : value;
+  return typeof image === "string" && image !== "NULL" ? image : "";
+};
+
 export const productNameBodyTemplate = (rowData: any): React.ReactNode => {
   //  console.log("Row Data:", rowData);
-  const productImage = rowData.product_image;
+  const productImage = firstImage(rowData.product_image);
   const productName = rowData.product_name
 || "";
 
   return (
     <div className="flex align-items-center gap-2" style={{ width: "200px", lineBreak: "anywhere" }}>
-      {productImage && productImage !== "NULL" ? (
+      {productImage ? (
         <img
           src={productImage}
           alt="product-image"
@@ -141,14 +147,15 @@ export const serialNumberBodyTemplate = (rowData: any): React.ReactNode => {
 export const actionItemsTemplate = (
   rowData: any,
   onMoveToRoom: (asset: any) => void,
-  companyIfricId: string
+  companyIfricId: string,
+  onOwnershipData?: (asset: any) => void
 ) => {
   const ownerCompanyIfricId = rowData?.company_ifric_id;
   const isDifferentOwner = ownerCompanyIfricId && ownerCompanyIfricId !== companyIfricId;
   const buttonLabel = isDifferentOwner ? "Ownership Data" : "Assign Owner";
   return (
     <button
-      onClick={isDifferentOwner ? undefined : () => onMoveToRoom(rowData)}
+      onClick={() => (isDifferentOwner ? onOwnershipData?.(rowData) : onMoveToRoom(rowData))}
       className={`action-menu-icon cursor-pointer ${buttonLabel === "Assign Owner" ? "ui-guide-assign-owner" : "ui-guide-ownership-data"}`}
     >
       <img src="/move-icon.svg" alt="move-icon" className="mr-2" />

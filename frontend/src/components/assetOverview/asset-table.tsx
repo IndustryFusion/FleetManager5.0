@@ -44,6 +44,7 @@ const AssetTable: React.FC<any> = ({
   loading,
   activeTab,
   onMoveToRoom,
+  onOwnershipData,
   searchFilters ,
   selectedProduct,
   setSelectedProduct,
@@ -129,7 +130,7 @@ const AssetTable: React.FC<any> = ({
       header: t("overview:action"),
       body: loading
         ? () => rowSkeleton("80px")
-        : (rowData: Asset) => actionItemsTemplate(rowData, onMoveToRoom, companyIfricId),
+        : (rowData: Asset) => actionItemsTemplate(rowData, onMoveToRoom, companyIfricId, onOwnershipData),
     },
   ];
  
