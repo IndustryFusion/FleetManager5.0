@@ -17,7 +17,14 @@
   background-color: #424040;
   color: #fff;
   box-shadow: rgba(37, 34, 34, 0.2);
-  padding: 16px 0;
+  /* A fixed height (same look as the old 16px padding), so the sidebar can end
+     exactly above it: see sidebar.css. */
+  height: var(--app-footer-height);
+  box-sizing: border-box;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .footer-container p{
   margin: 0;
@@ -27,6 +34,7 @@ body{
 }
 
 :root {
+  --app-footer-height: 52px;
   --fusion-blue: #3874C9;
   --black: #10182B;
   --grey-box: #F3F3F5;

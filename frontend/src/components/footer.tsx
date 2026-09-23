@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
     <footer className="mt-auto footer-container"
     >
       <p>
-        Copyright & Design by IB Systems GmbH and IndustryFusion Foundation, all
+        Copyright & Design by IndustryFusion Europe and IndustryFusion Foundation, all
         rights reserved!
       </p>
     </footer>

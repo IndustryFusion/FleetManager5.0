@@ -15,15 +15,48 @@
 // 
 
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "FleetManager5.0",
-  description: "IB-Systems",
-};
+const TITLE = "Fleet Management";
+const DESCRIPTION = "IndustryFusion-X";
+
+// A link preview image has to be an absolute URL, and the origin differs per
+// environment, so it is derived from the incoming request rather than being
+// configured per deployment. The matching tags for the pages/ routes live in
+// pages/_document.tsx.
+export async function generateMetadata(): Promise<Metadata> {
+  const requestHeaders = await headers();
+  const host =
+    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost";
+  const local = host.startsWith("localhost") || host.startsWith("127.0.0.1");
+  const protocol = requestHeaders.get("x-forwarded-proto") ?? (local ? "http" : "https");
+  const origin = `${protocol}://${host}`;
+  const image = { url: `${origin}/og-image.png`, width: 1200, height: 630 };
+
+  return {
+    metadataBase: new URL(origin),
+    title: TITLE,
+    description: DESCRIPTION,
+    openGraph: {
+      title: TITLE,
+      description: DESCRIPTION,
+      siteName: TITLE,
+      type: "website",
+      url: origin,
+      images: [image],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: TITLE,
+      description: DESCRIPTION,
+      images: [image.url],
+    },
+  };
+}
 
 export default function RootLayout({
   children,

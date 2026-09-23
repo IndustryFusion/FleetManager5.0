@@ -41,6 +41,7 @@ import { FilterMatchMode } from "primereact/api";
 import { getAccessGroupData } from "@/utility/auth";
 import { ContextMenu } from "primereact/contextmenu";
 import ConfirmTransferDialog from "@/components/move-to-room/confirm-dialog";
+import OwnershipDataDialog from "@/components/move-to-room/ownership-data-dialog";
 import { showToast } from "@/utility/toast";
 import { PdtOverviewTour } from "@/components/ui-navigation-guide/pdt-overview-tour";
 
@@ -310,6 +311,9 @@ const [factoryOwner, setFactoryOwner] = useState<{
     setIsBlue(!isBlue);
   };
 
+  // The product whose Ownership Data dialog is open (a product already transferred).
+  const [ownershipDataAsset, setOwnershipDataAsset] = useState<any>(null);
+
   const handleMoveToRoom = (asset: Asset) => {
     setSelectedProduct(asset);
     setIsMoveToRoomDialogVisible(true);
@@ -465,6 +469,12 @@ const handleConfirmTransfer = async () => {
          }
         />
       )}
+        <OwnershipDataDialog
+          visible={!!ownershipDataAsset}
+          asset={ownershipDataAsset}
+          manufacturerIfricId={companyIfricId}
+          onHide={() => setOwnershipDataAsset(null)}
+        />
       {isConfirmDialogVisible && transferAsset && (
         <ConfirmTransferDialog
           visible={isConfirmDialogVisible}
@@ -549,6 +559,7 @@ const handleConfirmTransfer = async () => {
                       loading={assetStatus === "loading"}
                       activeTab={activeTab}
                       onMoveToRoom={handleMoveToRoom}
+                      onOwnershipData={setOwnershipDataAsset}
                       searchFilters={searchFilters}
                       companyIfricId={companyIfricId}
                     />

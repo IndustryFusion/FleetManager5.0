@@ -1,0 +1,68 @@
+/* Ownership Data dialog. Only layout lives here: colours, fonts and sizes come
+   from confirm-dialog.css and move-to-room.css, so it matches the transfer
+   dialogs it sits next to. */
+
+.ownership-data-details {
+    display: flex;
+    gap: 16px;
+}
+
+.ownership-data-details .party-card {
+    flex: 1 1 0;
+    min-width: 0;
+    align-items: flex-start;
+    padding: 16px;
+}
+
+.ownership-data-details .form_group_title {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.ownership-data-details .owner_details_group {
+    width: 100%;
+}
+
+.ownership-data-id {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+.ownership-data-id p {
+    margin: 0;
+    font-size: 14px;
+    min-width: 0;
+}
+
+.ownership-data-id p.collapsed {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ownership-data-id p.expanded {
+    word-break: break-all;
+}
+
+.ownership-data-role {
+    color: var(--Common-Text-Grey-600, #475467);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+@media screen and (max-width: 960px) {
+    .ownership-data-details,
+    .ownership-data-dialog .parties-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ownership-data-dialog .transfer-arrow {
+        align-self: center;
+        transform: rotate(90deg);
+    }
+}
