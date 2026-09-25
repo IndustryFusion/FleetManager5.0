@@ -15,6 +15,7 @@
 // 
 
 import { Controller, Post, Body, Get, Req, UseGuards, Param, Query, Patch, Delete} from '@nestjs/common';
+import { Public } from './public.decorator';
 import { AuthService } from './auth.service';
 import { FindOneAuthDto, FindIndexedDbAuthDto, EncryptRouteDto, CompanyTwinDto } from './dto/find-auth-dto';
 import { Request } from 'express';
@@ -32,16 +33,19 @@ export class AuthController {
    * Ends the session in Keycloak as well as here. Public: by the time a user
    * logs out their access token may already have expired.
    */
+  @Public()
   @Post('logout')
   logout(@Body() data: { email: string; ifricdr?: string }) {
     return this.authService.logOut(data);
   }
 
+  @Public()
   @Post('refresh')
   refreshSession(@Body('ifricdr') ifricdr: string) {
     return this.authService.refreshSession(ifricdr);
   }
 
+  @Public()
   @Post('login')
   userLogin(@Body() data: FindOneAuthDto) {
     try {
@@ -64,11 +68,13 @@ export class AuthController {
   // Server-to-server, from IFX Suite, immediately before it sends a user here
   // over SSO. Unguarded because the signed route token in the body is the
   // credential — see AuthService.receiveRouteHandoff.
+  @Public()
   @Post('receive-route-handoff')
   receiveRouteHandoff(@Body() body: { routeToken: string; ifricdr: string }) {
     return this.authService.receiveRouteHandoff(body);
   }
 
+  @Public()
   @Post('decrypt-route')
   decryptRoute(@Body() data: FindIndexedDbAuthDto) {
     try {
@@ -150,6 +156,7 @@ export class AuthController {
     return this.authService.getAccessGroup(id, req);
   }
 
+  @Public()
   @Get('authenticate-token/:ifricdi')
   authenticateToken(@Param('ifricdi') ifricdi: string) {
     return this.authService.authenticateToken(ifricdi);

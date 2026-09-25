@@ -15,6 +15,7 @@
 // 
 
 import React, { useState, useEffect, useRef } from "react";
+import api from "@/utility/jwt";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { TabPanel, TabView } from "primereact/tabview";
@@ -66,7 +67,7 @@ const GetListTemplate: React.FC = () => {
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const response = await axios.get(`${BACKEND_API_URL}/templates`, {
+        const response = await api.get(`${BACKEND_API_URL}/templates`, {
           headers: {
             "Content-Type": "application/json",
           },

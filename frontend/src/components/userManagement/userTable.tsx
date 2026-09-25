@@ -1,4 +1,5 @@
 import { Column } from "primereact/column";
+import api from "@/utility/jwt";
 import { DataTable } from "primereact/datatable";
 import "../../styles/asset-overview.css";
 import "../../styles/user-management.css";
@@ -74,7 +75,7 @@ const UserTable:React.FC<UserTableProps> = ({filters, accessgroupIndexDb,setUser
 
   const handleDelete = async(id:string)=>{
     try{
-      const response = await axios.delete(`${FLEET_MANAGER_BACKEND_URL}/auth/delete-company-user/${id}`,{
+      const response = await api.delete(`${FLEET_MANAGER_BACKEND_URL}/auth/delete-company-user/${id}`,{
         headers: {
           "Content-Type": "application/json",
         },
@@ -196,7 +197,7 @@ const UserTable:React.FC<UserTableProps> = ({filters, accessgroupIndexDb,setUser
 
   const fetchUsers = async() => {
     try{
-      const response = await axios.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-company-users/${companyIfricId}`,{
+      const response = await api.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-company-users/${companyIfricId}`,{
         headers: {
           "Content-Type": "application/json",
         },
@@ -216,7 +217,7 @@ const UserTable:React.FC<UserTableProps> = ({filters, accessgroupIndexDb,setUser
             email: response.data[i].user_email
           };
           user.name = response.data[i].user_name;
-          const productAccessResponse = await axios.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-user-product-access/${response.data[i]['_id']}`,{
+          const productAccessResponse = await api.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-user-product-access/${response.data[i]['_id']}`,{
             headers: {
               "Content-Type": "application/json",
             },
@@ -224,7 +225,7 @@ const UserTable:React.FC<UserTableProps> = ({filters, accessgroupIndexDb,setUser
           user.access = [];
           if(productAccessResponse.data.length > 0) {
             for(let j = 0; j < productAccessResponse.data.length; j++) {
-              let accessGroupData = await axios.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-access-group/${productAccessResponse.data[j].access_group_id}`,{
+              let accessGroupData = await api.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-access-group/${productAccessResponse.data[j].access_group_id}`,{
                 headers: {
                   "Content-Type": "application/json",
                 },

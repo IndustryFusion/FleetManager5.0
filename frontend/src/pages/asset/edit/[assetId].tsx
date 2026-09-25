@@ -15,6 +15,7 @@
 // 
 
 import React, { useState, useEffect, useRef } from "react";
+import api from "@/utility/jwt";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import axios from "axios";
@@ -83,7 +84,7 @@ const AssetEdit = () => {
 
   const fetchAsset = async (assetId: string) => {
     try {
-      const response = await axios.get(API_URL + `/asset/${assetId}`, {
+      const response = await api.get(API_URL + `/asset/${assetId}`, {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -174,7 +175,7 @@ const AssetEdit = () => {
     } else {
       if (Object.keys(updatedData).length > 0) {
         try {
-          const response = await axios.patch(
+          const response = await api.patch(
             API_URL + `/asset/${formData.id}`,
             updatedData,
             {
