@@ -15,6 +15,7 @@
 // 
 
 import React, { useEffect, useRef, useState } from "react";
+import api from "@/utility/jwt";
 import { Card } from "primereact/card";
 import "primereact/resources/primereact.min.css";
 import "primeflex/primeflex.css";
@@ -52,7 +53,7 @@ export default function AssetDetailsCard({ asset, setShowExtraCard }: AssetDetai
   useEffect(() => {
     const fetchSchema = async () => {
       try {
-        const response = await axios.get(BACKEND_API_URL + `/templates/template-name/`, {
+        const response = await api.get(BACKEND_API_URL + `/templates/template-name/`, {
           params: {
             name: asset?.asset_category
           },

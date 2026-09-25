@@ -66,7 +66,7 @@ export const getAssignedContracts = async (
     console.log(
     "BindingIfricId",  binding_company_ifric_id, "CompanyIfricId",contract_company_ifric_id, "AssetFricId",asset_ifric_id
     )
-    const res = await axios.get(
+    const res = await api.get(
 
       `${BACKEND_API_URL}/binding/get-contract-details-by-binding-company/${binding_company_ifric_id}/${contract_company_ifric_id}/${asset_ifric_id}`,{
           headers: {

@@ -15,6 +15,7 @@
 //
 
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import api from "@/utility/jwt";
 import axios from "axios";
 
 interface Template {
@@ -62,7 +63,7 @@ export const fetchTemplates = createAsyncThunk(
   async () => {
     try {
       // Fetch the list of templates
-      const listResponse = await axios.get(
+      const listResponse = await api.get(
         `${process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL}/mongodb-templates`,
         {
           headers: {
@@ -76,7 +77,7 @@ export const fetchTemplates = createAsyncThunk(
         const detailedTemplates = await Promise.all(
         templateList.map(async (template: any) => {
           try {
-            const detailResponse = await axios.get(
+            const detailResponse = await api.get(
               `${process.env.NEXT_PUBLIC_FLEET_MANAGER_BACKEND_URL}/mongodb-templates/${encodeURIComponent(template.title)}`,
               {
                 headers: {

@@ -1,4 +1,5 @@
 import { DataTable } from "primereact/datatable";
+import api from "@/utility/jwt";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { TriStateCheckbox } from "primereact/tristatecheckbox";
@@ -50,7 +51,7 @@ const GroupTable: React.FC<any> = ({ groups, setGroups, filters,setGroupsCount,a
   const handleUpdate = async(value) => {
     try {
       if('_id' in value) {
-        const response = await axios.patch(`${FLEET_MANAGER_BACKEND_URL}/auth/update-access-group/${value['_id']}`,
+        const response = await api.patch(`${FLEET_MANAGER_BACKEND_URL}/auth/update-access-group/${value['_id']}`,
           value,
           {
             headers: {
@@ -61,7 +62,7 @@ const GroupTable: React.FC<any> = ({ groups, setGroups, filters,setGroupsCount,a
           return true;
         }
       } else {
-        const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/create-access-group/${companyIfricId}`,
+        const response = await api.post(`${FLEET_MANAGER_BACKEND_URL}/auth/create-access-group/${companyIfricId}`,
           value,
           {
             headers: {
@@ -191,7 +192,7 @@ const GroupTable: React.FC<any> = ({ groups, setGroups, filters,setGroupsCount,a
 
   const fetchCompanyAccess = async() => {
     try {
-      const response = await axios.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-company-access-group/${companyIfricId}`,{
+      const response = await api.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-company-access-group/${companyIfricId}`,{
         headers: {
           "Content-Type": "application/json",
         },
@@ -212,7 +213,7 @@ const GroupTable: React.FC<any> = ({ groups, setGroups, filters,setGroupsCount,a
     showToast(toast, "success", "Success", "Deleted Company Access group");
   }else{
     try{
-      const response = await axios.delete(`${FLEET_MANAGER_BACKEND_URL}/auth/delete-access-group/${id}`,{
+      const response = await api.delete(`${FLEET_MANAGER_BACKEND_URL}/auth/delete-access-group/${id}`,{
         headers: {
           "Content-Type": "application/json",
         },

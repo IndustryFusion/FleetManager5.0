@@ -144,7 +144,7 @@ export const getAccessGroupData = async(token: string, from?: string) => {
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/decrypt-route`, {token, product_name: "Fleet Manager"}, {
+        const response = await api.post(`${FLEET_MANAGER_BACKEND_URL}/auth/decrypt-route`, {token, product_name: "Fleet Manager"}, {
             headers: registryHeader
         });
         const loginData = {
@@ -266,7 +266,7 @@ export const authenticateToken = async () => {
     if (!stored?.ifricdi) {
       return false;
     }
-    const response = await axios.get(
+    const response = await api.get(
       `${FLEET_MANAGER_BACKEND_URL}/auth/authenticate-token/${stored.ifricdi}`,
     );
     return response.data;

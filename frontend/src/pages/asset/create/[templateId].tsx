@@ -15,6 +15,7 @@
 // 
 
 import React, { useState, useEffect, useRef } from "react";
+import api from "@/utility/jwt";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
@@ -252,7 +253,7 @@ const CreateAssetForm: React.FC = () => {
     }
     else {
       try {
-        const response = await axios.post(
+        const response = await api.post(
           API_URL + `/asset/${currenTemplateID}`,
           submissionData,
           {

@@ -15,6 +15,8 @@
 // 
 
 import { Module } from '@nestjs/common';
+import { AuthGuard } from './endpoints/auth/auth.guard';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TemplatesController } from './endpoints/templates/templates.controller';
@@ -54,6 +56,11 @@ import { RouteHandoffService } from './endpoints/auth/route-handoff.service';
     CompanyController
   ],
   providers: [
+    // Authentication is deny-by-default: every route is guarded unless it
+    // carries @Public(), so a new handler is protected whether or not its
+    // author thought about it. The guard also refuses a caller from another
+    // company - this installation belongs to one.
+    { provide: APP_GUARD, useClass: AuthGuard },
     AppService,
     TemplatesService,
     AuthService,

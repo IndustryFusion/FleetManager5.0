@@ -1,5 +1,6 @@
 
 import { getCompanyDetailsById, getCompanyDetailsByRecordId } from "@/utility/auth";
+import api from "@/utility/jwt";
 import "../../../public/styles/certificate-card.css"
  import { formatDateTime } from "@/utility/certificate";
 import axios from "axios";
@@ -38,7 +39,7 @@ const CertificateCard:React.FC<any> =({certificate})=>{
       const handleDownload = async () => {
         let company_ifric_id = "";
         try {
-            const response = await axios.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-company-details-id/${certificate?.company_id}`,{
+            const response = await api.get(`${FLEET_MANAGER_BACKEND_URL}/auth/get-company-details-id/${certificate?.company_id}`,{
               headers: {
                 "Content-Type": "application/json",
               }         
