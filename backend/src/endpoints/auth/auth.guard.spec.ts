@@ -67,6 +67,21 @@ const contextWith = (token?: string) =>
     }),
   }) as any;
 
+/**
+ * A context over one fixed request object, so a second canActivate sees what
+ * the first left behind. That is what Nest does on a route covered both by
+ * the global registration and by its own @UseGuards(AuthGuard).
+ */
+const contextForOneRequest = (token: string) => {
+  const request: any = { headers: { authorization: `Bearer ${token}` } };
+  return {
+    getType: () => 'http',
+    getHandler: () => undefined,
+    getClass: () => undefined,
+    switchToHttp: () => ({ getRequest: () => request }),
+  } as any;
+};
+
 /** Says "not public", which is the case for every route under test here. */
 const reflector = { getAllAndOverride: () => false } as any;
 
@@ -86,6 +101,17 @@ describe('AuthGuard company check', () => {
     await expect(
       new AuthGuard(reflector).canActivate(contextWith(await tokenFor(OURS))),
     ).resolves.toBe(true);
+  });
+
+  it('lets a route that names the guard through a second time', async () => {
+    // Every route still carrying @UseGuards(AuthGuard) is checked twice: once
+    // globally, once by its own decorator. The first pass swaps the masked
+    // token in the header for the decrypted one, which cannot be unmasked
+    // again - so without this, exactly those routes answered 401.
+    const context = contextForOneRequest(await tokenFor(OURS));
+
+    await expect(new AuthGuard(reflector).canActivate(context)).resolves.toBe(true);
+    await expect(new AuthGuard(reflector).canActivate(context)).resolves.toBe(true);
   });
 
   it('refuses another company, and says whose installation this is', async () => {
