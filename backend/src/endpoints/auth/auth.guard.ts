@@ -13,6 +13,18 @@ import * as jwt from 'jsonwebtoken';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from './public.decorator';
 
+/**
+ * Marks a request whose token this guard has already read.
+ *
+ * The guard is registered globally *and* is still named on individual routes
+ * with `@UseGuards(AuthGuard)`, so Nest runs it twice on those routes. The
+ * first run replaces the masked token in the Authorization header with the
+ * decrypted one, and the second run cannot unmask what is no longer masked —
+ * so every route that names the guard answered 401. One check per request is
+ * what was intended in the first place.
+ */
+const AUTH_CHECKED = Symbol.for('ifx.auth.checked');
+
 @Injectable()
 export class AuthGuard implements CanActivate {
   private static readonly logger = new Logger(AuthGuard.name);
@@ -48,6 +60,11 @@ export class AuthGuard implements CanActivate {
     if (isPublic) return true;
 
     const request = context.switchToHttp().getRequest();
+
+    // Checked already on the way in; the header no longer carries a masked
+    // token for a second pass to read.
+    if (request[AUTH_CHECKED]) return true;
+
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException();
@@ -74,6 +91,8 @@ export class AuthGuard implements CanActivate {
     // Outside the catch above: a refusal here is a decision, not a malformed
     // token, and must not be reported as one.
     this.assertOwnCompany(callerCompany);
+
+    request[AUTH_CHECKED] = true;
     return true;
   }
 
