@@ -144,7 +144,12 @@ export const getAccessGroupData = async(token: string, from?: string) => {
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        const response = await api.post(`${FLEET_MANAGER_BACKEND_URL}/auth/decrypt-route`, {token, product_name: "Fleet Manager"}, {
+        // Bare axios on purpose: this is part of establishing a session, so a
+        // 401 is an ordinary answer rather than a failure. Through the shared
+        // instance the response interceptor treats it as a lost session,
+        // attempts a refresh and shows the session-expired dialog - to someone
+        // who is in the middle of signing in.
+        const response = await axios.post(`${FLEET_MANAGER_BACKEND_URL}/auth/decrypt-route`, {token, product_name: "Fleet Manager"}, {
             headers: registryHeader
         });
         const loginData = {
