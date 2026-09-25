@@ -42,6 +42,25 @@ export class AuthService {
   private readonly SECRET_KEY = process.env.JWT_SECRET!;
   private readonly MASK_SECRET = process.env.MASK_SECRET!;
 
+  /**
+   * This installation belongs to one company; nobody else may sign in.
+   *
+   * The same rule AuthGuard applies to every request, applied once at sign-in
+   * so the user is told on the form rather than by an error on a page they
+   * have already been taken to. Unset, every company is accepted, as before.
+   */
+  private assertOwnCompany(callerCompany: string | undefined): void {
+    const instanceCompany = process.env.INSTANCE_COMPANY_IFRIC_ID;
+    if (!instanceCompany) return;
+    if (callerCompany && callerCompany === instanceCompany) return;
+
+    throw new HttpException(
+      `This installation belongs to ${instanceCompany}. ` +
+        'Sign in with that company\'s account.',
+      HttpStatus.FORBIDDEN,
+    );
+  }
+
   async logIn(data: FindOneAuthDto) {
     try {
       // Find User From IFRIC Registry
@@ -56,6 +75,9 @@ export class AuthService {
         },
       );
       if (registryResponse.data.status == '200') {
+        // Refused here rather than on the first guarded call afterwards: the
+        // credentials are right, the account simply belongs elsewhere.
+        this.assertOwnCompany(registryResponse.data.data?.company_ifric_id);
         // Wrap the tokens the way every other consumer does. Without this the
         // response reaches the browser with no `ifricdi`, so storeAccessGroup
         // persists undefined and the request interceptor sends no

@@ -92,7 +92,16 @@ const HorizontalNavbar: React.FC = () => {
   const handleLogout = async () => {
     // Clear first: the login page must not find the old session still stored.
     await endSession().catch(() => undefined);
-    router.push("/login", undefined, {locale: 'en'});
+    // Signing in happens in IFX Suite, so signing out returns there rather
+    // than to this app's own form. ?signout=1 makes it show that form even
+    // if its own session outlived this one - otherwise it carries the user
+    // to its home page, which is not what pressing "log out" asked for.
+    const suite = process.env.NEXT_PUBLIC_IFX_SUITE_FRONTEND_URL;
+    if (suite) {
+      window.location.href = `${suite}/auth/login?signout=1`;
+    } else {
+      router.push("/login", undefined, {locale: 'en'});
+    }
     dispatch(resetTimer());
     dispatch(logout());
   };

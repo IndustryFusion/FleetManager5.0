@@ -247,9 +247,19 @@ export const UnauthorizedPopup: React.FC = () => {
   const handleLogin = async () => {
     await clearIndexedDbOnLogout();
     setVisible(false);
-    // This app's own login page. Bouncing to IFX Suite sent the user to an
-    // app that may still hold a live session and route them straight back,
-    // with no session here — a loop with no way to sign in.
+    // Signing in happens in IFX Suite, which is where these applications are
+    // opened from; this app's own login form is not the way back in.
+    //
+    // ?signout=1 is what keeps this from looping. Sent to IFX Suite plainly,
+    // a visitor whose session there is still live would be carried to its
+    // home page and straight back here - still with no session - and round
+    // again. The parameter tells it to sign out and show its form instead.
+    const suite = process.env.NEXT_PUBLIC_IFX_SUITE_FRONTEND_URL;
+    if (suite) {
+      window.location.href = `${suite}/auth/login?signout=1`;
+      return;
+    }
+    // No Suite configured: this app's own form is better than nowhere.
     router.push('/login');
   }
 
