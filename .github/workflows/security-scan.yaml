@@ -1,0 +1,77 @@
+name: Security scan
+
+# Report only: findings never fail this workflow, and the build and deploy
+# workflows are not touched. See ifx-docs 14.1 Security baseline, step 3.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TRIVY_VERSION: "0.76.2"
+  TRIVY_SHA256: "bc0fc726e017b8927a62b2d3531d7a84ee01769daf5c99ed866dced54089fdbf"
+
+jobs:
+  repository:
+    name: Dependencies and configuration
+    # Secrets are covered by GitHub secret scanning on this public repository.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install Trivy
+        run: |
+          curl -sSfL -o "${RUNNER_TEMP}/trivy.tar.gz" \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          echo "${TRIVY_SHA256}  ${RUNNER_TEMP}/trivy.tar.gz" | sha256sum -c -
+          tar -xzf "${RUNNER_TEMP}/trivy.tar.gz" -C "${RUNNER_TEMP}" trivy
+          echo "${RUNNER_TEMP}" >> "${GITHUB_PATH}"
+
+      - name: Scan the repository
+        run: |
+          trivy fs --scanners vuln,misconfig --exit-code 0 --format json --output trivy-repo.json .
+          trivy convert --format table --output trivy-repo.txt trivy-repo.json
+          {
+            echo "## Trivy: repository (report only)"
+            echo ""
+            echo "| Severity | Vulnerabilities | Secrets | Misconfigurations |"
+            echo "|---|---|---|---|"
+            for s in CRITICAL HIGH MEDIUM LOW; do
+              v=$(jq --arg s "$s" '[.Results[]?.Vulnerabilities[]?|select(.Severity==$s)]|length' trivy-repo.json)
+              k=$(jq --arg s "$s" '[.Results[]?.Secrets[]?|select(.Severity==$s)]|length' trivy-repo.json)
+              m=$(jq --arg s "$s" '[.Results[]?.Misconfigurations[]?|select(.Severity==$s and .Status=="FAIL")]|length' trivy-repo.json)
+              echo "| $s | $v | $k | $m |"
+            done
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Keep the report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: trivy-repository
+          path: |
+            trivy-repo.json
+            trivy-repo.txt
+          retention-days: 30
+
+      - name: Show findings in the Security tab
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        run: trivy convert --format sarif --output trivy-repo.sarif trivy-repo.json
+
+      - name: Upload SARIF
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          sarif_file: trivy-repo.sarif
+          category: trivy-repository

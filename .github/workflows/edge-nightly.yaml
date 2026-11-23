@@ -3,6 +3,9 @@ name: Edge-Nightly
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: dev-edge
@@ -18,7 +21,7 @@ jobs:
       DOCKER_TAG: ${{ steps.build.outputs.NIGHTLY_DOCKER_TAG }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.ref }}
           clean: true
@@ -31,11 +34,7 @@ jobs:
           # Authenticate with Vault
           VAULT_TOKEN=$(curl -s --request POST --data '{"password": "'"${VAULT_PASS}"'"}' "${VAULT_ADDR}/v1/auth/userpass/login/${VAULT_USER}" | jq -r .auth.client_token)
           # Fetch secrets from Vault
-          curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/${VAULT_PATH}" | jq -r '.data.data | to_entries | map("\(.key)=\(.value|tostring)") | .[]' > frontend/.env.development
-
-      - name: Verify .env.development
-        run: |
-          cat frontend/.env.development
+          curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" "${VAULT_ADDR}/v1/${VAULT_PATH}" | jq -r '.data.data | to_entries | map(select(.key | startswith("NEXT_PUBLIC_"))) | map("\(.key)=\(.value|tostring)") | .[]' > frontend/.env.development
 
       - id: build
         name: Build & Push Image
@@ -44,7 +43,7 @@ jobs:
           export DOCKER_TAG="latest"
           export ENV="edge"
           NIGHTLY_DOCKER_TAG=nightly-`date -I`-`date +%s`
-          docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
+          echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
           docker compose build --build-arg ENV_FILE=.env
           docker tag ${DOCKER_PREFIX}/fleet50-backend:${DOCKER_TAG} ${DOCKER_PREFIX}/fleet50-backend:${NIGHTLY_DOCKER_TAG}
           docker tag ${DOCKER_PREFIX}/fleet50-frontend:${DOCKER_TAG} ${DOCKER_PREFIX}/fleet50-frontend:${NIGHTLY_DOCKER_TAG}
