@@ -50,6 +50,10 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+      # Runtime versions in base image tags (python:3.8 -> 3.15 looks "minor") are
+      # chosen on purpose in ifx-docs 14.1 step 4, not by Dependabot.
+      - dependency-name: "node"
+      - dependency-name: "python"
 
   - package-ecosystem: "npm"
     directory: "/backend"
@@ -98,6 +102,10 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+      # Runtime versions in base image tags (python:3.8 -> 3.15 looks "minor") are
+      # chosen on purpose in ifx-docs 14.1 step 4, not by Dependabot.
+      - dependency-name: "node"
+      - dependency-name: "python"
 
   - package-ecosystem: "github-actions"
     directory: "/"
