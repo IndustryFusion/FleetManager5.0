@@ -33,6 +33,8 @@ const nextConfig = {
       // !! WARN !!
       ignoreBuildErrors: true,
     },
+    // Security: no on-the-fly image optimisation (Next 14 image-optimizer advisories). Images are served as they are.
+    images: { unoptimized: true },
     basePath: ''	
 }
 
