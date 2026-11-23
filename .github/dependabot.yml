@@ -1,0 +1,124 @@
+# Dependabot: grouped, weekly updates. Security fixes and minor/patch updates are
+# grouped into one pull request per ecosystem and directory; majors are ignored.
+# See ifx-docs 14.1 Security baseline, step 2.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "security"
+    groups:
+      npm-frontend-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      npm-frontend-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Major versions change behaviour; each gets its own plan (ifx-docs 14.1, step 5C).
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+
+  - package-ecosystem: "docker"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "security"
+    groups:
+      docker-frontend-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      docker-frontend-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Major versions change behaviour; each gets its own plan (ifx-docs 14.1, step 5C).
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "security"
+    groups:
+      npm-backend-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      npm-backend-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Major versions change behaviour; each gets its own plan (ifx-docs 14.1, step 5C).
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+
+  - package-ecosystem: "docker"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "security"
+    groups:
+      docker-backend-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      docker-backend-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Major versions change behaviour; each gets its own plan (ifx-docs 14.1, step 5C).
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "security"
+    groups:
+      actions-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      actions-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Major versions change behaviour; each gets its own plan (ifx-docs 14.1, step 5C).
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
