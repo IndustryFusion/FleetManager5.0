@@ -6,3 +6,8 @@ yarn-error.log
 .idea
 coverage
 .env
+.git
+.github
+*.md
+.next
+npm-debug.log

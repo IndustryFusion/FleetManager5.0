@@ -7,3 +7,6 @@ coverage
 .vscode
 .idea
 .env
+.git
+.github
+*.md
