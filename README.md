@@ -8,6 +8,12 @@ For the demo setup, the Fleet uses GitHub API to fetch these templates. The GitH
 
 Fleet Manager uses FIWARE Scorpio Broker for storing objects. The scorpio broker must be seperately deployed and the API must be connected to Fleet Manager using .env file. For scorpio broker, Kubernetes deployment and configuration files for development is in the folder 'broker'. This must be deployed on a Kubernetes node and expose the url to the Fleet Manager.
 
+Before applying the files in `broker`, create the database credentials Secret that both `postgres.yaml` and `scorpio.yaml` read. For a new deployment choose your own password. For an existing one, keep the values its database was created with, because Postgres only applies them on first start. The old files used `ngb` / `ngb`.
+
+```bash
+kubectl create secret generic scorpio-db --from-literal=user=ngb --from-literal=password='<choose-a-password>'
+```
+
 After deploying Scorpio broker (scorpio, kafka, postgres), create the below asset for demo ID series. Note: In value, urn:ngsi-ld:asset:2:XXX, the XXX range is your choice. The IDs will then start from XXX+1.
 
 ```bash

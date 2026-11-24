@@ -19,6 +19,18 @@ spec:
       - image: scorpiobroker/all-in-one-runner:java-kafka-latest
         imagePullPolicy: ""
         name: scorpio
+        # Same database credentials as broker/postgres.yaml, from the scorpio-db Secret (see README)
+        env:
+        - name: DBUSER
+          valueFrom:
+            secretKeyRef:
+              name: scorpio-db
+              key: user
+        - name: DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: scorpio-db
+              key: password
         ports:
         - containerPort: 9090
         resources: {}
