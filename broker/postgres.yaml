@@ -19,10 +19,17 @@ spec:
     - env:
       - name: POSTGRES_DB
         value: ngb
+      # Credentials come from the scorpio-db Secret (see README); Scorpio reads the same Secret
       - name: POSTGRES_PASSWORD
-        value: ngb
+        valueFrom:
+          secretKeyRef:
+            name: scorpio-db
+            key: password
       - name: POSTGRES_USER
-        value: ngb
+        valueFrom:
+          secretKeyRef:
+            name: scorpio-db
+            key: user
       image: mdillon/postgis
       imagePullPolicy: ""
       name: postgres
