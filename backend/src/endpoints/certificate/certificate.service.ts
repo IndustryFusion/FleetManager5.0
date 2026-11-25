@@ -168,9 +168,7 @@ export class CertificateService {
             certificate_data: checkLastCertificate.data[0].certificate_data,
             asset_ifric_id,
           }, {
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            headers: registryHeaders
           });
           console.log("verifyLastCertificate", verifyLastCertificate.data)
           if (verifyLastCertificate.data) {
