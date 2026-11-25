@@ -18,6 +18,7 @@ import { Injectable, NotFoundException, InternalServerErrorException } from '@ne
 import { TemplateDto } from './dto/template.dto';
 import { TemplateDescriptionDto } from './dto/templateDescription.dto';
 import axios from 'axios';
+import { urlSegment } from '../../utils/url-segment';
 
 @Injectable()
 export class TemplatesService {
@@ -93,7 +94,7 @@ export class TemplatesService {
       
       if (path) {
         path = `${path.replace(/-/g, '_')}_schema.json`;
-        const url = `${this.baseUrl}/${path}`;
+        const url = `${this.baseUrl}/${urlSegment(path)}`;
         const templateDescriptions: TemplateDescriptionDto[] = [];
 
         const headers = {
@@ -134,7 +135,7 @@ export class TemplatesService {
     try {
 
       const fileName = `${name}.json`;
-      const url = `${this.baseUrl}/${fileName}`;
+      const url = `${this.baseUrl}/${urlSegment(fileName)}`;
       console.log("url", url)
       const templateDescriptions: TemplateDescriptionDto[] = [];
       const headers = {

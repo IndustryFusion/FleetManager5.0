@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Request } from 'express';
 import { CompactEncrypt } from 'jose';
 import { createHash } from 'crypto';
+import { urlSegment } from '../../utils/url-segment';
 
 @Injectable()
 export class ContractService {
@@ -40,7 +41,7 @@ export class ContractService {
         'Authorization': req.headers['authorization']
       };
 
-      const response = await axios.get(`${this.contractUrl}/contract/get-company-contract/${company_ifric_id}`, {headers: contractHeaders});
+      const response = await axios.get(`${this.contractUrl}/contract/get-company-contract/${urlSegment(company_ifric_id)}`, {headers: contractHeaders});
       return response.data;
     } catch(err) {
       if (err instanceof HttpException) {

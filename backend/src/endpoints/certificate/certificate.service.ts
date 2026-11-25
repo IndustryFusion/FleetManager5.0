@@ -3,6 +3,7 @@ import axios, { Axios } from 'axios';
 import { CompactEncrypt } from 'jose';
 import { createHash } from 'crypto';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { urlSegment } from '../../utils/url-segment';
 
 @Injectable()
 export class CertificateService {
@@ -53,7 +54,7 @@ export class CertificateService {
       };
 
       // check whether the last created certificate is valid or expired or not
-      const checkLastCertificate = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${company_ifric_id}`, { headers: registryHeaders });
+      const checkLastCertificate = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${urlSegment(company_ifric_id)}`, { headers: registryHeaders });
 
       if (checkLastCertificate.data.length > 0) {
         const verifyLastCertificate = await axios.post(`${this.ifricRegistryUrl}/certificate/verify-company-certificate`, {
@@ -97,7 +98,7 @@ export class CertificateService {
         'Accept': 'application/json',
         'Authorization': req.headers['authorization']
       };
-      const companyCertificates = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${company_ifric_id}`, { headers: registryHeaders });
+      const companyCertificates = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${urlSegment(company_ifric_id)}`, { headers: registryHeaders });
       return companyCertificates.data;
     } catch (err) {
       throw err;
@@ -113,7 +114,7 @@ export class CertificateService {
         'Authorization': req.headers['authorization']
       };
       // check whether the last created certificate is valid or expired or not
-      const checkLastCertificate = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${company_ifric_id}`, { headers: registryHeaders });
+      const checkLastCertificate = await axios.get(`${this.ifricRegistryUrl}/certificate/get-company-certificate/${urlSegment(company_ifric_id)}`, { headers: registryHeaders });
 
       if (checkLastCertificate.data.length > 0) {
         const verifyLastCertificate = await axios.post(`${this.ifricRegistryUrl}/certificate/verify-company-certificate`, {
