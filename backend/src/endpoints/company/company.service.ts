@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
 import { Request } from 'express';
+import { urlSegment } from '../../utils/url-segment';
 
 @Injectable()
 export class CompanyService {
@@ -16,7 +17,7 @@ export class CompanyService {
         'Authorization': req.headers['authorization']
       };
 
-      const response = await axios.get(`${this.ifxPlatformUrl}/pdt-asset-cache/get-assets-and-owner-details/${company_ifric_id}`, {headers: ifxHeaders});
+      const response = await axios.get(`${this.ifxPlatformUrl}/pdt-asset-cache/get-assets-and-owner-details/${urlSegment(company_ifric_id)}`, {headers: ifxHeaders});
       return response.data;
     } catch(err) {
       if (err instanceof HttpException) {

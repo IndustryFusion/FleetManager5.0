@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { CreateBindingDto, UpdateBindingDto } from './dto/binding.dto';
 import axios from 'axios';
+import { urlSegment } from '../../utils/url-segment';
 
 @Injectable()
 export class BindingService {
@@ -24,7 +25,7 @@ export class BindingService {
 
   async getContractDetailsByBindingCompany(binding_company_ifric_id: string, contract_company_ifric_id: string, asset_ifric_id: string) {
     try {
-      const response = await axios.get(`${this.contractUrl}/binding/get-contract-details-by-binding-company/${binding_company_ifric_id}/${contract_company_ifric_id}/${asset_ifric_id}`);
+      const response = await axios.get(`${this.contractUrl}/binding/get-contract-details-by-binding-company/${urlSegment(binding_company_ifric_id)}/${urlSegment(contract_company_ifric_id)}/${urlSegment(asset_ifric_id)}`);
       return response.data;
     } catch (err) {
       if (err instanceof HttpException) {

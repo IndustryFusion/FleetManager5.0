@@ -20,6 +20,7 @@ import { TemplatesService } from '../templates/templates.service';
 import axios from 'axios';
 import * as moment from 'moment';
 import { Request } from 'express';
+import { urlSegment } from '../../utils/url-segment';
 @Injectable()
 export class AssetService {
   constructor(private readonly templatesService: TemplatesService) { }
@@ -41,7 +42,7 @@ export class AssetService {
         'Accept': 'application/json',
         'Authorization': req.headers['authorization']
       };
-      const assetIds = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${company_ifric_id}`, { headers: registryHeaders });
+      const assetIds = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${urlSegment(company_ifric_id)}`, { headers: registryHeaders });
       if(assetIds.data.length > 0) {
         for (let i = assetIds.data.length - 1; i >= 0; i--) {
           let assetId = assetIds.data[i].asset_ifric_id;
@@ -71,7 +72,7 @@ export class AssetService {
         'Content-Type': 'application/ld+json',
         'Accept': 'application/ld+json'
       };
-      const url = this.scorpioUrl + '/' + id;
+      const url = this.scorpioUrl + '/' + urlSegment(id);
       const response = await axios.get(url, { headers });
       if (response.data) {
         return response.data;
@@ -89,7 +90,7 @@ export class AssetService {
         'Content-Type': 'application/ld+json',
         'Accept': 'application/ld+json'
       };
-      const url = this.scorpioUrl + '/' + id + '?options=keyValues';
+      const url = this.scorpioUrl + '/' + urlSegment(id) + '?options=keyValues';
       const response = await axios.get(url, { headers });
       if (response.data) {
         return response.data;
@@ -139,7 +140,7 @@ export class AssetService {
         throw new Error("No company found with the provided ID");
       } */
 
-      const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${id}`, { headers: registryHeaders });  
+      const companyTwinData = await axios.get(`${this.registryUrl}/auth/get-manufacturer-asset/${urlSegment(id)}`, { headers: registryHeaders });  
       const batchSize = 50; 
       const batchPromises = [];
       for (let i = 0; i < companyTwinData.data.length; i += batchSize) {
@@ -349,7 +350,7 @@ export class AssetService {
           }
         });
         updatedData['@context'] = this.context;
-        const url = this.scorpioUrl + '/' + id + '/attrs';
+        const url = this.scorpioUrl + '/' + urlSegment(id) + '/attrs';
         const response = await axios.post(url, updatedData, { headers });
         return {
           status: response.status,
@@ -373,7 +374,7 @@ export class AssetService {
         'Content-Type': 'application/ld+json',
         'Accept': 'application/ld+json'
       };
-      const url = this.scorpioUrl + '/' + id;
+      const url = this.scorpioUrl + '/' + urlSegment(id);
       const response = await axios.delete(url, { headers });
       return {
         status: response.status,
