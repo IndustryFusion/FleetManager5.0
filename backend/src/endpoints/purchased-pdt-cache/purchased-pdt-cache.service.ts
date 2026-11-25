@@ -16,7 +16,7 @@ export class PurchasedPdtCacheService {
       };
       // The headers go in the config (third argument). They used to be passed
       // as the body, so the PDT backend never received the token.
-      const response = await axios.post(`${this.ifxPlatformUrl}/purchased-pdt-cache/${company_ifric_id}/${asset_ifric_id}/${asset_cert_valid}`, {}, { headers: ifxHeaders });
+      const response = await axios.post(`${this.ifxPlatformUrl}/purchased-pdt-cache/${encodeURIComponent(company_ifric_id)}/${encodeURIComponent(asset_ifric_id)}/${encodeURIComponent(asset_cert_valid)}`, {}, { headers: ifxHeaders });
       return response.data;
     } catch(err) {
       if (err instanceof HttpException) {
